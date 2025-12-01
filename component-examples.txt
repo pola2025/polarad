@@ -1,0 +1,1149 @@
+폴라애드(PolaAd) 컴포넌트 스타일 가이드
+실제 구현 예제 및 사용법
+
+작성일: 2025년 11월 2일
+버전: 1.0
+
+======================================
+📦 1. BUTTON 컴포넌트
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Primary Button (주요 행동 유도)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.btn-primary {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  /* Spacing */
+  padding: 12px 24px;
+
+  /* Typography */
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+  white-space: nowrap;
+
+  /* Visual */
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-in-out);
+
+  /* Accessibility */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.btn-primary:disabled {
+  background-color: var(--neutral-300);
+  color: var(--neutral-500);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+[React/Next.js Example]
+export function PrimaryButton({
+  children,
+  onClick,
+  disabled = false,
+  type = 'button'
+}) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="btn-primary"
+    >
+      {children}
+    </button>
+  );
+}
+
+[사용 예시]
+<PrimaryButton onClick={handleSubmit}>
+  330만 원 바로 결제하고 시작하기
+</PrimaryButton>
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Secondary Button (보조 행동)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 12px 24px;
+
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  font-weight: var(--font-medium);
+
+  background-color: transparent;
+  color: var(--neutral-900);
+  border: 2px solid var(--neutral-300);
+  border-radius: var(--radius-md);
+
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.btn-secondary:hover {
+  background-color: var(--neutral-100);
+  border-color: var(--neutral-400);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+[사용 예시]
+<SecondaryButton>무료 상담 신청하기</SecondaryButton>
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Ghost Button (최소한의 버튼)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 12px 24px;
+
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  font-weight: var(--font-medium);
+
+  background-color: transparent;
+  color: var(--neutral-700);
+  border: none;
+  border-radius: var(--radius-md);
+
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.btn-ghost:hover {
+  background-color: var(--neutral-100);
+  color: var(--neutral-900);
+}
+
+[사용 예시]
+<GhostButton>취소</GhostButton>
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Button Sizes (크기 변형)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.btn-sm {
+  padding: 8px 16px;
+  font-size: var(--text-body-sm);
+}
+
+.btn-md {
+  padding: 12px 24px;
+  font-size: var(--text-body-md);
+}
+
+.btn-lg {
+  padding: 16px 32px;
+  font-size: var(--text-body-lg);
+}
+
+
+======================================
+📝 2. INPUT 컴포넌트
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Text Input (기본 입력 필드)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.input-label {
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-medium);
+  color: var(--neutral-700);
+}
+
+.input-label-required::after {
+  content: '*';
+  color: var(--error);
+  margin-left: var(--space-1);
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  color: var(--neutral-900);
+
+  background-color: var(--bg-primary);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius-md);
+
+  transition: all var(--duration-fast) var(--ease-in-out);
+
+  /* Remove default appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.input-field::placeholder {
+  color: var(--neutral-400);
+}
+
+.input-field:hover {
+  border-color: var(--neutral-400);
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  outline: 2px solid var(--primary-light);
+  outline-offset: 0;
+}
+
+.input-field.error {
+  border-color: var(--error);
+}
+
+.input-field.error:focus {
+  outline-color: var(--error-bg);
+}
+
+.input-helper {
+  font-size: var(--text-body-xs);
+  color: var(--neutral-500);
+}
+
+.input-error {
+  font-size: var(--text-body-xs);
+  color: var(--error);
+}
+
+[React/Next.js Example]
+export function Input({
+  label,
+  id,
+  type = 'text',
+  placeholder,
+  value,
+  onChange,
+  error,
+  helperText,
+  required = false
+}) {
+  return (
+    <div className="input-wrapper">
+      <label
+        htmlFor={id}
+        className={`input-label ${required ? 'input-label-required' : ''}`}
+      >
+        {label}
+      </label>
+
+      <input
+        type={type}
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`input-field ${error ? 'error' : ''}`}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : helperText ? `${id}-helper` : undefined}
+      />
+
+      {error && (
+        <span id={`${id}-error`} className="input-error">
+          {error}
+        </span>
+      )}
+
+      {helperText && !error && (
+        <span id={`${id}-helper`} className="input-helper">
+          {helperText}
+        </span>
+      )}
+    </div>
+  );
+}
+
+[사용 예시]
+<Input
+  label="회사명"
+  id="company"
+  value={company}
+  onChange={(e) => setCompany(e.target.value)}
+  placeholder="예: 폴라애드"
+  required
+/>
+
+<Input
+  label="이메일"
+  id="email"
+  type="email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  error={emailError}
+  helperText="견적서를 받으실 이메일 주소를 입력해주세요"
+/>
+
+
+======================================
+🎴 3. CARD 컴포넌트
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Basic Card (기본 카드)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.card {
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  margin-bottom: var(--space-4);
+}
+
+.card-title {
+  font-size: var(--text-heading-md);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-900);
+  margin-bottom: var(--space-2);
+}
+
+.card-subtitle {
+  font-size: var(--text-body-sm);
+  color: var(--neutral-600);
+}
+
+.card-content {
+  color: var(--neutral-700);
+}
+
+.card-footer {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color-light);
+}
+
+[React/Next.js Example]
+export function Card({ children, hover = false, className = '' }) {
+  return (
+    <div className={`card ${hover ? 'card-hover' : ''} ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function CardHeader({ children }) {
+  return <div className="card-header">{children}</div>;
+}
+
+export function CardTitle({ children }) {
+  return <h3 className="card-title">{children}</h3>;
+}
+
+export function CardContent({ children }) {
+  return <div className="card-content">{children}</div>;
+}
+
+export function CardFooter({ children }) {
+  return <div className="card-footer">{children}</div>;
+}
+
+[사용 예시]
+<Card hover>
+  <CardHeader>
+    <CardTitle>올인원 패키지</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p>인쇄물 + 홈페이지 + 광고 설정을 한 번에</p>
+  </CardContent>
+  <CardFooter>
+    <PrimaryButton>자세히 보기</PrimaryButton>
+  </CardFooter>
+</Card>
+
+
+======================================
+📋 4. NAVIGATION 컴포넌트
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Header Navigation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color-light);
+
+  transition: all var(--duration-normal) var(--ease-in-out);
+}
+
+.header-scrolled {
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-container {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-6);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.nav-logo {
+  font-size: var(--text-heading-sm);
+  font-weight: var(--font-bold);
+  color: var(--neutral-950);
+  text-decoration: none;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  list-style: none;
+}
+
+.nav-link {
+  font-size: var(--text-body-md);
+  font-weight: var(--font-medium);
+  color: var(--neutral-700);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+
+  transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.nav-link:hover {
+  color: var(--neutral-900);
+  background-color: var(--neutral-100);
+  text-decoration: none;
+}
+
+.nav-link-active {
+  color: var(--primary);
+  font-weight: var(--font-semibold);
+}
+
+.nav-cta {
+  margin-left: var(--space-4);
+}
+
+[React/Next.js Example]
+export function Header() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <header className={`header ${scrolled ? 'header-scrolled' : ''}`}>
+      <nav className="nav-container">
+        <a href="/" className="nav-logo">
+          폴라애드
+        </a>
+
+        <ul className="nav-menu">
+          <li>
+            <a href="/about" className="nav-link">회사소개</a>
+          </li>
+          <li>
+            <a href="/service" className="nav-link">서비스 안내</a>
+          </li>
+          <li>
+            <a href="/estimator" className="nav-link">맞춤 견적</a>
+          </li>
+          <li>
+            <a href="/portfolio" className="nav-link">포트폴리오</a>
+          </li>
+          <li>
+            <a href="/contact" className="nav-link">문의하기</a>
+          </li>
+        </ul>
+
+        <div className="nav-cta">
+          <PrimaryButton size="sm">바로 시작하기</PrimaryButton>
+        </div>
+      </nav>
+    </header>
+  );
+}
+
+
+======================================
+💬 5. TOAST NOTIFICATION
+======================================
+
+[CSS]
+.toast-container {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: var(--z-notification);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  max-width: 400px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+
+  animation: slideInRight var(--duration-normal) var(--ease-out);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-success {
+  border-left: 4px solid var(--success);
+}
+
+.toast-error {
+  border-left: 4px solid var(--error);
+}
+
+.toast-warning {
+  border-left: 4px solid var(--warning);
+}
+
+.toast-info {
+  border-left: 4px solid var(--info);
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-900);
+  margin-bottom: var(--space-1);
+}
+
+.toast-message {
+  font-size: var(--text-body-xs);
+  color: var(--neutral-600);
+}
+
+.toast-close {
+  flex-shrink: 0;
+  padding: var(--space-1);
+  background: transparent;
+  border: none;
+  color: var(--neutral-500);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.toast-close:hover {
+  background-color: var(--neutral-100);
+  color: var(--neutral-700);
+}
+
+[React/Next.js Example]
+export function Toast({ type = 'info', title, message, onClose }) {
+  const icons = {
+    success: <CheckCircle className="toast-icon" />,
+    error: <XCircle className="toast-icon" />,
+    warning: <AlertCircle className="toast-icon" />,
+    info: <Info className="toast-icon" />
+  };
+
+  return (
+    <div className={`toast toast-${type}`}>
+      {icons[type]}
+      <div className="toast-content">
+        <div className="toast-title">{title}</div>
+        {message && <div className="toast-message">{message}</div>}
+      </div>
+      <button onClick={onClose} className="toast-close" aria-label="닫기">
+        <X size={16} />
+      </button>
+    </div>
+  );
+}
+
+[사용 예시]
+<Toast
+  type="success"
+  title="결제 완료"
+  message="담당자가 24시간 내에 연락드리겠습니다."
+  onClose={handleClose}
+/>
+
+
+======================================
+⏳ 6. LOADING STATES
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Spinner (스피너)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.spinner {
+  display: inline-block;
+  border: 3px solid var(--neutral-200);
+  border-top-color: var(--primary);
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.spinner-md {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.spinner-lg {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+[React Example]
+export function Spinner({ size = 'md' }) {
+  return <div className={`spinner spinner-${size}`} role="status" aria-label="로딩 중" />;
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Skeleton (스켈레톤)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[CSS]
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--neutral-200) 0%,
+    var(--neutral-100) 50%,
+    var(--neutral-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-text {
+  height: 1em;
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-title {
+  height: 2em;
+  width: 60%;
+  margin-bottom: var(--space-4);
+}
+
+.skeleton-card {
+  padding: var(--space-6);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+}
+
+[React Example]
+export function SkeletonCard() {
+  return (
+    <div className="skeleton-card">
+      <div className="skeleton skeleton-title"></div>
+      <div className="skeleton skeleton-text"></div>
+      <div className="skeleton skeleton-text"></div>
+      <div className="skeleton skeleton-text" style={{ width: '80%' }}></div>
+    </div>
+  );
+}
+
+
+======================================
+📱 7. MODAL (모달)
+======================================
+
+[CSS]
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-backdrop);
+  background-color: var(--overlay);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: relative;
+  z-index: var(--z-modal);
+
+  background-color: var(--surface-raised);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
+
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  animation: scaleIn var(--duration-normal) var(--ease-out);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border-color-light);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: var(--text-heading-md);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-900);
+}
+
+.modal-close {
+  padding: var(--space-2);
+  background: transparent;
+  border: none;
+  color: var(--neutral-500);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.modal-close:hover {
+  background-color: var(--neutral-100);
+  color: var(--neutral-700);
+}
+
+.modal-body {
+  padding: var(--space-6);
+}
+
+.modal-footer {
+  padding: var(--space-6);
+  border-top: 1px solid var(--border-color-light);
+
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+[React Example]
+export function Modal({ isOpen, onClose, title, children, footer }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title">{title}</h2>
+          <button onClick={onClose} className="modal-close" aria-label="닫기">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="modal-body">
+          {children}
+        </div>
+
+        {footer && (
+          <div className="modal-footer">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+[사용 예시]
+<Modal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  title="결제 확인"
+  footer={
+    <>
+      <SecondaryButton onClick={() => setIsModalOpen(false)}>
+        취소
+      </SecondaryButton>
+      <PrimaryButton onClick={handlePayment}>
+        결제하기
+      </PrimaryButton>
+    </>
+  }
+>
+  <p>정말로 결제하시겠습니까?</p>
+  <p className="text-sm text-neutral-600">
+    결제 금액: <strong>3,300,000원</strong> (VAT 포함)
+  </p>
+</Modal>
+
+
+======================================
+📊 8. 견적 계산기 (Estimator)
+======================================
+
+[CSS]
+.estimator {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-8);
+
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.estimator-title {
+  font-size: var(--text-heading-lg);
+  font-weight: var(--font-bold);
+  color: var(--neutral-900);
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.estimator-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.estimator-label {
+  font-size: var(--text-body-md);
+  font-weight: var(--font-medium);
+  color: var(--neutral-700);
+}
+
+.estimator-value {
+  font-size: var(--text-body-lg);
+  font-weight: var(--font-semibold);
+  color: var(--neutral-900);
+}
+
+.estimator-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.estimator-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-full);
+
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.estimator-button:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+.estimator-button:disabled {
+  background-color: var(--neutral-300);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.estimator-count {
+  font-size: var(--text-heading-md);
+  font-weight: var(--font-bold);
+  color: var(--neutral-900);
+  min-width: 60px;
+  text-align: center;
+}
+
+.estimator-total {
+  margin-top: var(--space-6);
+  padding: var(--space-6);
+  background-color: var(--primary-light);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.estimator-total-label {
+  font-size: var(--text-body-md);
+  color: var(--neutral-700);
+  margin-bottom: var(--space-2);
+}
+
+.estimator-total-price {
+  font-size: var(--text-display-lg);
+  font-weight: var(--font-extrabold);
+  color: var(--primary);
+}
+
+.estimator-total-vat {
+  font-size: var(--text-body-sm);
+  color: var(--neutral-600);
+  margin-top: var(--space-2);
+}
+
+[React Example]
+export function Estimator() {
+  const [additionalPages, setAdditionalPages] = useState(0);
+
+  const BASE_PRICE = 3000000; // VAT 별도
+  const PAGE_PRICE = 200000; // VAT 별도
+  const VAT_RATE = 0.1;
+
+  const subtotal = BASE_PRICE + (additionalPages * PAGE_PRICE);
+  const vat = subtotal * VAT_RATE;
+  const total = subtotal + vat;
+
+  return (
+    <div className="estimator">
+      <h2 className="estimator-title">맞춤 견적 계산기</h2>
+
+      <div className="estimator-item">
+        <span className="estimator-label">올인원 패키지 (기본)</span>
+        <span className="estimator-value">
+          {BASE_PRICE.toLocaleString()}원
+        </span>
+      </div>
+
+      <div className="estimator-item">
+        <span className="estimator-label">추가 페이지</span>
+        <div className="estimator-control">
+          <button
+            className="estimator-button"
+            onClick={() => setAdditionalPages(Math.max(0, additionalPages - 1))}
+            disabled={additionalPages === 0}
+            aria-label="감소"
+          >
+            <Minus size={20} />
+          </button>
+
+          <span className="estimator-count">
+            {additionalPages}
+          </span>
+
+          <button
+            className="estimator-button"
+            onClick={() => setAdditionalPages(additionalPages + 1)}
+            aria-label="증가"
+          >
+            <Plus size={20} />
+          </button>
+        </div>
+      </div>
+
+      {additionalPages > 0 && (
+        <div className="estimator-item">
+          <span className="estimator-label">추가 페이지 비용</span>
+          <span className="estimator-value">
+            {(additionalPages * PAGE_PRICE).toLocaleString()}원
+          </span>
+        </div>
+      )}
+
+      <div className="estimator-total">
+        <div className="estimator-total-label">총 견적 금액</div>
+        <div className="estimator-total-price">
+          {total.toLocaleString()}원
+        </div>
+        <div className="estimator-total-vat">
+          (VAT 포함 | VAT 별도: {subtotal.toLocaleString()}원)
+        </div>
+      </div>
+
+      <div style={{ marginTop: 'var(--space-6)' }}>
+        <PrimaryButton fullWidth>이메일로 견적서 받기</PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+
+======================================
+✅ 접근성 체크리스트
+======================================
+
+모든 컴포넌트는 다음을 준수해야 합니다:
+
+□ 키보드 네비게이션 가능 (Tab, Enter, Esc)
+□ 명확한 Focus State (outline)
+□ Semantic HTML 사용 (button, nav, header, etc.)
+□ ARIA 라벨 제공 (aria-label, aria-describedby)
+□ 색상 대비율 준수 (WCAG 2.0 AA)
+□ 터치 타겟 최소 44x44px
+□ 스크린 리더 호환
+
+
+======================================
+📝 다음 단계
+======================================
+
+1. Next.js 프로젝트 생성
+2. globals.css 파일 적용
+3. 컴포넌트 디렉토리 구조 설정
+4. 페이지별 구현 시작
+
+작성: 2025년 11월 2일
+버전: 1.0

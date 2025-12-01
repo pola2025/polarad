@@ -1,0 +1,796 @@
+폴라애드(PolaAd) SEO 구현 가이드
+Next.js 15 기준 실전 코드
+
+작성일: 2025년 11월 2일
+버전: 1.0
+
+======================================
+📁 프로젝트 구조
+======================================
+
+polaad-website/
+├── app/
+│   ├── layout.tsx                 # 루트 레이아웃 (전역 메타데이터)
+│   ├── page.tsx                   # 메인 페이지
+│   ├── about/
+│   │   └── page.tsx              # 회사소개
+│   ├── service/
+│   │   └── page.tsx              # 서비스 안내
+│   ├── estimator/
+│   │   └── page.tsx              # 맞춤 견적
+│   ├── portfolio/
+│   │   └── page.tsx              # 포트폴리오
+│   ├── contact/
+│   │   └── page.tsx              # 문의하기
+│   ├── sitemap.ts                 # 동적 사이트맵
+│   └── robots.ts                  # 동적 robots.txt
+├── components/
+│   ├── seo/
+│   │   ├── OrganizationSchema.tsx
+│   │   ├── LocalBusinessSchema.tsx
+│   │   ├── ProductSchema.tsx
+│   │   ├── BreadcrumbSchema.tsx
+│   │   └── FAQSchema.tsx
+│   └── ui/
+│       └── ...
+├── public/
+│   ├── robots.txt                 # 정적 robots.txt (백업)
+│   └── favicon.ico
+├── lib/
+│   └── seo-utils.ts              # SEO 유틸리티 함수
+└── next.config.js                 # Next.js 설정
+
+
+======================================
+📄 1. 루트 레이아웃 (app/layout.tsx)
+======================================
+
+import type { Metadata } from 'next'
+import { Pretendard } from 'next/font/google'
+import { OrganizationSchema } from '@/components/seo/OrganizationSchema'
+import './globals.css'
+
+const pretendard = Pretendard({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-pretendard',
+  weight: ['300', '400', '500', '600', '700', '800'],
+})
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://polaad.co.kr'),
+
+  title: {
+    default: '폴라애드 - 24시간 작동하는 온라인 영업사원 | 홈페이지+광고+인쇄물',
+    template: '%s | 폴라애드'
+  },
+
+  description: '중소기업을 위한 올인원 온라인 영업 솔루션. 홈페이지 제작, Meta 광고 설정, 명함/인쇄물을 한 번에. 330만원(VAT 포함)으로 24시간 영업 자동화를 시작하세요.',
+
+  keywords: [
+    '온라인 영업',
+    '홈페이지 제작',
+    'B2B 마케팅',
+    '온라인 마케팅',
+    '중소기업 홈페이지',
+    'Meta 광고',
+    '명함 제작',
+    '온라인 영업 자동화',
+    '반응형 홈페이지',
+    '업체 홈페이지',
+    '토스페이먼츠 연동',
+    'B2B 홈페이지'
+  ],
+
+  authors: [{ name: '폴라애드', url: 'https://polaad.co.kr' }],
+  creator: '폴라애드',
+  publisher: '폴라애드',
+
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    url: 'https://polaad.co.kr',
+    siteName: '폴라애드',
+    title: '폴라애드 - 24시간 작동하는 온라인 영업사원',
+    description: '중소기업을 위한 올인원 온라인 영업 솔루션. 홈페이지+광고+인쇄물 한 번에.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: '폴라애드 온라인 영업 솔루션',
+      },
+    ],
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    site: '@polaad',
+    creator: '@polaad',
+    title: '폴라애드 - 24시간 작동하는 온라인 영업사원',
+    description: '중소기업을 위한 올인원 온라인 영업 솔루션',
+    images: ['/og-image.jpg'],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+  verification: {
+    google: 'your-google-verification-code',
+    other: {
+      'naver-site-verification': 'your-naver-verification-code',
+    },
+  },
+
+  alternates: {
+    canonical: 'https://polaad.co.kr',
+  },
+
+  category: '온라인 마케팅',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="ko" className={pretendard.variable}>
+      <head>
+        {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+        {/* Organization Schema - 모든 페이지에 적용 */}
+        <OrganizationSchema />
+      </head>
+      <body>
+        {children}
+      </body>
+    </html>
+  )
+}
+
+
+======================================
+📄 2. 메인 페이지 (app/page.tsx)
+======================================
+
+import type { Metadata } from 'next'
+import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema'
+import { FAQSchema } from '@/components/seo/FAQSchema'
+
+export const metadata: Metadata = {
+  title: '폴라애드 - 24시간 작동하는 온라인 영업사원',
+  description: '발로 뛰는 영업은 이제 그만. 중소기업을 위한 올인원 온라인 영업 솔루션. 홈페이지 제작, Meta 광고 설정, 명함/인쇄물을 한 번에. 330만원으로 24시간 영업 자동화를 시작하세요.',
+
+  openGraph: {
+    title: '폴라애드 - 24시간 작동하는 온라인 영업사원',
+    description: '중소기업을 위한 올인원 온라인 영업 솔루션',
+    url: 'https://polaad.co.kr',
+    images: [{ url: '/og-home.jpg', width: 1200, height: 630 }],
+  },
+
+  alternates: {
+    canonical: 'https://polaad.co.kr',
+  },
+}
+
+export default function HomePage() {
+  const faqs = [
+    {
+      question: '올인원 패키지에 무엇이 포함되나요?',
+      answer: '홈페이지 제작(10페이지 이내), Meta 광고 자동화 설정, 인쇄물(명함 200매, 대봉투 500매, 계약서 500매, 명찰), 도메인+호스팅 1년 무료가 포함됩니다.'
+    },
+    {
+      question: '제작 기간은 얼마나 걸리나요?',
+      answer: '기획서 확정 후 홈페이지는 30~45 영업일, 인쇄물은 7~10 영업일, 광고 설정은 5~7 영업일이 소요됩니다.'
+    },
+    {
+      question: '환불이 가능한가요?',
+      answer: '서비스 제작 시작 전에는 전액 환불이 가능합니다. 제작 시작 후에는 단순 변심으로 인한 환불이 불가하며, 품질상 심각한 하자가 있는 경우에만 환불이 가능합니다.'
+    }
+  ]
+
+  return (
+    <>
+      {/* Breadcrumb Schema */}
+      <BreadcrumbSchema
+        items={[
+          { name: '홈', url: 'https://polaad.co.kr' }
+        ]}
+      />
+
+      {/* FAQ Schema */}
+      <FAQSchema faqs={faqs} />
+
+      <main>
+        {/* Hero Section */}
+        <section>
+          <h1>사장님, 오늘도 명함만 돌리고 계신가요?</h1>
+          <p>
+            발로 뛰는 영업은 지치고, 효과는 더딥니다.
+            이제 당신의 비즈니스도 24시간 잠들지 않는 '온라인 영업사원'이 필요합니다.
+          </p>
+          {/* CTA 버튼 */}
+        </section>
+
+        {/* 나머지 섹션들 */}
+      </main>
+    </>
+  )
+}
+
+
+======================================
+📄 3. 서비스 안내 페이지 (app/service/page.tsx)
+======================================
+
+import type { Metadata } from 'next'
+import { ProductSchema } from '@/components/seo/ProductSchema'
+import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema'
+
+export const metadata: Metadata = {
+  title: '온라인 영업 올인원 패키지 | 홈페이지+광고+인쇄물 330만원',
+  description: '홈페이지 제작(10페이지), Meta 광고 자동화, 명함/계약서 인쇄물을 한 번에. 도메인+호스팅 1년 무료. 중소기업 맞춤형 온라인 영업 솔루션을 지금 시작하세요.',
+
+  keywords: [
+    '홈페이지 제작',
+    '온라인 마케팅 패키지',
+    'B2B 홈페이지',
+    '중소기업 홈페이지',
+    '반응형 홈페이지',
+    'Meta 광고',
+    '명함 제작',
+    '온라인 영업 패키지'
+  ],
+
+  openGraph: {
+    title: '온라인 영업 올인원 패키지 | 폴라애드',
+    description: '홈페이지 제작(10페이지), Meta 광고 자동화, 명함/계약서 인쇄물',
+    url: 'https://polaad.co.kr/service',
+    images: [{ url: '/og-service.jpg', width: 1200, height: 630 }],
+  },
+
+  alternates: {
+    canonical: 'https://polaad.co.kr/service',
+  },
+}
+
+export default function ServicePage() {
+  return (
+    <>
+      {/* Product Schema */}
+      <ProductSchema
+        name="온라인 영업 올인원 패키지"
+        description="홈페이지 제작(10페이지) + Meta 광고 자동화 + 인쇄물(명함, 대봉투, 계약서, 명찰)"
+        price="3300000"
+        currency="KRW"
+        availability="InStock"
+        rating={4.9}
+        reviewCount={18}
+      />
+
+      {/* Breadcrumb Schema */}
+      <BreadcrumbSchema
+        items={[
+          { name: '홈', url: 'https://polaad.co.kr' },
+          { name: '서비스 안내', url: 'https://polaad.co.kr/service' }
+        ]}
+      />
+
+      <main>
+        <h1>가장 강력한 영업팀을 만드는데 필요한 모든 것</h1>
+
+        {/* 섹션 1: 패키지 가치 제안 */}
+        <section>
+          <h2>시간, 비용, 복잡함을 모두 해결하는 올인원 솔루션</h2>
+          <p>
+            개별로 진행했다면 몇 배의 시간과 비용이 들었을 과정을,
+            폴라애드가 하나의 패키지에 담았습니다.
+          </p>
+        </section>
+
+        {/* 섹션 2: 상세 서비스 내역 (Tab UI) */}
+        <section>
+          <h2>포함된 서비스</h2>
+
+          {/* 인쇄물 */}
+          <article>
+            <h3>신뢰의 첫인상, 인쇄물</h3>
+            <ul>
+              <li>명함: 아르미 울트라화이트 310g / 200매</li>
+              <li>대봉투: 모조지 150g / 500매</li>
+              <li>계약서: A3 모조지 180g / 500매</li>
+              <li>명찰: 투명케이스 + 명찰카드 + 목걸이 줄</li>
+            </ul>
+          </article>
+
+          {/* 홈페이지 */}
+          <article>
+            <h3>24시간 영업사원, 홈페이지</h3>
+            <ul>
+              <li>기본 10페이지 이내 제작</li>
+              <li>도메인 + 호스팅 1년간 무료 제공</li>
+              <li>반응형 디자인 (모바일/태블릿/PC 대응)</li>
+              <li>결제 모듈 탑재 가능 (토스페이먼츠)</li>
+            </ul>
+          </article>
+
+          {/* 광고 지원 */}
+          <article>
+            <h3>잠재고객 발굴, 광고 지원</h3>
+            <ul>
+              <li>Meta 광고 계정 연동 및 초기 설정</li>
+              <li>광고 자동화 설정 지원</li>
+              <li>고객 접수 실시간 전달 시스템 구축</li>
+            </ul>
+          </article>
+        </section>
+
+        {/* 섹션 3: 가격 및 행동 유도 */}
+        <section>
+          <h2>투명한 가격 정책</h2>
+          <p>
+            <strong>3,300,000원 (VAT 포함)</strong>
+          </p>
+          <p>VAT 별도: 3,000,000원</p>
+        </section>
+      </main>
+    </>
+  )
+}
+
+
+======================================
+📄 4. Sitemap 생성 (app/sitemap.ts)
+======================================
+
+import { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://polaad.co.kr'
+  const currentDate = new Date()
+
+  return [
+    {
+      url: baseUrl,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/service`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/estimator`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/portfolio`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+  ]
+}
+
+
+======================================
+📄 5. Robots.txt 생성 (app/robots.ts)
+======================================
+
+import { MetadataRoute } from 'next'
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/api/', '/admin/', '/_next/', '/private/'],
+      },
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: ['/api/', '/admin/'],
+      },
+      {
+        userAgent: 'Yeti', // 네이버 봇
+        allow: '/',
+        disallow: ['/api/', '/admin/'],
+      },
+    ],
+    sitemap: 'https://polaad.co.kr/sitemap.xml',
+  }
+}
+
+
+======================================
+🧩 6. Schema 컴포넌트들
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OrganizationSchema.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// components/seo/OrganizationSchema.tsx
+
+export function OrganizationSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "폴라애드",
+    "alternateName": "PolaAd",
+    "url": "https://polaad.co.kr",
+    "logo": "https://polaad.co.kr/logo.png",
+    "description": "중소기업을 위한 온라인 영업 자동화 솔루션 전문 기업",
+    "foundingDate": "2024",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+82-2-XXXX-XXXX",
+      "contactType": "고객 상담",
+      "areaServed": "KR",
+      "availableLanguage": ["Korean"]
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "KR",
+      "addressRegion": "서울",
+      "addressLocality": "강남구",
+      "streetAddress": "테헤란로 123"
+    },
+    "sameAs": [
+      "https://www.facebook.com/polaad",
+      "https://www.instagram.com/polaad",
+      "https://blog.naver.com/polaad"
+    ]
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LocalBusinessSchema.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// components/seo/LocalBusinessSchema.tsx
+
+export function LocalBusinessSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "폴라애드",
+    "image": "https://polaad.co.kr/images/office.jpg",
+    "@id": "https://polaad.co.kr",
+    "url": "https://polaad.co.kr",
+    "telephone": "+82-2-XXXX-XXXX",
+    "priceRange": "₩₩₩",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "테헤란로 123",
+      "addressLocality": "강남구",
+      "addressRegion": "서울",
+      "postalCode": "06000",
+      "addressCountry": "KR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 37.5012345,
+      "longitude": 127.0123456
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "09:00",
+      "closes": "18:00"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "24"
+    }
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ProductSchema.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// components/seo/ProductSchema.tsx
+
+interface ProductSchemaProps {
+  name: string
+  description: string
+  price: string
+  currency: string
+  availability: 'InStock' | 'OutOfStock' | 'PreOrder'
+  rating?: number
+  reviewCount?: number
+}
+
+export function ProductSchema({
+  name,
+  description,
+  price,
+  currency,
+  availability,
+  rating = 4.9,
+  reviewCount = 18
+}: ProductSchemaProps) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": name,
+    "description": description,
+    "brand": {
+      "@type": "Brand",
+      "name": "폴라애드"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": "https://polaad.co.kr/service",
+      "priceCurrency": currency,
+      "price": price,
+      "priceValidUntil": "2025-12-31",
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": `https://schema.org/${availability}`,
+      "seller": {
+        "@type": "Organization",
+        "name": "폴라애드"
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": rating,
+      "reviewCount": reviewCount
+    }
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BreadcrumbSchema.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// components/seo/BreadcrumbSchema.tsx
+
+interface BreadcrumbItem {
+  name: string
+  url: string
+}
+
+interface BreadcrumbSchemaProps {
+  items: BreadcrumbItem[]
+}
+
+export function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": items.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name,
+      "item": item.url
+    }))
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FAQSchema.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// components/seo/FAQSchema.tsx
+
+interface FAQ {
+  question: string
+  answer: string
+}
+
+interface FAQSchemaProps {
+  faqs: FAQ[]
+}
+
+export function FAQSchema({ faqs }: FAQSchemaProps) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+
+======================================
+⚙️ 7. Next.js 설정 (next.config.js)
+======================================
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // 이미지 최적화
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'polaad.co.kr',
+      },
+    ],
+  },
+
+  // 압축 활성화
+  compress: true,
+
+  // 엄격 모드
+  reactStrictMode: true,
+
+  // SWC Minification
+  swcMinify: true,
+
+  // 실험적 기능
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react'],
+  },
+
+  // 헤더 설정 (보안 + SEO)
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          },
+        ],
+      },
+    ]
+  },
+
+  // 리다이렉트 (www 제거)
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.polaad.co.kr',
+          },
+        ],
+        destination: 'https://polaad.co.kr/:path*',
+        permanent: true,
+      },
+    ]
+  },
+}
+
+module.exports = nextConfig
+
+
+======================================
+✅ 배포 체크리스트
+======================================
+
+[배포 전 필수 작업]
+☐ Google Search Console 등록
+☐ Naver Search Advisor 등록
+☐ Google Analytics 4 설정
+☐ 메타 태그 검증 (Facebook, Twitter)
+☐ Schema.org 검증 (validator.schema.org)
+☐ PageSpeed Insights 테스트
+☐ Mobile-Friendly Test
+☐ 실제 전화번호/주소 업데이트
+☐ OG 이미지 생성 (1200x630px)
+☐ Favicon 생성
+
+[배포 후 작업]
+☐ Sitemap 제출 (Google, Naver)
+☐ 색인 생성 요청
+☐ Core Web Vitals 모니터링 시작
+☐ 검색 순위 추적 도구 설정
+
+
+작성: 2025년 11월 2일
+버전: 1.0

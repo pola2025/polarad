@@ -1,0 +1,85 @@
+
+네, HTTPS 인증은 이제 웹사이트의 신뢰도를 위한 필수 요소이며, 특히 결제 모듈을 사용하신다면 법적으로도 반드시 갖춰야 하는 기능입니다.
+결론부터 말씀드리면, 추천해 드린 기술 스택(아이윈브이 VPS + Ubuntu)에서는 "Let's Encrypt"라는 무료 SSL 인증서를 "Certbot"이라는 자동화 도구를 사용하여 발급받고, "Nginx"라는 웹 서버를 통해 적용하는 것이 가장 표준적이고 강력한 방법입니다.
+비용은 완전히 무료이며, 과정도 매우 간단하고 자동화할 수 있습니다.
+HTTPS 인증의 원리와 추천 방법
+현재 폴라애드의 스택(Next.js/Node.js)은 그 자체로 웹서버 역할을 할 수 있지만, 실제 프로덕션(운영) 환경에서는 보안, 안정성, 성능을 위해 앞에 리버스 프록시(Reverse Proxy) 서버를 두는 것이 일반적입니다.
+리버스 프록시(Reverse Proxy)란?
+외부의 모든 HTTPS 요청(443 포트)을 대신 받아주는 전문 '경비원' 또는 '안내 데스크'라고 생각하시면 쉽습니다. 이 경비원이 안전하게 요청을 확인(HTTPS 복호화)한 후, 내부 직원(우리의 Next.js/Node.js 애플리케이션)에게 안전한 내부 통로(HTTP)로 요청을 전달해주는 역할을 합니다.
+이 역할에 가장 널리 사용되는 것이 바로 **Nginx(엔진엑스)**입니다.
+이 구조의 장점:
+보안 강화: SSL/TLS 인증서의 복잡한 처리와 외부 공격에 대한 1차 방어를 Nginx가 담당하므로, 우리의 핵심 애플리케이션은 비즈니스 로직에만 집중할 수 있습니다.
+안정적인 운영: PM2와 같은 프로세스 매니저와 함께 사용하면, Node.js 애플리케이션이 오류로 종료되어도 자동으로 재시작시켜주는 등 무중단 운영이 가능합니다.
+성능 향상: 정적 파일(이미지, CSS 등) 서빙 속도가 매우 빠르고, 추후 트래픽 증가 시 여러 대의 서버로 요청을 분산하는 로드 밸런싱 기능도 수행할 수 있습니다.
+HTTPS 적용을 위한 단계별 가이드 (실제 서버 작업 순서)
+사전 준비: 폴라애드의 도메인(예: polaad.co.kr)을 구매하고, 해당 도메인의 DNS 설정에서 아이윈브이 VPS의 IP 주소를 가리키도록 설정해야 합니다.
+1단계: 서버에 Nginx 및 핵심 도구 설치
+서버에 SSH로 접속하여 아래 명령어를 실행합니다.
+code
+Bash
+# 패키지 목록 업데이트
+sudo apt update
+
+# Nginx 설치
+sudo apt install nginx
+
+# Node.js 애플리케이션 관리 도구(PM2) 설치
+sudo npm install -g pm2
+2단계: Next.js/Node.js 애플리케이션 실행
+pm2를 이용해 애플리케이션을 백그라운드에서 실행시킵니다. (보통 Next.js는 npm start로 실행)
+code
+Bash
+# 프로젝트 폴더로 이동
+cd /path/to/your/project
+
+# PM2로 애플리케이션 시작 (예: 앱 이름은 'polaad')
+pm2 start npm --name "polaad" -- start```
+
+**3단계: Nginx를 리버스 프록시로 설정 (HTTP)**
+
+Nginx가 외부의 요청을 받아 내부의 애플리케이션(보통 3000번 포트에서 실행됨)으로 연결해주도록 설정 파일을 작성합니다.
+
+```bash
+# Nginx 설정 파일 열기
+sudo vi /etc/nginx/sites-available/polaad
+
+# 아래 내용 입력 (i 키 누르고 붙여넣기)
+server {
+    listen 80;
+    server_name polaad.co.kr; # 본인 도메인으로 변경
+
+    location / {
+        proxy_pass http://localhost:3000; # Next.js/Node.js가 실행중인 포트
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# 설정 파일 링크 생성 및 Nginx 재시작
+sudo ln -s /etc/nginx/sites-available/polaad /etc/nginx/sites-enabled/
+sudo nginx -t # 설정 문법 검사
+sudo systemctl restart nginx
+4단계: Certbot 설치 및 SSL 인증서 발급 (가장 중요한 단계)
+Certbot이 Nginx 설정 파일을 자동으로 읽고, SSL 인증서를 발급받은 뒤, HTTPS 설정을 자동으로 추가해주는 마법 같은 단계입니다.
+code
+Bash
+# Certbot 및 Nginx 플러그인 설치
+sudo apt install certbot python3-certbot-nginx
+
+# Certbot 실행 (Nginx 플러그인 사용)
+sudo certbot --nginx -d polaad.co.kr # 본인 도메인으로 변경
+실행 과정: 위 명령어를 실행하면, 이메일 주소를 입력하고 약관에 동의하는 몇 가지 질문이 나옵니다.
+마지막 질문: HTTP 트래픽을 HTTPS로 자동으로 리디렉션할지 묻는데, **2번(Redirect)**을 선택하는 것이 좋습니다. 이렇게 하면 http://polaad.co.kr로 접속해도 자동으로 https://polaad.co.kr로 이동하게 됩니다.
+5단계: 자동 갱신 확인
+Let's Encrypt 인증서는 90일마다 갱신이 필요하지만, Certbot을 설치할 때 자동 갱신 설정이 저절로 완료됩니다. 제대로 설정되었는지 테스트만 해보면 됩니다.
+code
+Bash
+sudo certbot renew --dry-run
+"Congratulations, renewals succeeded." 메시지가 나오면 성공입니다.
+최종 아키텍처 요약
+[사용자] --- (HTTPS) ---> [Nginx on VPS] --- (HTTP) ---> [Next.js/Node.js App on VPS]
+(포트 443) | (포트 3000)
+|
+(SSL/TLS 인증서 처리)
+(Let's Encrypt by Certbot)
+이 과정을 통해 폴라애드 웹사이트는 브라우저 주소창에 안전하다는 자물쇠 아이콘이 표시되며, 토스페이먼츠 결제 연동을 위한 모든 보안 요구사항을 완벽하게 충족하게 됩니다.

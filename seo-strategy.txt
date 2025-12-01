@@ -1,0 +1,1063 @@
+폴라애드(PolaAd) SEO 최적화 전략
+AI 크롤러가 정보를 완벽하게 수집할 수 있도록 최적화
+
+작성일: 2025년 11월 2일
+버전: 1.0
+기준: Google Search 2025, Next.js 15
+
+======================================
+🎯 SEO 전략 개요
+======================================
+
+[목표]
+1. "온라인 영업", "홈페이지 제작", "B2B 마케팅" 등 핵심 키워드 상위 노출
+2. 네이버 상호명 검색 광고 연동 최적화
+3. 구글/네이버 검색엔진 크롤러의 완벽한 정보 수집
+4. Core Web Vitals 점수 90점 이상 달성
+5. Rich Snippets (풍부한 검색 결과) 표시
+
+[핵심 전략]
+✓ Next.js 15 Metadata API 활용 (최신 SEO 표준)
+✓ Schema.org 구조화 데이터 (AI 크롤러 친화적)
+✓ Core Web Vitals 최적화 (페이지 속도 + UX)
+✓ Technical SEO (Sitemap, Robots.txt, Canonical)
+✓ 컨텐츠 SEO (키워드 최적화, 내부 링크)
+
+
+======================================
+📊 현재 기획서 SEO 검토 결과
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 잘된 점 (Strengths)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Next.js 선택 ✓
+   - SSR (Server-Side Rendering) 기본 지원
+   - 검색엔진이 완전한 HTML을 받을 수 있음
+   - SEO에 가장 유리한 프레임워크
+
+2. 명확한 페이지 구조 ✓
+   - 회사소개, 서비스 안내, 맞춤 견적, 포트폴리오, 문의하기
+   - 계층적 구조로 크롤러가 이해하기 쉬움
+
+3. 컨텐츠 카피 기획 ✓
+   - 타겟 키워드 자연스럽게 포함
+   - "온라인 영업", "24시간 영업사원" 등 명확한 가치 제안
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ 보완 필요 사항 (Needs Improvement)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Metadata 정의 없음 ❌
+   - 페이지별 Title, Description 미정의
+   - Open Graph, Twitter Card 미기획
+
+2. 구조화 데이터 없음 ❌
+   - Schema.org LocalBusiness 마크업 필요
+   - 서비스 정보, 가격 정보 구조화 필요
+
+3. Technical SEO 미계획 ❌
+   - Sitemap, Robots.txt 전략 없음
+   - Canonical URL 규칙 없음
+   - 이미지 최적화 가이드 없음
+
+4. 성능 최적화 미계획 ❌
+   - Core Web Vitals 목표치 없음
+   - 이미지 lazy loading 전략 없음
+   - 폰트 로딩 최적화 없음
+
+5. 내부 링크 구조 미계획 ❌
+   - 페이지 간 연결 구조 불명확
+   - Breadcrumb 네비게이션 없음
+
+
+======================================
+🔍 키워드 전략 (Keyword Strategy)
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+주요 타겟 키워드 (Primary Keywords)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[높은 검색량 + 높은 전환율]
+1. 온라인 영업 (월 검색량: 높음)
+2. 홈페이지 제작 (월 검색량: 매우 높음)
+3. B2B 마케팅 (월 검색량: 높음)
+4. 온라인 마케팅 (월 검색량: 매우 높음)
+5. 명함 제작 (월 검색량: 높음)
+6. 업체 홈페이지 제작 (월 검색량: 중간)
+7. Meta 광고 (월 검색량: 중간)
+8. 페이스북 광고 (월 검색량: 높음)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+보조 키워드 (Secondary Keywords)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[중간 검색량 + 높은 관련성]
+- 중소기업 홈페이지
+- 저렴한 홈페이지 제작
+- 반응형 홈페이지
+- 온라인 영업 자동화
+- B2B 홈페이지
+- 기업 인쇄물
+- 명함 디자인
+- 온라인 광고 대행
+- 토스페이먼츠 연동
+- 홈페이지 견적
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+롱테일 키워드 (Long-tail Keywords)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[낮은 경쟁 + 높은 전환율]
+- "온라인 영업 자동화 솔루션"
+- "중소기업 홈페이지 제작 비용"
+- "B2B 온라인 마케팅 패키지"
+- "24시간 작동하는 온라인 영업"
+- "명함 홈페이지 광고 한번에"
+- "토스페이먼츠 결제 연동 홈페이지"
+- "Meta 광고 자동화 설정"
+- "네이버 상호명 검색 광고"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+지역 키워드 (Local Keywords)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[사업장 위치에 따라 추가]
+- "[지역명] 홈페이지 제작"
+- "[지역명] 온라인 마케팅"
+- "[지역명] 명함 제작"
+
+
+======================================
+📄 페이지별 SEO 최적화
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. 메인 페이지 (/)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Title - 60자 이내]
+폴라애드 - 24시간 작동하는 온라인 영업사원 | 홈페이지+광고+인쇄물
+
+[Description - 155자 이내]
+중소기업을 위한 올인원 온라인 영업 솔루션. 홈페이지 제작, Meta 광고 설정, 명함/인쇄물을 한 번에. 330만원(VAT 포함)으로 24시간 영업 자동화를 시작하세요.
+
+[Focus Keywords]
+- Primary: 온라인 영업, 홈페이지 제작
+- Secondary: B2B 마케팅, 온라인 영업 자동화
+
+[H1]
+사장님, 오늘도 명함만 돌리고 계신가요?
+
+[H2 목록]
+- 영업의 방식이 바뀌면, 사장님의 하루가 바뀝니다
+- 폴라애드의 약속: 원스톱 솔루션
+- 올인원 패키지로 24시간 영업 자동화
+
+[구조화 데이터]
+- Organization Schema
+- WebSite Schema
+- BreadcrumbList Schema
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. 서비스 안내 페이지 (/service)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Title]
+온라인 영업 올인원 패키지 | 홈페이지+광고+인쇄물 330만원 - 폴라애드
+
+[Description]
+홈페이지 제작(10페이지), Meta 광고 자동화, 명함/계약서 인쇄물을 한 번에. 도메인+호스팅 1년 무료. 중소기업 맞춤형 온라인 영업 솔루션을 지금 시작하세요.
+
+[Focus Keywords]
+- Primary: 홈페이지 제작, 온라인 마케팅 패키지
+- Secondary: B2B 홈페이지, 중소기업 홈페이지
+
+[H1]
+가장 강력한 영업팀을 만드는데 필요한 모든 것
+
+[H2 목록]
+- 신뢰의 첫인상, 인쇄물
+- 24시간 영업사원, 홈페이지
+- 잠재고객 발굴, 광고 지원
+
+[구조화 데이터]
+- Service Schema (각 서비스별)
+- Offer Schema (가격 정보)
+- Review Schema (고객 후기)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. 맞춤 견적 페이지 (/estimator)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Title]
+홈페이지 제작 견적 계산기 | 실시간 맞춤 견적 - 폴라애드
+
+[Description]
+필요한 페이지 수에 맞춰 실시간으로 견적을 확인하세요. 투명한 가격 정책으로 추가 비용 걱정 없이 온라인 영업을 시작할 수 있습니다. 견적서 이메일 발송 무료.
+
+[Focus Keywords]
+- Primary: 홈페이지 제작 견적, 홈페이지 비용
+- Secondary: 반응형 홈페이지 가격
+
+[H1]
+당신의 비즈니스 규모에 맞게, 필요한 만큼만 선택하세요
+
+[구조화 데이터]
+- PriceSpecification Schema
+- AggregateOffer Schema
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. 포트폴리오 페이지 (/portfolio)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Title]
+홈페이지 제작 포트폴리오 | 중소기업 성공 사례 - 폴라애드
+
+[Description]
+폴라애드와 함께한 중소기업들의 성공 사례를 확인하세요. B2B 홈페이지부터 온라인 쇼핑몰까지, 다양한 업종의 실제 프로젝트 결과를 보여드립니다.
+
+[Focus Keywords]
+- Primary: 홈페이지 제작 포트폴리오
+- Secondary: B2B 홈페이지 사례, 중소기업 홈페이지
+
+[H1]
+폴라애드와 함께 성장한 기업들
+
+[구조화 데이터]
+- CreativeWork Schema
+- ImageObject Schema (각 포트폴리오 이미지)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. 문의하기 페이지 (/contact)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Title]
+무료 상담 신청 | 온라인 영업 솔루션 문의 - 폴라애드
+
+[Description]
+온라인 영업 자동화에 대해 궁금하신가요? 전문가와 무료 상담을 통해 우리 회사에 맞는 최적의 솔루션을 찾아보세요. 24시간 내 연락드립니다.
+
+[Focus Keywords]
+- Primary: 홈페이지 제작 문의, 온라인 마케팅 상담
+- Secondary: 무료 상담, 견적 문의
+
+[H1]
+당신의 비즈니스에 대해 더 듣고 싶습니다
+
+[구조화 데이터]
+- ContactPage Schema
+- ContactPoint Schema
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. 회사소개 페이지 (/about)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Title]
+회사소개 | 중소기업 온라인 영업 파트너 - 폴라애드
+
+[Description]
+폴라애드는 중소기업의 성장을 돕는 온라인 영업 솔루션 전문 기업입니다. 홈페이지 제작부터 마케팅 자동화까지, 검증된 전문가 팀이 함께합니다.
+
+[Focus Keywords]
+- Primary: 폴라애드, 온라인 영업 솔루션
+- Secondary: 홈페이지 제작 업체
+
+[구조화 데이터]
+- Organization Schema
+- LocalBusiness Schema
+
+
+======================================
+🏗️ 구조화 데이터 (Schema.org)
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Organization Schema (전체 페이지)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[JSON-LD]
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "폴라애드",
+  "alternateName": "PolaAd",
+  "url": "https://polaad.co.kr",
+  "logo": "https://polaad.co.kr/logo.png",
+  "description": "중소기업을 위한 온라인 영업 자동화 솔루션 전문 기업",
+  "foundingDate": "2024",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+82-XX-XXXX-XXXX",
+    "contactType": "고객 상담",
+    "areaServed": "KR",
+    "availableLanguage": ["Korean"]
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "KR",
+    "addressRegion": "[지역]",
+    "addressLocality": "[시/군/구]",
+    "streetAddress": "[상세 주소]"
+  },
+  "sameAs": [
+    "https://www.facebook.com/polaad",
+    "https://www.instagram.com/polaad",
+    "https://blog.naver.com/polaad"
+  ]
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. LocalBusiness Schema
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[JSON-LD]
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "폴라애드",
+  "image": "https://polaad.co.kr/images/office.jpg",
+  "@id": "https://polaad.co.kr",
+  "url": "https://polaad.co.kr",
+  "telephone": "+82-XX-XXXX-XXXX",
+  "priceRange": "₩₩₩",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "[상세 주소]",
+    "addressLocality": "[시/군/구]",
+    "addressRegion": "[지역]",
+    "postalCode": "[우편번호]",
+    "addressCountry": "KR"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": [위도],
+    "longitude": [경도]
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ],
+    "opens": "09:00",
+    "closes": "18:00"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "24"
+  }
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. Service Schema (서비스 안내 페이지)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[JSON-LD]
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "온라인 영업 올인원 패키지",
+  "provider": {
+    "@type": "Organization",
+    "name": "폴라애드"
+  },
+  "description": "홈페이지 제작, Meta 광고 설정, 명함/인쇄물을 포함한 종합 온라인 영업 솔루션",
+  "areaServed": {
+    "@type": "Country",
+    "name": "대한민국"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "온라인 영업 서비스",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "올인원 패키지"
+        },
+        "price": "3300000",
+        "priceCurrency": "KRW",
+        "priceValidUntil": "2025-12-31",
+        "availability": "https://schema.org/InStock"
+      }
+    ]
+  }
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. Product Schema (올인원 패키지)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[JSON-LD]
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "온라인 영업 올인원 패키지",
+  "description": "홈페이지 제작(10페이지) + Meta 광고 자동화 + 인쇄물(명함, 대봉투, 계약서, 명찰)",
+  "brand": {
+    "@type": "Brand",
+    "name": "폴라애드"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://polaad.co.kr/service",
+    "priceCurrency": "KRW",
+    "price": "3300000",
+    "priceValidUntil": "2025-12-31",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "폴라애드"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "18"
+  }
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. BreadcrumbList Schema
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[JSON-LD - 서비스 안내 페이지 예시]
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "홈",
+      "item": "https://polaad.co.kr"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "서비스 안내",
+      "item": "https://polaad.co.kr/service"
+    }
+  ]
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. FAQPage Schema
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[JSON-LD]
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "올인원 패키지에 무엇이 포함되나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "홈페이지 제작(10페이지 이내), Meta 광고 자동화 설정, 인쇄물(명함 200매, 대봉투 500매, 계약서 500매, 명찰), 도메인+호스팅 1년 무료가 포함됩니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "제작 기간은 얼마나 걸리나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "기획서 확정 후 홈페이지는 30~45 영업일, 인쇄물은 7~10 영업일, 광고 설정은 5~7 영업일이 소요됩니다."
+      }
+    }
+  ]
+}
+
+
+======================================
+⚙️ Next.js 15 Metadata API 구현
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+기본 Layout Metadata (app/layout.tsx)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://polaad.co.kr'),
+
+  title: {
+    default: '폴라애드 - 24시간 작동하는 온라인 영업사원',
+    template: '%s | 폴라애드'
+  },
+
+  description: '중소기업을 위한 올인원 온라인 영업 솔루션. 홈페이지 제작, Meta 광고 설정, 명함/인쇄물을 한 번에.',
+
+  keywords: [
+    '온라인 영업',
+    '홈페이지 제작',
+    'B2B 마케팅',
+    '온라인 마케팅',
+    '중소기업 홈페이지',
+    'Meta 광고',
+    '명함 제작',
+    '온라인 영업 자동화'
+  ],
+
+  authors: [{ name: '폴라애드' }],
+  creator: '폴라애드',
+  publisher: '폴라애드',
+
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    url: 'https://polaad.co.kr',
+    siteName: '폴라애드',
+    title: '폴라애드 - 24시간 작동하는 온라인 영업사원',
+    description: '중소기업을 위한 올인원 온라인 영업 솔루션',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: '폴라애드 온라인 영업 솔루션',
+      },
+    ],
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: '폴라애드 - 24시간 작동하는 온라인 영업사원',
+    description: '중소기업을 위한 올인원 온라인 영업 솔루션',
+    images: ['/og-image.jpg'],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+  verification: {
+    google: 'google-site-verification-code',
+    yandex: 'yandex-verification-code',
+    other: {
+      'naver-site-verification': 'naver-verification-code',
+    },
+  },
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+페이지별 Metadata (app/service/page.tsx)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '온라인 영업 올인원 패키지 | 홈페이지+광고+인쇄물 330만원',
+  description: '홈페이지 제작(10페이지), Meta 광고 자동화, 명함/계약서 인쇄물을 한 번에. 도메인+호스팅 1년 무료.',
+
+  keywords: [
+    '홈페이지 제작',
+    '온라인 마케팅 패키지',
+    'B2B 홈페이지',
+    '중소기업 홈페이지',
+    '반응형 홈페이지'
+  ],
+
+  openGraph: {
+    title: '온라인 영업 올인원 패키지 | 폴라애드',
+    description: '홈페이지 제작(10페이지), Meta 광고 자동화, 명함/계약서 인쇄물',
+    url: 'https://polaad.co.kr/service',
+    images: [
+      {
+        url: '/og-service.jpg',
+        width: 1200,
+        height: 630,
+        alt: '폴라애드 서비스 안내',
+      },
+    ],
+  },
+
+  alternates: {
+    canonical: 'https://polaad.co.kr/service',
+  },
+}
+
+export default function ServicePage() {
+  return (
+    // 페이지 내용
+  )
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+동적 Metadata (app/blog/[slug]/page.tsx)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+import type { Metadata } from 'next'
+
+export async function generateMetadata(
+  { params }: { params: { slug: string } }
+): Promise<Metadata> {
+  // 데이터 fetch
+  const post = await getPost(params.slug)
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author],
+      images: [post.coverImage],
+    },
+  }
+}
+
+
+======================================
+🚀 Core Web Vitals 최적화
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+목표 지표 (2025 기준)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ LCP (Largest Contentful Paint): < 2.5초
+✓ INP (Interaction to Next Paint): < 200ms
+✓ CLS (Cumulative Layout Shift): < 0.1
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. LCP 최적화 전략
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[이미지 최적화]
+// next.config.js
+module.exports = {
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
+  },
+}
+
+// 컴포넌트에서 사용
+import Image from 'next/image'
+
+<Image
+  src="/hero-image.jpg"
+  alt="온라인 영업 자동화"
+  width={1200}
+  height={600}
+  priority // LCP 이미지는 priority 설정
+  quality={90}
+/>
+
+[폰트 최적화]
+// app/layout.tsx
+import { Pretendard } from 'next/font/google'
+
+const pretendard = Pretendard({
+  subsets: ['latin'],
+  display: 'swap', // FOIT 방지
+  preload: true,
+  variable: '--font-pretendard',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="ko" className={pretendard.variable}>
+      <body>{children}</body>
+    </html>
+  )
+}
+
+[리소스 우선순위]
+<head>
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+  <link
+    rel="dns-prefetch"
+    href="https://analytics.google.com"
+  />
+</head>
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. INP 최적화 전략
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[코드 스플리팅]
+// 동적 import로 불필요한 JS 로딩 지연
+import dynamic from 'next/dynamic'
+
+const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+  loading: () => <Spinner />,
+  ssr: false, // 클라이언트 전용 컴포넌트
+})
+
+[React 18 기능 활용]
+'use client'
+
+import { useTransition } from 'react'
+
+export function SearchBox() {
+  const [isPending, startTransition] = useTransition()
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const handleSearch = (e) => {
+    const value = e.target.value
+
+    // 우선순위 낮은 업데이트는 transition으로
+    startTransition(() => {
+      setSearchTerm(value)
+    })
+  }
+
+  return <input onChange={handleSearch} />
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. CLS 최적화 전략
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[이미지/동영상 크기 명시]
+<Image
+  src="/image.jpg"
+  alt="설명"
+  width={800}
+  height={600} // 명시적 크기로 레이아웃 시프트 방지
+/>
+
+[폰트 로딩 최적화]
+// CSS에서 fallback 폰트 크기 조정
+.text {
+  font-family: 'Pretendard',
+               -apple-system,
+               sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  /* size-adjust로 폴백 폰트 크기 조정 */
+}
+
+[광고/삽입 컨텐츠]
+// 광고 영역에 최소 높이 설정
+.ad-container {
+  min-height: 250px;
+}
+
+
+======================================
+🔧 Technical SEO 구현
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Robots.txt
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# public/robots.txt
+
+# 모든 검색엔진 허용
+User-agent: *
+Allow: /
+
+# 제외할 경로
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /private/
+
+# Sitemap 위치
+Sitemap: https://polaad.co.kr/sitemap.xml
+
+# 크롤링 속도 조절 (선택사항)
+Crawl-delay: 1
+
+# 특정 봇 설정 (네이버)
+User-agent: Yeti
+Allow: /
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. Sitemap.xml 생성
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// app/sitemap.ts
+import { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: 'https://polaad.co.kr',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: 'https://polaad.co.kr/about',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://polaad.co.kr/service',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 1.0,
+    },
+    {
+      url: 'https://polaad.co.kr/estimator',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: 'https://polaad.co.kr/portfolio',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://polaad.co.kr/contact',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+  ]
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. Canonical URL 설정
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// 모든 페이지에 canonical 명시
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://polaad.co.kr/service',
+  },
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. Structured Data 자동 주입
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// components/StructuredData.tsx
+export function OrganizationSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "폴라애드",
+    // ... 나머지 스키마
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+// app/layout.tsx에서 사용
+export default function RootLayout({ children }) {
+  return (
+    <html lang="ko">
+      <head>
+        <OrganizationSchema />
+      </head>
+      <body>{children}</body>
+    </html>
+  )
+}
+
+
+======================================
+📊 SEO 모니터링 및 측정
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+필수 도구 설정
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Google Search Console
+   - 사이트맵 제출
+   - 색인 생성 요청
+   - Core Web Vitals 모니터링
+   - 검색 성과 분석
+
+2. Google Analytics 4
+   - 사용자 행동 추적
+   - 전환율 측정
+   - 페이지 성과 분석
+
+3. Naver Search Advisor
+   - 네이버 검색 최적화
+   - 사이트 등록
+   - 검색 반영 확인
+
+4. Schema Markup Validator
+   - https://validator.schema.org/
+   - 구조화 데이터 검증
+
+5. PageSpeed Insights
+   - Core Web Vitals 측정
+   - 성능 개선 제안
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KPI (핵심 성과 지표)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Organic Traffic (자연 유입): 월 1,000+ 방문
+✓ Keyword Rankings: 타겟 키워드 상위 10위 내
+✓ Click-Through Rate (CTR): 5% 이상
+✓ Bounce Rate (이탈률): 50% 이하
+✓ Average Session Duration: 2분 이상
+✓ Conversion Rate: 3% 이상
+
+
+======================================
+✅ SEO 체크리스트
+======================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+제작 단계별 체크리스트
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[설계 단계]
+☐ 키워드 리서치 완료
+☐ 페이지별 메타데이터 정의
+☐ URL 구조 설계
+☐ 사이트 구조도 작성
+☐ 내부 링크 전략 수립
+
+[개발 단계]
+☐ Next.js Metadata API 구현
+☐ Schema.org 구조화 데이터 추가
+☐ robots.txt 생성
+☐ sitemap.xml 생성
+☐ Canonical URL 설정
+☐ 이미지 최적화 (WebP, AVIF)
+☐ 폰트 최적화
+☐ 코드 스플리팅
+☐ Lazy Loading 구현
+☐ 반응형 디자인 구현
+
+[테스트 단계]
+☐ PageSpeed Insights 90점 이상
+☐ Mobile-Friendly Test 통과
+☐ Schema Markup 검증
+☐ 접근성 테스트 (WCAG AA)
+☐ 크로스 브라우저 테스트
+☐ 깨진 링크 검사
+
+[배포 단계]
+☐ Google Search Console 등록
+☐ Naver Search Advisor 등록
+☐ Google Analytics 설정
+☐ 사이트맵 제출
+☐ 색인 생성 요청
+☐ 소셜 미디어 메타태그 검증
+
+[운영 단계]
+☐ 주간 성과 모니터링
+☐ 월간 SEO 리포트
+☐ 키워드 순위 추적
+☐ 컨텐츠 업데이트
+☐ 기술적 이슈 해결
+
+
+======================================
+💡 SEO 모범 사례
+======================================
+
+[DO - 해야 할 것]
+✓ 각 페이지에 고유한 Title과 Description 작성
+✓ H1 태그는 페이지당 1개만 사용
+✓ 이미지에 의미 있는 alt 텍스트 제공
+✓ 내부 링크를 적극 활용
+✓ HTTPS 사용 (보안 필수)
+✓ 모바일 친화적 디자인
+✓ 빠른 페이지 로딩 속도
+✓ 정기적인 컨텐츠 업데이트
+✓ 사용자 의도에 맞는 컨텐츠
+
+[DON'T - 하지 말아야 할 것]
+✗ 키워드 스터핑 (과도한 키워드 반복)
+✗ 숨겨진 텍스트/링크
+✗ 중복 컨텐츠
+✗ 느린 페이지 속도 방치
+✗ Flash 사용
+✗ 깨진 링크 방치
+✗ 모바일 미지원
+✗ 자동 생성 컨텐츠
+✗ 부적절한 리다이렉트
+
+
+======================================
+📈 예상 효과
+======================================
+
+[1개월 후]
+- Google/Naver 색인 등록 완료
+- 브랜드 키워드(폴라애드) 상위 노출
+- 월 100~200 자연 유입
+
+[3개월 후]
+- 주요 키워드 20위권 진입
+- 월 500~1,000 자연 유입
+- 견적 문의 10건 이상
+
+[6개월 후]
+- 주요 키워드 10위권 진입
+- 월 2,000+ 자연 유입
+- 견적 문의 30건 이상
+- 결제 전환 5건 이상
+
+
+작성: 2025년 11월 2일
+버전: 1.0
+다음 업데이트: 개발 완료 후 실제 데이터 반영

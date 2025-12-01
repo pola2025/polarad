@@ -1,0 +1,481 @@
+/**
+ * 폴라애드(PolaAd) 디자인 시스템
+ * 버전: 1.0
+ * 작성일: 2025년 11월 2일
+ *
+ * 직관적이면서 미래지향적인 B2B 온라인 영업 플랫폼
+ */
+
+/* ==========================================
+   CSS Reset & Base Styles
+   ========================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  line-height: var(--leading-normal);
+  color: var(--neutral-900);
+  background-color: var(--bg-primary);
+}
+
+
+/* ==========================================
+   CSS Variables - Design Tokens
+   ========================================== */
+
+:root {
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Primary Color - 신뢰와 혁신
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --primary-50: #E6F0FF;
+  --primary-100: #CCE0FF;
+  --primary-200: #99C2FF;
+  --primary-300: #66A3FF;
+  --primary-400: #3385FF;
+  --primary-500: #0066FF;
+  --primary-600: #0052CC;
+  --primary-700: #003D99;
+  --primary-800: #002966;
+  --primary-900: #001433;
+
+  --primary: var(--primary-500);
+  --primary-hover: var(--primary-600);
+  --primary-light: var(--primary-50);
+  --primary-dark: var(--primary-700);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Secondary Color - 성공과 성장
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --secondary-50: #E6F7F5;
+  --secondary-100: #CCEFEB;
+  --secondary-200: #99DFD7;
+  --secondary-300: #66CFC3;
+  --secondary-400: #33BFAF;
+  --secondary-500: #00AF9B;
+  --secondary-600: #008C7C;
+  --secondary-700: #00695D;
+  --secondary-800: #00463E;
+  --secondary-900: #00231F;
+
+  --secondary: var(--secondary-500);
+  --secondary-hover: var(--secondary-600);
+  --success: var(--secondary-500);
+  --success-bg: var(--secondary-50);
+  --success-border: var(--secondary-100);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Accent Color - 에너지와 주목
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --accent-50: #FFF7E6;
+  --accent-100: #FFEFCC;
+  --accent-200: #FFDF99;
+  --accent-300: #FFCF66;
+  --accent-400: #FFBF33;
+  --accent-500: #FFAF00;
+  --accent-600: #CC8C00;
+  --accent-700: #996900;
+  --accent-800: #664600;
+  --accent-900: #332300;
+
+  --accent: var(--accent-500);
+  --warning: var(--accent-500);
+  --warning-bg: var(--accent-50);
+  --warning-border: var(--accent-100);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Neutral Gray Scale - 구조와 계층
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --neutral-50: #FAFAF9;
+  --neutral-100: #F5F5F4;
+  --neutral-200: #E7E5E4;
+  --neutral-300: #D6D3D1;
+  --neutral-400: #A8A29E;
+  --neutral-500: #78716C;
+  --neutral-600: #57534E;
+  --neutral-700: #44403C;
+  --neutral-800: #292524;
+  --neutral-900: #1C1917;
+  --neutral-950: #0A0A0A;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Semantic Colors - Error, Info
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --error: #EF4444;
+  --error-bg: #FEE2E2;
+  --error-border: #FECACA;
+
+  --info: var(--primary);
+  --info-bg: var(--primary-50);
+  --info-border: var(--primary-100);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Background & Surface
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: var(--neutral-50);
+  --bg-tertiary: var(--neutral-100);
+
+  --surface-raised: #FFFFFF;
+  --surface-flat: var(--neutral-50);
+
+  --overlay: rgba(0, 0, 0, 0.5);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Typography - Font Family
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI',
+    'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+
+  --font-serif: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Typography - Type Scale
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* Display - 히어로 섹션 */
+  --text-display-2xl: 4.5rem; /* 72px */
+  --text-display-xl: 3.75rem; /* 60px */
+  --text-display-lg: 3rem; /* 48px */
+
+  /* Heading - 제목 */
+  --text-heading-xl: 2.5rem; /* 40px - H1 */
+  --text-heading-lg: 2rem; /* 32px - H2 */
+  --text-heading-md: 1.5rem; /* 24px - H3 */
+  --text-heading-sm: 1.25rem; /* 20px - H4 */
+  --text-heading-xs: 1.125rem; /* 18px - H5 */
+
+  /* Body - 본문 */
+  --text-body-lg: 1.125rem; /* 18px */
+  --text-body-md: 1rem; /* 16px */
+  --text-body-sm: 0.875rem; /* 14px */
+  --text-body-xs: 0.75rem; /* 12px */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Typography - Font Weight
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Typography - Line Height
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Typography - Letter Spacing
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Spacing System - 8px Grid
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --space-0: 0;
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
+  --space-32: 8rem; /* 128px */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Border Radius
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --radius-none: 0;
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
+  --radius-2xl: 1.5rem; /* 24px */
+  --radius-full: 9999px;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Shadow - 깊이감 표현
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Color Shadows */
+  --shadow-primary: 0 10px 15px -3px rgba(0, 102, 255, 0.2);
+  --shadow-success: 0 10px 15px -3px rgba(0, 175, 155, 0.2);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Border
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --border-width-1: 1px;
+  --border-width-2: 2px;
+  --border-width-4: 4px;
+
+  --border-color-light: var(--neutral-200);
+  --border-color-medium: var(--neutral-300);
+  --border-color-dark: var(--neutral-400);
+  --border-color-focus: var(--primary);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Animation
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Layout - Container
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --container-xs: 480px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Breakpoints
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Z-Index
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-tooltip: 1600;
+  --z-notification: 1700;
+}
+
+
+/* ==========================================
+   Base Typography Styles
+   ========================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  color: var(--neutral-900);
+}
+
+h1 {
+  font-size: var(--text-heading-xl);
+}
+
+h2 {
+  font-size: var(--text-heading-lg);
+}
+
+h3 {
+  font-size: var(--text-heading-md);
+}
+
+h4 {
+  font-size: var(--text-heading-sm);
+}
+
+h5 {
+  font-size: var(--text-heading-xs);
+}
+
+h6 {
+  font-size: var(--text-body-lg);
+}
+
+p {
+  margin-bottom: var(--space-4);
+  color: var(--neutral-700);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-in-out);
+}
+
+a:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+
+/* ==========================================
+   Utility Classes
+   ========================================== */
+
+.container {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+
+/* ==========================================
+   Responsive Utilities
+   ========================================== */
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: var(--space-12);
+    padding-right: var(--space-12);
+  }
+}
+
+
+/* ==========================================
+   Print Styles
+   ========================================== */
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  a[href]::after {
+    content: ' (' attr(href) ')';
+  }
+
+  abbr[title]::after {
+    content: ' (' attr(title) ')';
+  }
+
+  pre {
+    white-space: pre-wrap !important;
+  }
+
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+
+
+/* ==========================================
+   Accessibility - Reduced Motion
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
