@@ -56,8 +56,8 @@ export default function PortfolioPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: '홈', url: 'https://polaad.co.kr' },
-          { name: '포트폴리오', url: 'https://polaad.co.kr/portfolio' }
+          { name: '홈', url: 'https://polarad.co.kr' },
+          { name: '포트폴리오', url: 'https://polarad.co.kr/portfolio' }
         ]}
       />
 

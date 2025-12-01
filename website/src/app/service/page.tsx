@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { ProductSchema } from '@/components/seo/ProductSchema'
+import { ServiceSchema } from '@/components/seo/ServiceSchema'
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema'
 import ServiceHeroSection from '@/components/sections/service/ServiceHeroSection'
 import ServicePackageSection from '@/components/sections/service/ServicePackageSection'
@@ -26,12 +27,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: '온라인 영업 올인원 패키지 | 폴라애드',
     description: '홈페이지 제작(10페이지), Meta 광고 자동화, 명함/계약서 인쇄물',
-    url: 'https://polaad.co.kr/service',
-    images: [{ url: '/og-service.jpg', width: 1200, height: 630 }],
+    url: 'https://polarad.co.kr/service',
+    images: [{ url: '/icon.png', width: 512, height: 512 }],
   },
 
   alternates: {
-    canonical: 'https://polaad.co.kr/service',
+    canonical: 'https://polarad.co.kr/service',
   },
 }
 
@@ -47,11 +48,12 @@ export default function ServicePage() {
         rating={4.9}
         reviewCount={18}
       />
+      <ServiceSchema />
 
       <BreadcrumbSchema
         items={[
-          { name: '홈', url: 'https://polaad.co.kr' },
-          { name: '서비스 안내', url: 'https://polaad.co.kr/service' }
+          { name: '홈', url: 'https://polarad.co.kr' },
+          { name: '서비스 안내', url: 'https://polarad.co.kr/service' }
         ]}
       />
 

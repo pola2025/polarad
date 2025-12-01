@@ -19,6 +19,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/admin/'],
       },
     ],
-    sitemap: 'https://polaad.co.kr/sitemap.xml',
+    sitemap: 'https://polarad.co.kr/sitemap.xml',
   }
 }

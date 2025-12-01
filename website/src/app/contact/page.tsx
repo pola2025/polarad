@@ -15,8 +15,8 @@ export default function ContactPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: '홈', url: 'https://polaad.co.kr' },
-          { name: '상담신청', url: 'https://polaad.co.kr/contact' }
+          { name: '홈', url: 'https://polarad.co.kr' },
+          { name: '상담신청', url: 'https://polarad.co.kr/contact' }
         ]}
       />
 

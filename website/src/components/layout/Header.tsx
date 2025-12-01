@@ -16,6 +16,7 @@ export function Header() {
     { href: '/portfolio', label: '포트폴리오' },
     { href: '/about', label: '회사소개' },
     { href: '/contact', label: '상담신청' },
+    { href: '/marketing-news', label: '마케팅 소식' },
   ]
 
   return (

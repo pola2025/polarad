@@ -6,13 +6,13 @@ export function OrganizationSchema() {
     "@type": "Organization",
     "name": "폴라애드",
     "alternateName": "PolaAd",
-    "url": "https://polaad.co.kr",
-    "logo": "https://polaad.co.kr/logo.png",
-    "description": "중소기업을 위한 온라인 영업 자동화 솔루션 전문 기업",
+    "url": "https://polarad.co.kr",
+    "logo": "https://polarad.co.kr/logo.png",
+    "description": "법인영업, 경영컨설팅, 온라인마케팅, DB마케팅 전문 기업",
     "foundingDate": "2024",
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+82-2-XXXX-XXXX",
+      "telephone": "+82-32-345-9834",
       "contactType": "고객 상담",
       "areaServed": "KR",
       "availableLanguage": ["Korean"]
@@ -20,15 +20,10 @@ export function OrganizationSchema() {
     "address": {
       "@type": "PostalAddress",
       "addressCountry": "KR",
-      "addressRegion": "서울",
-      "addressLocality": "강남구",
-      "streetAddress": "테헤란로 123"
-    },
-    "sameAs": [
-      "https://www.facebook.com/polaad",
-      "https://www.instagram.com/polaad",
-      "https://blog.naver.com/polaad"
-    ]
+      "addressRegion": "서울특별시",
+      "addressLocality": "금천구",
+      "streetAddress": "가산디지털2로 98, 롯데 IT 캐슬 2동 11층 1107"
+    }
   }
 
   return (

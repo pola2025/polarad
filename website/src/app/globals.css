@@ -558,6 +558,118 @@ section {
   color: var(--color-accent);
 }
 
+/* ==========================================
+   Title Highlight Styles
+   제목/서브타이틀 강조 스타일
+   ========================================== */
+
+/* Primary Color Highlight - 메인 컬러 강조 */
+.highlight-primary {
+  color: var(--color-primary);
+}
+
+/* Accent Color Highlight - 액센트 컬러 강조 */
+.highlight-accent {
+  color: var(--color-accent);
+  font-weight: inherit;
+}
+
+/* Gradient Highlight - 그라디언트 강조 */
+.highlight-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Underline Accent - 밑줄 강조 */
+.highlight-underline {
+  position: relative;
+  display: inline;
+}
+
+.highlight-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0.1em;
+  left: 0;
+  right: 0;
+  height: 0.3em;
+  background: var(--color-accent-light);
+  z-index: -1;
+  border-radius: 2px;
+}
+
+/* Box Highlight - 박스 강조 */
+.highlight-box {
+  display: inline;
+  padding: 0.1em 0.3em;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+}
+
+/* ==========================================
+   Paragraph & Text Flow Styles
+   본문 줄바꿈 및 흐름 스타일
+   ========================================== */
+
+/* 본문 컨테이너 - 자연스러운 줄바꿈 */
+.prose-flow {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
+.prose-flow p {
+  margin-bottom: 1.5em;
+}
+
+.prose-flow p:last-child {
+  margin-bottom: 0;
+}
+
+/* 문단 간격 조절 클래스 */
+.paragraph-tight p {
+  margin-bottom: 1em;
+}
+
+.paragraph-relaxed p {
+  margin-bottom: 2em;
+}
+
+/* 첫 줄 들여쓰기 (선택적) */
+.prose-indent p {
+  text-indent: 1em;
+}
+
+.prose-indent p:first-child {
+  text-indent: 0;
+}
+
+/* 인용 스타일 본문 */
+.prose-quote {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: var(--color-gray-700);
+  font-weight: 400;
+}
+
+/* 서브타이틀/설명 텍스트 */
+.subtitle {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--color-gray-600);
+  word-break: keep-all;
+}
+
+.subtitle-lg {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--color-gray-600);
+  word-break: keep-all;
+}
+
 .bg-primary {
   background-color: var(--color-primary);
 }
@@ -572,4 +684,174 @@ section {
 
 .border-accent {
   border-color: var(--color-accent);
+}
+
+/* ==========================================
+   Article Content Typography
+   마케팅 소식 본문 스타일
+   ========================================== */
+
+.article-content {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--color-gray-700);
+}
+
+.article-content h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-gray-900);
+}
+
+.article-content h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+.article-content h3 {
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-gray-900);
+}
+
+.article-content h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-800);
+}
+
+.article-content p {
+  margin-bottom: 1.5rem;
+  color: var(--color-gray-600);
+}
+
+.article-content strong {
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.article-content a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--transition-fast);
+}
+
+.article-content a:hover {
+  color: var(--color-primary-dark);
+}
+
+.article-content ul,
+.article-content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.article-content ul {
+  list-style-type: disc;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-600);
+}
+
+.article-content li::marker {
+  color: var(--color-primary);
+}
+
+.article-content blockquote {
+  margin: 2rem 0;
+  padding: 1.5rem 2rem;
+  background: var(--color-gray-50);
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  font-style: normal;
+}
+
+.article-content blockquote p {
+  margin-bottom: 0;
+  color: var(--color-gray-700);
+}
+
+.article-content code {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+}
+
+.article-content pre {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: var(--color-gray-900);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+
+.article-content pre code {
+  background: transparent;
+  padding: 0;
+  color: var(--color-gray-100);
+  font-size: 0.875rem;
+}
+
+.article-content table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.article-content th {
+  background: var(--color-gray-50);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 2px solid var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+.article-content td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+.article-content tr:last-child td {
+  border-bottom: none;
+}
+
+.article-content hr {
+  margin: 3rem 0;
+  border: none;
+  border-top: 2px solid var(--color-gray-200);
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  margin: 1.5rem 0;
 }

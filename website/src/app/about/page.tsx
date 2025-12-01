@@ -62,8 +62,8 @@ export default function AboutPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: '홈', url: 'https://polaad.co.kr' },
-          { name: '회사소개', url: 'https://polaad.co.kr/about' }
+          { name: '홈', url: 'https://polarad.co.kr' },
+          { name: '회사소개', url: 'https://polarad.co.kr/about' }
         ]}
       />
 

@@ -30,7 +30,7 @@ export function ProductSchema({
     },
     "offers": {
       "@type": "Offer",
-      "url": "https://polaad.co.kr/service",
+      "url": "https://polarad.co.kr/service",
       "priceCurrency": currency,
       "price": price,
       "priceValidUntil": "2025-12-31",
