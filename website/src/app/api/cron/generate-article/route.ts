@@ -7,6 +7,12 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import sharp from 'sharp';
+import {
+  generateUniqueVariation,
+  buildImagePrompt,
+  saveUsedCombo,
+  checkImageDuplicate,
+} from '@/lib/image-variation';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -413,34 +419,56 @@ ${kw}
   return (await res.json()).candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-// 썸네일 생성
+// 썸네일 생성 (로컬 저장용) - 중복 방지 로직 포함
 async function generateThumbnail(title: string, filename: string): Promise<string> {
-  const prompt = `Create a photorealistic 1024x1024 stock photo for a Korean marketing blog article about: "${title}".
-Korean people, Korean office/cafe setting, modern business environment, natural lighting.
-ABSOLUTELY NO TEXT, letters, numbers, watermarks, logos in the image.`;
+  const MAX_RETRIES = 3;
+  const imagesDir = path.join(process.cwd(), 'public', 'images', 'marketing-news');
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseModalities: ['image', 'text'] }
-    })
-  });
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      // 유니크한 베리에이션 생성
+      const variation = await generateUniqueVariation();
+      const prompt = buildImagePrompt(title, variation);
 
-  const result = await res.json();
-  const imageData = result.candidates?.[0]?.content?.parts?.find((p: { inlineData?: { mimeType?: string; data?: string } }) =>
-    p.inlineData?.mimeType?.startsWith('image/')
-  );
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['image', 'text'] }
+        })
+      });
 
-  if (imageData?.inlineData?.data) {
-    const webpFilename = filename.replace(/\.png$/, '.webp');
-    const imagePath = path.join(process.cwd(), 'public', 'images', 'marketing-news', webpFilename);
-    await fs.mkdir(path.dirname(imagePath), { recursive: true });
-    const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
-    await sharp(imageBuffer).resize(1200, 630, { fit: 'cover' }).webp({ quality: 80 }).toFile(imagePath);
-    return `/images/marketing-news/${webpFilename}`;
+      const result = await res.json();
+      const imageData = result.candidates?.[0]?.content?.parts?.find((p: { inlineData?: { mimeType?: string; data?: string } }) =>
+        p.inlineData?.mimeType?.startsWith('image/')
+      );
+
+      if (imageData?.inlineData?.data) {
+        const webpFilename = filename.replace(/\.png$/, '.webp');
+        const imagePath = path.join(imagesDir, webpFilename);
+        await fs.mkdir(path.dirname(imagePath), { recursive: true });
+
+        const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
+        const webpBuffer = await sharp(imageBuffer).resize(1200, 630, { fit: 'cover' }).webp({ quality: 80 }).toBuffer();
+
+        // 중복 검사
+        const duplicateCheck = await checkImageDuplicate(webpBuffer, imagesDir);
+        if (duplicateCheck.isDuplicate) {
+          console.log(`⚠️ 중복 이미지 감지, 재시도...`);
+          continue;
+        }
+
+        await fs.writeFile(imagePath, webpBuffer);
+        await saveUsedCombo(variation);
+
+        return `/images/marketing-news/${webpFilename}`;
+      }
+    } catch (error) {
+      console.error(`썸네일 생성 실패 (시도 ${attempt + 1}):`, error);
+    }
   }
+
   return '/images/solution-website.webp';
 }
 
@@ -571,43 +599,68 @@ async function uploadImageToGitHub(
   }
 }
 
-// 썸네일 생성 (GitHub 버전)
+// 썸네일 생성 (GitHub 버전) - 중복 방지 로직 포함
 async function generateThumbnailForGitHub(title: string, slug: string): Promise<{ path: string; buffer?: Buffer }> {
-  const prompt = `Create a photorealistic 1024x1024 stock photo for a Korean marketing blog article about: "${title}".
-Korean people, Korean office/cafe setting, modern business environment, natural lighting.
-ABSOLUTELY NO TEXT, letters, numbers, watermarks, logos in the image.`;
+  const MAX_RETRIES = 3;
+  const imagesDir = path.join(process.cwd(), 'public', 'images', 'marketing-news');
 
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseModalities: ['image', 'text'] }
-      })
-    });
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      // 유니크한 베리에이션 생성
+      const variation = await generateUniqueVariation();
+      const prompt = buildImagePrompt(title, variation);
 
-    const result = await res.json();
-    const imageData = result.candidates?.[0]?.content?.parts?.find((p: { inlineData?: { mimeType?: string; data?: string } }) =>
-      p.inlineData?.mimeType?.startsWith('image/')
-    );
+      console.log(`🖼️ 이미지 생성 시도 ${attempt + 1}/${MAX_RETRIES}`);
+      console.log(`   인원: ${variation.people}`);
+      console.log(`   장소: ${variation.location}`);
+      console.log(`   활동: ${variation.activity}`);
 
-    if (imageData?.inlineData?.data) {
-      const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
-      const webpBuffer = await sharp(imageBuffer)
-        .resize(1200, 630, { fit: 'cover' })
-        .webp({ quality: 80 })
-        .toBuffer();
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['image', 'text'] }
+        })
+      });
 
-      return {
-        path: `/images/marketing-news/${slug}.webp`,
-        buffer: webpBuffer
-      };
+      const result = await res.json();
+      const imageData = result.candidates?.[0]?.content?.parts?.find((p: { inlineData?: { mimeType?: string; data?: string } }) =>
+        p.inlineData?.mimeType?.startsWith('image/')
+      );
+
+      if (imageData?.inlineData?.data) {
+        const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
+        const webpBuffer = await sharp(imageBuffer)
+          .resize(1200, 630, { fit: 'cover' })
+          .webp({ quality: 80 })
+          .toBuffer();
+
+        // 중복 검사
+        const duplicateCheck = await checkImageDuplicate(webpBuffer, imagesDir);
+
+        if (duplicateCheck.isDuplicate) {
+          console.log(`⚠️ 중복 이미지 감지! 기존 파일: ${duplicateCheck.matchedFile}, 재시도...`);
+          continue; // 다음 시도
+        }
+
+        // 사용된 조합 저장
+        await saveUsedCombo(variation);
+
+        console.log(`✅ 유니크한 이미지 생성 완료`);
+
+        return {
+          path: `/images/marketing-news/${slug}.webp`,
+          buffer: webpBuffer
+        };
+      }
+    } catch (error) {
+      console.error(`썸네일 생성 실패 (시도 ${attempt + 1}):`, error);
     }
-  } catch (error) {
-    console.error('썸네일 생성 실패:', error);
   }
 
+  // 모든 시도 실패 시 에러 (기본 이미지 폴백 제거)
+  console.error('❌ 이미지 생성 최종 실패');
   return { path: '/images/solution-website.webp' };
 }
 
