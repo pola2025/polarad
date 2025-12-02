@@ -47,7 +47,17 @@ ChatGPT 이미지 생성은 텍스트 프롬프트를 입력하면 AI가 이미�
 
 A/B 테스트용 광고 소재를 빠르게 여러 버전 제작할 수 있습니다.
 
-![ChatGPT 이미지 생성 - 제작 시간 비교](/images/marketing-news/charts/chatgpt-time-comparison.webp)
+<ComparisonChart
+  title="ChatGPT 이미지 생성 - 제작 시간 비교"
+  beforeLabel="기존"
+  afterLabel="ChatGPT"
+  data={[
+    { label: "SNS 피드 이미지", before: "2시간", after: "20분", change: "-83%" },
+    { label: "광고 배너", before: "3시간", after: "30분", change: "-83%" },
+    { label: "블로그 썸네일", before: "1시간", after: "10분", change: "-83%" },
+    { label: "제품 목업", before: "4시간", after: "40분", change: "-83%" }
+  ]}
+/>
 
 ### 2-3. 제품 시각화 및 목업
 
@@ -57,7 +67,16 @@ A/B 테스트용 광고 소재를 빠르게 여러 버전 제작할 수 있습�
 
 실제로 적용해본 후기를 공유합니다. 한 이커머스 브랜드에서 ChatGPT 이미지 생성으로 광고 소재를 제작한 결과:
 
-![ChatGPT 도입 전후 성과 비교](/images/marketing-news/charts/chatgpt-performance-comparison.webp)
+<ComparisonChart
+  title="ChatGPT 도입 전후 성과 비교"
+  beforeLabel="도입 전"
+  afterLabel="도입 후"
+  data={[
+    { label: "소재 제작 시간", before: "주 15시간", after: "주 3시간", change: "-80%" },
+    { label: "광고 CTR", before: "1.2%", after: "1.8%", change: "+50%" },
+    { label: "디자인 외주 비용", before: "월 200만원", after: "월 50만원", change: "-75%" }
+  ]}
+/>
 
 ## 4. 주의사항 및 팁
 

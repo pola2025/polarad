@@ -307,9 +307,19 @@ ${kw}
 ### 2-1. [세부 방법 1]
 ### 2-2. [세부 방법 2]
 ## 3. 성공 사례 및 데이터
-- 구체적인 수치와 Before/After 비교를 **텍스트로** 설명
-- 표(테이블) 사용 금지 → 대신 글머리 기호(bullet)로 데이터 나열
-- 예: "도입 전 주 15시간 → 도입 후 주 3시간 (80% 절감)"
+- Before/After 비교 데이터는 ComparisonChart 컴포넌트 사용:
+\`\`\`jsx
+<ComparisonChart
+  title="차트 제목"
+  beforeLabel="Before"
+  afterLabel="After"
+  data={[
+    { label: "항목1", before: "이전값", after: "이후값", change: "-80%" },
+    { label: "항목2", before: "이전값", after: "이후값", change: "+50%" }
+  ]}
+/>
+\`\`\`
+- 표(테이블) 사용 금지 → 대신 ComparisonChart 또는 글머리 기호 사용
 ## 4. 주의사항 및 팁
 
 > 💡 **폴라애드 팁**: [실무 노하우]

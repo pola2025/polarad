@@ -7,6 +7,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getArticle, getAllSlugs, getRelatedArticles, CATEGORIES } from '@/lib/marketing-news';
 import { ArticleCTA, ShareButtons, RelatedArticles } from '@/components/marketing-news';
 import { ViewCounter } from '@/components/marketing-news/ViewCounter';
+import { ComparisonChart, BarChart, StatCards } from '@/components/marketing-news/Chart';
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
 
 interface PageProps {
@@ -177,7 +178,14 @@ export default async function ArticlePage({ params }: PageProps) {
 
                 {/* MDX Content - 기존 디자인 시스템 타이포그래피 적용 */}
                 <div className="article-content">
-                  <MDXRemote source={article.content} />
+                  <MDXRemote
+                    source={article.content}
+                    components={{
+                      ComparisonChart,
+                      BarChart,
+                      StatCards,
+                    }}
+                  />
                 </div>
 
                 {/* CTA */}
