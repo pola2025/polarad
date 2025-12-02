@@ -4,6 +4,7 @@ import { Newspaper } from 'lucide-react';
 import { getArticlesByCategory, CATEGORIES, type ArticleCategory } from '@/lib/marketing-news';
 import { ArticleCard, CategoryFilter } from '@/components/marketing-news';
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
+import { FAQPageSchema } from '@/components/seo/FAQPageSchema';
 
 interface PageProps {
   params: Promise<{ category: string }>;
@@ -61,6 +62,16 @@ export default async function CategoryPage({ params }: PageProps) {
           { name: categoryInfo.label, url: `https://polarad.co.kr/marketing-news/category/${category}` }
         ]}
       />
+
+      {/* FAQ 카테고리인 경우 FAQPage 스키마 추가 */}
+      {categoryKey === 'faq' && articles.length > 0 && (
+        <FAQPageSchema
+          faqs={articles.map((article) => ({
+            question: article.title,
+            answer: article.description,
+          }))}
+        />
+      )}
 
       {/* Hero Section */}
       <section className="bg-gradient-subtle py-16 md:py-20 border-b border-gray-200">

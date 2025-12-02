@@ -23,9 +23,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           <div className="relative aspect-video md:aspect-[4/3]">
             <Image
               src={article.thumbnail || '/images/marketing-news/default-thumbnail.png'}
-              alt={`${article.title} - AI 생성 이미지`}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              alt={`${article.title} - ${article.description.slice(0, 60)}`}
+              width={800}
+              height={450}
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
               data-ai-generated="true"
             />
             <div className="absolute top-4 left-4">
@@ -74,9 +75,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
       <div className="relative aspect-video">
         <Image
           src={article.thumbnail || '/images/marketing-news/default-thumbnail.png'}
-          alt={`${article.title} - AI 생성 이미지`}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          alt={`${article.title} - ${article.description.slice(0, 60)}`}
+          width={600}
+          height={338}
+          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
           data-ai-generated="true"
         />
       </div>

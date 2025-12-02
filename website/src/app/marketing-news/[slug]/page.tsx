@@ -171,9 +171,10 @@ export default async function ArticlePage({ params }: PageProps) {
                 <div className="relative aspect-video rounded-2xl overflow-hidden mb-10 border border-gray-200">
                   <Image
                     src={article.thumbnail}
-                    alt={`${article.title} - AI 생성 이미지`}
-                    fill
-                    className="object-cover"
+                    alt={`${article.title} - ${article.description.slice(0, 80)}`}
+                    width={1200}
+                    height={675}
+                    className="object-cover w-full h-full"
                     priority
                     data-ai-generated="true"
                   />
@@ -261,23 +262,40 @@ export default async function ArticlePage({ params }: PageProps) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Article',
+              mainEntityOfPage: {
+                '@type': 'WebPage',
+                '@id': `https://polarad.co.kr/marketing-news/${slug}`,
+              },
               headline: article.title,
               description: article.description,
-              image: article.thumbnail,
+              image: {
+                '@type': 'ImageObject',
+                url: `https://polarad.co.kr${article.thumbnail}`,
+                width: 1200,
+                height: 675,
+              },
               author: {
                 '@type': 'Organization',
                 name: article.author,
+                url: 'https://polarad.co.kr',
               },
               publisher: {
                 '@type': 'Organization',
                 name: '폴라애드',
+                url: 'https://polarad.co.kr',
                 logo: {
                   '@type': 'ImageObject',
                   url: 'https://polarad.co.kr/images/logo-pc.png',
+                  width: 200,
+                  height: 60,
                 },
               },
               datePublished: article.publishedAt,
               dateModified: article.updatedAt || article.publishedAt,
+              articleSection: categoryInfo.label,
+              keywords: article.tags.join(', '),
+              wordCount: article.content.split(/\s+/).filter(Boolean).length,
+              inLanguage: 'ko-KR',
             }),
           }}
         />

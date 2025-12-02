@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OG Image - 폴라애드</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    .og-container {
+      width: 1200px;
+      height: 630px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Aurora Effect */
+    .aurora {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .aurora::before {
+      content: '';
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      top: -25%;
+      left: -25%;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 30% at 50% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+    }
+
+    /* Grid Pattern */
+    .grid-pattern {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Content */
+    .content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 60px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      color: #fbbf24;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 32px;
+      backdrop-filter: blur(4px);
+    }
+
+    .badge svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .logo {
+      font-size: 72px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 24px;
+      letter-spacing: -2px;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-size: 32px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .tagline .highlight {
+      color: #60a5fa;
+    }
+
+    .description {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      max-width: 700px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .feature .check {
+      width: 24px;
+      height: 24px;
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #22c55e;
+    }
+
+    .feature .check svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* URL */
+    .url {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="og-container">
+    <!-- Aurora Background -->
+    <div class="aurora"></div>
+
+    <!-- Grid Pattern -->
+    <div class="grid-pattern"></div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3l1.5 4.5H18l-3.5 3 1.5 4.5L12 12l-4 3 1.5-4.5L6 7.5h4.5L12 3z"/>
+        </svg>
+        경영컨설팅 · 법인영업 · 온라인마케팅 전문
+      </div>
+
+      <h1 class="logo">폴라<span>애드</span></h1>
+
+      <p class="tagline">
+        Meta <span class="highlight">DB 수집 광고</span> & 운영 리포트
+      </p>
+
+      <p class="description">
+        법인영업 · 경영컨설팅 · 온라인마케팅 · DB마케팅<br>
+        고효율 잠재고객 DB 수집부터 성과 분석까지 한 번에
+      </p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <path d="M5 12l5 5L20 7"/>
+            </svg>
+          </div>
+          Meta DB 수집
+        </div>
+        <div class="feature">
+          <div class="check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <path d="M5 12l5 5L20 7"/>
+            </svg>
+          </div>
+          광고 운영
+        </div>
+        <div class="feature">
+          <div class="check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <path d="M5 12l5 5L20 7"/>
+            </svg>
+          </div>
+          성과 리포트
+        </div>
+      </div>
+    </div>
+
+    <!-- URL -->
+    <div class="url">polarad.co.kr</div>
+  </div>
+</body>
+</html>
