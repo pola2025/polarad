@@ -260,7 +260,14 @@ ${kw}
 ## 3. 해결 방법 B: [A가 안 될 때]
 
 ## 4. 이것도 확인해보세요
-- 증상별 원인과 해결법을 **글머리 기호**로 정리 (표 사용 금지)
+
+**[데이터 시각화 - 표 대신 컴포넌트 사용]**
+표(테이블)는 절대 사용 금지. 데이터가 있으면 아래 컴포넌트 중 선택:
+- Before/After 비교 → \`<ComparisonChart ... />\`
+- 순위/비율 → \`<BarChart ... />\`
+- 핵심 통계 → \`<StatCards ... />\`
+
+증상별 원인과 해결법은 **글머리 기호**로 정리
 
 ## 5. 예방법
 
@@ -307,19 +314,45 @@ ${kw}
 ### 2-1. [세부 방법 1]
 ### 2-2. [세부 방법 2]
 ## 3. 성공 사례 및 데이터
-- Before/After 비교 데이터는 ComparisonChart 컴포넌트 사용:
+
+**[차트 컴포넌트 사용 - 필수]**
+표(테이블)는 절대 사용하지 마세요. 대신 아래 차트 컴포넌트를 사용하세요:
+
+1. **Before/After 비교 데이터** → ComparisonChart:
 \`\`\`jsx
 <ComparisonChart
-  title="차트 제목"
-  beforeLabel="Before"
-  afterLabel="After"
+  title="성과 개선 사례"
+  beforeLabel="도입 전"
+  afterLabel="도입 후"
   data={[
-    { label: "항목1", before: "이전값", after: "이후값", change: "-80%" },
-    { label: "항목2", before: "이전값", after: "이후값", change: "+50%" }
+    { label: "전환율", before: "1.2%", after: "3.5%", change: "+192%" },
+    { label: "광고비용", before: "월 500만원", after: "월 200만원", change: "-60%" }
   ]}
 />
 \`\`\`
-- 표(테이블) 사용 금지 → 대신 ComparisonChart 또는 글머리 기호 사용
+
+2. **순위/비율 데이터** → BarChart:
+\`\`\`jsx
+<BarChart
+  title="업종별 평균 ROAS"
+  unit="%"
+  color="primary"
+  data={[
+    { label: "IT/소프트웨어", value: 650 },
+    { label: "뷰티/화장품", value: 500 }
+  ]}
+/>
+\`\`\`
+
+3. **핵심 통계/요약 데이터** → StatCards:
+\`\`\`jsx
+<StatCards stats={[
+  { label: "평균 CTR", value: "2.5%", icon: "📈", change: "+50%" },
+  { label: "권장 예산", value: "30,000원/일", icon: "💰" }
+]} />
+\`\`\`
+
+**반드시 수치/통계 데이터가 있으면 위 컴포넌트 중 적합한 것을 사용하세요.**
 ## 4. 주의사항 및 팁
 
 > 💡 **폴라애드 팁**: [실무 노하우]
