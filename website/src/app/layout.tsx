@@ -1,9 +1,12 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { OrganizationSchema } from '@/components/seo/OrganizationSchema'
 import { WebSiteSchema } from '@/components/seo/WebSiteSchema'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import './globals.css'
+
+const GA_MEASUREMENT_ID = 'G-0SK5T8Q0F0'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://polarad.co.kr'),
@@ -113,6 +116,20 @@ export default function RootLayout({
         <WebSiteSchema />
       </head>
       <body className="font-sans antialiased">
+        {/* Google Analytics */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
+
         <Header />
         <main className="min-h-screen pt-[76px] md:pt-[60px] lg:pt-[68px]">
           {children}
