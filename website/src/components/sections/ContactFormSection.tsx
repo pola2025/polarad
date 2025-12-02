@@ -46,6 +46,14 @@ export function ContactFormSection() {
       const result = await response.json()
 
       if (result.success) {
+        // GA4 전환 이벤트 - 패키지 상담
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'package_form_submit', {
+            event_category: 'conversion',
+            event_label: 'package_consult'
+          })
+        }
+
         alert('상담 신청이 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.')
         // 폼 초기화
         setFormData({

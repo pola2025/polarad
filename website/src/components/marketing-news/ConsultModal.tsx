@@ -54,6 +54,15 @@ export function ConsultModal({ isOpen, onClose, source = 'marketing-news' }: Con
       const result = await response.json()
 
       if (result.success) {
+        // GA4 전환 이벤트 - 블로그 상담
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'blog_form_submit', {
+            event_category: 'conversion',
+            event_label: 'blog_consult',
+            source: source
+          })
+        }
+
         setIsSuccess(true)
         // 3초 후 모달 닫기
         setTimeout(() => {
