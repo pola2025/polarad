@@ -31,7 +31,7 @@ function RelatedArticleCard({ article }: { article: ArticleListItem }) {
       href={`/marketing-news/${article.slug}`}
       className="group block card overflow-hidden p-0"
     >
-      <div className="relative aspect-video">
+      <div className="relative aspect-video rounded-lg overflow-hidden">
         <Image
           src={article.thumbnail || '/images/marketing-news/default-thumbnail.png'}
           alt={article.title}
@@ -39,19 +39,17 @@ function RelatedArticleCard({ article }: { article: ArticleListItem }) {
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
       </div>
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="badge badge-primary text-xs">
-            {categoryInfo.label}
-          </span>
-          <span className="flex items-center gap-1 text-xs text-gray-500">
-            <Calendar size={10} />
-            {formatDate(article.publishedAt)}
-          </span>
-        </div>
-        <h3 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+      <div className="p-3">
+        <span className="badge badge-primary text-xs mb-1">
+          {categoryInfo.label}
+        </span>
+        <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-2 mb-1">
           {article.title}
         </h3>
+        <span className="flex items-center gap-1 text-[10px] text-gray-400">
+          <Calendar size={10} />
+          {formatDate(article.publishedAt)}
+        </span>
       </div>
     </Link>
   );
