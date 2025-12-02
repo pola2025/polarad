@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { Calendar } from 'lucide-react';
 import type { ArticleListItem } from '@/lib/marketing-news/types';
 import { CATEGORIES } from '@/lib/marketing-news/types';
 
@@ -39,13 +40,24 @@ function RelatedArticleCard({ article }: { article: ArticleListItem }) {
         />
       </div>
       <div className="p-4">
-        <span className="badge badge-primary text-xs mb-2">
-          {categoryInfo.label}
-        </span>
+        <div className="flex items-center justify-between mb-2">
+          <span className="badge badge-primary text-xs">
+            {categoryInfo.label}
+          </span>
+          <span className="flex items-center gap-1 text-xs text-gray-500">
+            <Calendar size={10} />
+            {formatDate(article.publishedAt)}
+          </span>
+        </div>
         <h3 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
           {article.title}
         </h3>
       </div>
     </Link>
   );
+}
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return `${date.getMonth() + 1}.${date.getDate()}`;
 }

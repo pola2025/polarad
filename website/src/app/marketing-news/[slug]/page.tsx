@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Clock, ChevronLeft, User, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, ChevronLeft, User, ChevronRight, Eye } from 'lucide-react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getArticle, getAllSlugs, getRelatedArticles, CATEGORIES } from '@/lib/marketing-news';
 import { ArticleCTA, ShareButtons, RelatedArticles } from '@/components/marketing-news';
+import { ViewCounter } from '@/components/marketing-news/ViewCounter';
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
 
 interface PageProps {
@@ -132,6 +133,10 @@ export default async function ArticlePage({ params }: PageProps) {
                   <Clock size={18} className="text-gray-400" />
                   {article.readingTime}분 읽기
                 </span>
+                <span className="flex items-center gap-2">
+                  <Eye size={18} className="text-gray-400" />
+                  <ViewCounter slug={slug} increment={true} />
+                </span>
               </div>
 
               {/* Tags */}
@@ -214,6 +219,10 @@ export default async function ArticlePage({ params }: PageProps) {
                           <dd className="text-gray-900">{formatDate(article.updatedAt)}</dd>
                         </div>
                       )}
+                      <div className="flex justify-between">
+                        <dt className="text-gray-500">조회수</dt>
+                        <dd className="text-gray-900"><ViewCounter slug={slug} /></dd>
+                      </div>
                     </dl>
                   </div>
 
