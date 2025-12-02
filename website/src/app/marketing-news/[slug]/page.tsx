@@ -29,14 +29,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: '글을 찾을 수 없습니다' };
   }
 
+  const canonicalUrl = `https://polarad.co.kr/marketing-news/${slug}`;
+
   return {
     title: article.title,
     description: article.description,
     keywords: article.seo?.keywords || article.tags,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: article.title,
       description: article.description,
       type: 'article',
+      url: canonicalUrl,
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt,
       authors: [article.author],

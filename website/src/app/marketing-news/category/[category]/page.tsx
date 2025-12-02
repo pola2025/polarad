@@ -23,13 +23,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: '카테고리를 찾을 수 없습니다' };
   }
 
+  const canonicalUrl = `https://polarad.co.kr/marketing-news/category/${category}`;
+
   return {
     title: categoryInfo.label,
     description: categoryInfo.description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${categoryInfo.label} | 마케팅 소식 | 폴라애드`,
       description: categoryInfo.description,
       type: 'website',
+      url: canonicalUrl,
     },
   };
 }

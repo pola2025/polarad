@@ -7,10 +7,14 @@ import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
 export const metadata: Metadata = {
   title: '마케팅 소식',
   description: 'Meta 광고 운영 팁, 온라인 마케팅 트렌드, 실전 가이드를 확인하세요. 중소기업과 1인 사업자를 위한 실용적인 마케팅 정보를 제공합니다.',
+  alternates: {
+    canonical: 'https://polarad.co.kr/marketing-news',
+  },
   openGraph: {
     title: '마케팅 소식 | 폴라애드',
     description: 'Meta 광고 운영 팁, 온라인 마케팅 트렌드, 실전 가이드',
     type: 'website',
+    url: 'https://polarad.co.kr/marketing-news',
   },
 };
 
