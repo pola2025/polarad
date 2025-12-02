@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import type { ArticleListItem } from '@/lib/marketing-news/types';
 import { CATEGORIES } from '@/lib/marketing-news/types';
+import { ViewCounter } from './ViewCounter';
 
 interface ArticleCardProps {
   article: ArticleListItem;
@@ -53,6 +54,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
                   <Clock size={14} />
                   {article.readingTime}분
                 </span>
+                <ViewCounter slug={article.slug} showIcon />
               </div>
               <span className="text-primary font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                 읽기 <ArrowRight size={16} />
@@ -98,6 +100,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
               <Clock size={12} />
               {article.readingTime}분
             </span>
+            <ViewCounter slug={article.slug} showIcon />
           </div>
           <ArrowRight size={16} className="text-gray-400 group-hover:text-primary group-hover:translate-x-1 transition-all" />
         </div>
