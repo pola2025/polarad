@@ -760,9 +760,9 @@ seo:
 ${content}
 `;
 
-    // 7. GitHub에 커밋
+    // 7. GitHub에 커밋 (website/ 폴더 내에 저장)
     const categoryFolder = CATEGORIES[category].folder;
-    const mdxPath = `content/marketing-news/${categoryFolder}/${slug}.mdx`;
+    const mdxPath = `website/content/marketing-news/${categoryFolder}/${slug}.mdx`;
 
     console.log('📤 GitHub 커밋...');
     const mdxCommitted = await commitToGitHub(
@@ -771,9 +771,9 @@ ${content}
       `📝 자동 생성: ${seoTitle}`
     );
 
-    // 이미지도 GitHub에 업로드
+    // 이미지도 GitHub에 업로드 (website/ 폴더 내에 저장)
     if (thumbnail.buffer) {
-      const imagePath = `public/images/marketing-news/${slug}.webp`;
+      const imagePath = `website/public/images/marketing-news/${slug}.webp`;
       await uploadImageToGitHub(thumbnail.buffer, imagePath);
     }
 
