@@ -29,8 +29,14 @@ const CATEGORIES = {
 
 type CategoryKey = keyof typeof CATEGORIES;
 
-// 현재 연도 가져오기 (항상 2025년 사용)
-const CURRENT_YEAR = '2025';
+// 현재 연도 가져오기 (KST 기준 동적 계산)
+function getCurrentYear(): string {
+  const now = new Date();
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(now.getTime() + kstOffset);
+  return String(kstDate.getUTCFullYear());
+}
+const CURRENT_YEAR = getCurrentYear();
 
 // 요일별 카테고리 매핑 (0=일, 1=월, 2=화, ...)
 const DAY_CATEGORY_MAP: Record<number, CategoryKey> = {
