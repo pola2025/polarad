@@ -8,10 +8,10 @@ const JWT_SECRET = new TextEncoder().encode(
 
 // 공개 경로 (인증 불필요)
 const publicPaths = [
-  '/',
   '/login',
   '/signup',
   '/admin/login',
+  '/admin/unauthorized',
 ]
 
 // 정적 파일 패턴
@@ -27,14 +27,14 @@ const staticPatterns = [
 const adminPermissions: Record<string, string[]> = {
   SUPER: ['*'], // 모든 경로
   MANAGER: [
-    '/admin/dashboard',
+    '/admin',
     '/admin/users',
     '/admin/workflows',
     '/admin/notifications',
     '/admin/contracts',
   ],
   OPERATOR: [
-    '/admin/dashboard',
+    '/admin',
     '/admin/workflows',
     '/admin/notifications',
   ],
@@ -88,7 +88,7 @@ export async function middleware(request: NextRequest) {
       }
       if (pathname === '/admin/login') {
         if (token.type === 'admin') {
-          return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+          return NextResponse.redirect(new URL('/admin', request.url))
         }
       }
     }

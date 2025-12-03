@@ -147,6 +147,12 @@ model Client {
   notificationLogs   NotificationLog[]
   tokenRefreshLogs   TokenRefreshLog[]
   user               User?
+  // Meta 광고 데이터 관계
+  metaRawData        MetaRawData[]
+  metaWeeklySummary  MetaWeeklySummary[]
+  metaMonthlySummary MetaMonthlySummary[]
+  metaDailyAggregate MetaDailyAggregate[]
+  metaTelegramReport MetaTelegramReport[]
 
   @@index([email])
   @@index([clientId])
@@ -390,4 +396,155 @@ enum ContractStatus {
   ACTIVE      // 계약 진행 중
   EXPIRED     // 계약 만료
   CANCELLED   // 계약 취소
+}
+
+// 시스템 설정 (Key-Value 형태)
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+// ============================================================================
+// Meta 광고 데이터 관련 모델
+// ============================================================================
+
+// 일별 원본 광고 데이터
+model MetaRawData {
+  id              BigInt   @id @default(autoincrement())
+  clientId        String   @map("client_id")
+  date            DateTime @db.Date
+  adId            String   @map("ad_id")
+  adName          String?  @map("ad_name")
+  campaignId      String?  @map("campaign_id")
+  campaignName    String?  @map("campaign_name")
+  platform        String?  // facebook, instagram
+  device          String?  // mobile, desktop
+  currency        String   @default("KRW")
+  impressions     Int      @default(0)
+  reach           Int      @default(0)
+  clicks          Int      @default(0)
+  leads           Int      @default(0)
+  spend           Decimal  @default(0) @db.Decimal(12, 2)
+  videoViews      Int      @default(0) @map("video_views")
+  avgWatchTime    Decimal  @default(0) @map("avg_watch_time") @db.Decimal(5, 1)
+  costPerVideoView Decimal @default(0) @map("cost_per_video_view") @db.Decimal(10, 6)
+  costPerLead     Decimal  @default(0) @map("cost_per_lead") @db.Decimal(10, 6)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, date, adId, platform, device])
+  @@index([clientId])
+  @@index([date])
+  @@index([adId])
+  @@index([clientId, date])
+  @@map("meta_raw_data")
+}
+
+// 주간 집계 데이터
+model MetaWeeklySummary {
+  id               BigInt   @id @default(autoincrement())
+  clientId         String   @map("client_id")
+  weekYear         Int      @map("week_year")
+  weekNumber       Int      @map("week_number")
+  weekStart        DateTime @map("week_start") @db.Date
+  weekEnd          DateTime @map("week_end") @db.Date
+  adId             String   @map("ad_id")
+  adName           String?  @map("ad_name")
+  campaignId       String?  @map("campaign_id")
+  campaignName     String?  @map("campaign_name")
+  totalImpressions Int      @default(0) @map("total_impressions")
+  totalReach       Int      @default(0) @map("total_reach")
+  totalClicks      Int      @default(0) @map("total_clicks")
+  totalLeads       Int      @default(0) @map("total_leads")
+  totalSpend       Decimal  @default(0) @map("total_spend") @db.Decimal(12, 2)
+  totalVideoViews  Int      @default(0) @map("total_video_views")
+  avgCtr           Decimal? @map("avg_ctr") @db.Decimal(5, 2)
+  avgCpl           Decimal? @map("avg_cpl") @db.Decimal(10, 2)
+  efficiencyGrade  String?  @map("efficiency_grade") @db.Char(1) // S, A, B, C, D, F
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  client           Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, weekYear, weekNumber, adId])
+  @@index([clientId, weekYear, weekNumber])
+  @@index([efficiencyGrade])
+  @@map("meta_weekly_summary")
+}
+
+// 월간 집계 데이터
+model MetaMonthlySummary {
+  id               BigInt   @id @default(autoincrement())
+  clientId         String   @map("client_id")
+  year             Int
+  month            Int
+  adId             String   @map("ad_id")
+  adName           String?  @map("ad_name")
+  campaignId       String?  @map("campaign_id")
+  campaignName     String?  @map("campaign_name")
+  totalImpressions Int      @default(0) @map("total_impressions")
+  totalReach       Int      @default(0) @map("total_reach")
+  totalClicks      Int      @default(0) @map("total_clicks")
+  totalLeads       Int      @default(0) @map("total_leads")
+  totalSpend       Decimal  @default(0) @map("total_spend") @db.Decimal(12, 2)
+  avgCtr           Decimal? @map("avg_ctr") @db.Decimal(5, 2)
+  avgCpl           Decimal? @map("avg_cpl") @db.Decimal(10, 2)
+  weekCount        Int?     @map("week_count")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  client           Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, year, month, adId])
+  @@index([clientId, year, month])
+  @@map("meta_monthly_summary")
+}
+
+// 일별 집계 데이터 (대시보드용 빠른 조회)
+model MetaDailyAggregate {
+  id               BigInt   @id @default(autoincrement())
+  clientId         String   @map("client_id")
+  date             DateTime @db.Date
+  totalImpressions Int      @default(0) @map("total_impressions")
+  totalReach       Int      @default(0) @map("total_reach")
+  totalClicks      Int      @default(0) @map("total_clicks")
+  totalLeads       Int      @default(0) @map("total_leads")
+  totalSpend       Decimal  @default(0) @map("total_spend") @db.Decimal(12, 2)
+  adCount          Int      @default(0) @map("ad_count")
+  avgCtr           Decimal? @map("avg_ctr") @db.Decimal(5, 2)
+  avgCpl           Decimal? @map("avg_cpl") @db.Decimal(10, 2)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  client           Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, date])
+  @@index([clientId, date])
+  @@map("meta_daily_aggregates")
+}
+
+// 텔레그램 리포트 발송 이력
+model MetaTelegramReport {
+  id           BigInt   @id @default(autoincrement())
+  clientId     String   @map("client_id")
+  reportType   String   @map("report_type") // weekly, monthly
+  periodStart  DateTime @map("period_start") @db.Date
+  periodEnd    DateTime @map("period_end") @db.Date
+  messageId    String?  @map("message_id")
+  chartUrl     String?  @map("chart_url")
+  reportData   Json?    @map("report_data")
+  status       String   @default("sent") // sent, failed
+  errorMessage String?  @map("error_message")
+  sentAt       DateTime @default(now()) @map("sent_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, reportType])
+  @@index([sentAt(sort: Desc)])
+  @@map("meta_telegram_reports")
 }

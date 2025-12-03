@@ -114,3 +114,5 @@ nul
 
 # 로컬 테스트 파일
 *.local.*
+.vercel
+website/vercel-env.txt

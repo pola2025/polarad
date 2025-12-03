@@ -2,9 +2,10 @@
 
 ## 문서 정보
 - **프로젝트명**: Polarad 마케팅 패키지
-- **버전**: 1.0.0
+- **버전**: 2.0.0
 - **작성일**: 2025-12-01
-- **기반**: 비즈액터스쿨 스타트패키지
+- **최종 수정**: 2025-12-02
+- **변경 사항**: 프로젝트 분리 구조 (관리자/사용자)
 
 ---
 
@@ -20,482 +21,669 @@ Polarad 마케팅 패키지는 **광고 마케팅 서비스를 이용하는 고�
 - **광고 성과 대시보드**: Meta 광고 성과 실시간 모니터링 (bas_meta 연동)
 
 ### 1.3 대상 사용자
-| 사용자 유형 | 설명 |
-|------------|------|
-| **고객 (Client)** | 마케팅 서비스를 이용하는 사업자/개인 |
-| **관리자 (Admin)** | 서비스 운영, 제작 관리, 알림 발송 담당 |
-| **디자이너 (Designer)** | 인쇄물/홈페이지 시안 제작 |
+| 사용자 유형 | 설명 | 접근 경로 |
+|------------|------|----------|
+| **고객 (Client)** | 마케팅 서비스를 이용하는 사업자/개인 | client.polarad.co.kr |
+| **관리자 (Admin)** | 서비스 운영, 제작 관리, 알림 발송 담당 | admin.polarad.co.kr |
 
 ---
 
-## 2. 서비스 구성
+## 2. 시스템 아키텍처 (v2.0 - 프로젝트 분리)
 
-### 2.1 전체 서비스 맵
+### 2.1 전체 구조
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Polarad 마케팅 패키지                              │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
-│  │  인쇄물     │  │  마케팅     │  │  홈페이지   │  │  광고 성과  │ │
-│  │  제작       │  │  설정       │  │  제작       │  │  (bas_meta) │ │
-│  ├─────────────┤  ├─────────────┤  ├─────────────┤  ├─────────────┤ │
-│  │ • 명함      │  │ • Meta광고  │  │ • 아임웹    │  │ • 대시보드  │ │
-│  │ • 명찰      │  │ • 네이버광고│  │ • 스타일선택│  │ • 일/주간   │ │
-│  │ • 계약서    │  │ • 블로그    │  │ • 컬러컨셉  │  │   리포트    │ │
-│  │ • 대봉투    │  │ • 네이버클라│  │             │  │ • 캠페인    │ │
-│  │             │  │   우드      │  │             │  │   분석      │ │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Supabase PostgreSQL                                 │
+│                              (공유 데이터베이스)                               │
+│                                                                              │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐│
+│  │   users     │ │ submissions │ │  workflows  │ │  contracts              ││
+│  │   admins    │ │ clients     │ │ workflow_   │ │  contract_logs          ││
+│  │   packages  │ │ submissions │ │    logs     │ │  meta_raw_data          ││
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────┘
+                          ▲                    ▲
+                          │                    │
+            ┌─────────────┴─────────┐  ┌──────┴──────────────┐
+            │                       │  │                      │
+┌───────────┴───────────┐   ┌──────┴──┴───────────┐
+│                       │   │                      │
+│  admin.polarad.co.kr  │   │ client.polarad.co.kr │
+│                       │   │                      │
+│  ┌─────────────────┐  │   │  ┌────────────────┐  │
+│  │ 관리자 프로젝트    │  │   │  │ 사용자 프로젝트  │  │
+│  │ (polarad)       │  │   │  │ (polarad-client)│  │
+│  └─────────────────┘  │   │  └────────────────┘  │
+│                       │   │                      │
+│  • 관리자 로그인       │   │  • 사용자 로그인/가입  │
+│  • 사용자 관리        │   │  • 계약 요청          │
+│  • 계약 승인/거절     │   │  • 자료 제출          │
+│  • 워크플로우 관리    │   │  • 진행 현황 확인     │
+│  • 클라이언트 관리    │   │  • 광고 성과 조회     │
+│  • 토큰/알림 관리     │   │  • 알림 수신          │
+│  • Meta 데이터 수집   │   │                      │
+│                       │   │                      │
+└───────────────────────┘   └──────────────────────┘
+        Vercel                      Vercel
 ```
 
-### 2.2 서비스별 상세
+### 2.2 Monorepo 구조 (Turborepo + pnpm)
 
-#### 2.2.1 인쇄물 제작 서비스
-| 항목 | 설명 | 제작 기간 |
-|------|------|----------|
-| 명함 | 기본 명함 제작 | 2-3 영업일 |
-| 명찰 | 행사용 명찰 | 3-4 영업일 |
-| 자문계약서 | 표지/내지 디자인 | 7 영업일 |
-| 대봉투 | A4 대봉투 | 4-5 영업일 |
+> **참고**: polarad.co.kr(랜딩 페이지)는 별도 관리하며 이 Monorepo에 포함하지 않습니다.
 
-#### 2.2.2 마케팅 설정 서비스
-| 항목 | 필요 정보 |
-|------|----------|
-| Meta 광고 | 광고 관리자 권한 초대 또는 ID/PW |
-| 네이버 검색광고 | ID/PW, 본인인증, 예산 충전 |
-| 네이버 클라우드 | ID/PW, 결제 정보 등록 |
-| 블로그 디자인 | 디자인 요청사항 |
+```
+polarad/                          # GitHub: polasales/polarad
+├── apps/
+│   ├── admin/                    # admin.polarad.co.kr
+│   │   ├── app/
+│   │   │   ├── (dashboard)/      # 대시보드 (인증 필요)
+│   │   │   │   ├── page.tsx      # 메인 대시보드
+│   │   │   │   ├── users/        # 사용자 관리
+│   │   │   │   ├── contracts/    # 계약 관리
+│   │   │   │   ├── workflows/    # 워크플로우 관리
+│   │   │   │   ├── clients/      # Meta 클라이언트 관리
+│   │   │   │   ├── tokens/       # 토큰 관리
+│   │   │   │   ├── notifications/# 알림 관리
+│   │   │   │   └── settings/     # 설정
+│   │   │   ├── login/            # 관리자 로그인
+│   │   │   ├── unauthorized/     # 권한 없음
+│   │   │   └── api/              # 관리자 API
+│   │   │       ├── auth/admin/
+│   │   │       ├── admin/        # 관리자 전용 API
+│   │   │       ├── users/
+│   │   │       ├── clients/
+│   │   │       ├── tokens/
+│   │   │       ├── workflows/
+│   │   │       └── notifications/
+│   │   ├── public/
+│   │   │   └── robots.txt        # 검색엔진 차단
+│   │   └── package.json
+│   │
+│   └── client/                   # client.polarad.co.kr
+│       ├── app/
+│       │   ├── page.tsx          # 로그인 리다이렉트
+│       │   ├── login/            # 사용자 로그인
+│       │   ├── signup/           # 회원가입 (4단계)
+│       │   ├── dashboard/        # 대시보드 (인증 필요)
+│       │   │   ├── page.tsx      # 메인
+│       │   │   ├── contract/     # 계약 요청
+│       │   │   ├── contracts/    # 계약 목록
+│       │   │   ├── submissions/  # 자료 제출
+│       │   │   ├── progress/     # 진행 현황
+│       │   │   └── analytics/    # 광고 성과
+│       │   └── api/              # 사용자 API
+│       │       ├── auth/         # login, signup, logout
+│       │       ├── user/         # profile, dashboard, workflows
+│       │       ├── contracts/
+│       │       ├── submissions/
+│       │       └── upload/
+│       ├── public/
+│       │   └── robots.txt        # 검색엔진 차단
+│       └── package.json
+│
+├── packages/
+│   ├── database/                 # @polarad/database
+│   │   ├── prisma/
+│   │   │   └── schema.prisma     # 공유 스키마
+│   │   ├── src/
+│   │   │   └── index.ts          # Prisma client export
+│   │   └── package.json
+│   │
+│   ├── ui/                       # @polarad/ui
+│   │   ├── src/
+│   │   │   ├── button.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── card.tsx
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   └── config/                   # @polarad/config
+│       ├── eslint/
+│       ├── typescript/
+│       └── package.json
+│
+├── package.json                  # 루트 (workspaces)
+├── pnpm-workspace.yaml
+├── turbo.json
+└── .gitignore
+```
 
-#### 2.2.3 홈페이지 제작 서비스
-| 항목 | 설명 |
-|------|------|
-| 플랫폼 | 아임웹 기반 |
-| 스타일 선택 | 샘플 사이트 미리보기 후 선택 |
-| 컬러 컨셉 | 필수 선택 (브랜드 색상) |
+### 2.3 검색엔진 및 AI 크롤링 차단
 
-#### 2.2.4 광고 성과 대시보드 (bas_meta 연동)
-| 기능 | 설명 |
-|------|------|
-| 일간 리포트 | 노출, 클릭, 비용, 리드 현황 |
-| 주간 리포트 | 주간 성과 요약 및 효율 등급 |
-| 캠페인 분석 | 광고별 성과 비교 |
-| 텔레그램 알림 | 자동 리포트 발송 |
+> **중요**: admin과 client 앱은 내부 시스템이므로 검색엔진 및 AI 크롤러 접근을 차단합니다.
+
+#### robots.txt (apps/admin/public, apps/client/public)
+```txt
+# 모든 검색엔진 및 AI 크롤러 차단
+User-agent: *
+Disallow: /
+
+# AI 크롤러 명시적 차단
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+```
+
+#### Next.js 메타데이터 설정 (각 앱의 layout.tsx)
+```typescript
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
+};
+```
+
+#### HTTP 헤더 설정 (next.config.js)
+```javascript
+async headers() {
+  return [
+    {
+      source: '/:path*',
+      headers: [
+        { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+      ],
+    },
+  ];
+}
+```
+
+### 2.4 데이터 흐름
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                              데이터 흐름 다이어그램                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+[사용자] client.polarad.co.kr          [관리자] admin.polarad.co.kr
+         │                                      │
+         │ 1. 회원가입                            │
+         ├────────────────→ users 테이블 ←───────┤ 사용자 목록 조회
+         │                                      │
+         │ 2. 계약 요청                           │
+         ├────────────────→ contracts ←─────────┤ 계약 승인/거절
+         │                  (PENDING)           │ (APPROVED/REJECTED)
+         │                                      │
+         │ 3. 자료 제출                           │
+         ├────────────────→ submissions ←───────┤ 제출 자료 확인
+         │                  + S3 파일            │
+         │                      │               │
+         │                      ▼               │
+         │               4. 워크플로우 생성        │
+         │                  workflows ←─────────┤ 상태 변경, 시안 업로드
+         │                      │               │
+         │                      ▼               │
+         │ 5. 진행 현황 확인     │               │
+         │←─────────────────────┘               │
+         │                                      │
+         │ 6. 광고 성과 조회                       │
+         ├────────────────→ meta_raw_data ←─────┤ Meta API 데이터 수집
+         │                                      │ (Cron Job)
+         │                                      │
+         │ 7. 알림 수신                           │
+         │←───────────────── notifications ←────┤ 알림 발송
+         │                  (Telegram/SMS/Email) │
+```
 
 ---
 
-## 3. 사용자 플로우
+## 3. 기능 상세
 
-### 3.1 고객 플로우
+### 3.1 사용자 영역 (client.polarad.co.kr)
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                         고객 (Client) 플로우                          │
-└──────────────────────────────────────────────────────────────────────┘
-
-[회원가입]
-    │
-    ▼
-[기수 선택] → [이메일 입력] → [기본정보 입력] → [비밀번호 설정] → [알림 동의]
-    │
-    ▼
-[대시보드 진입]
-    │
-    ├─→ [인쇄물 탭] → 자료 업로드 → 시안 확인 → 발주 요청
-    │
-    ├─→ [마케팅 탭] → 광고 계정 정보 입력 → 설정 완료
-    │
-    ├─→ [홈페이지 탭] → 스타일 선택 → 컬러 선택 → 요청 완료
-    │
-    └─→ [광고 성과 탭] → 실시간 대시보드 → 리포트 확인
-                         (bas_meta 연동)
-```
-
-### 3.2 상태 전환 플로우
-
-```
-[자료제출중]
-     │ (모든 필수 자료 업로드 완료)
-     ▼
-[제작진행중] ← 수정/업로드 불가
-     │ (관리자가 시안 업로드)
-     ▼
-[시안확인]
-     │ (사용자가 발주요청 버튼 클릭)
-     ▼
-[발주요청] ← 정보 변경 불가 (경고 강조!)
-     │ (인쇄소 제작 완료)
-     ▼
-[제작완료]
-     │ (발송)
-     ▼
-[발송완료]
-```
-
----
-
-## 4. 핵심 기능 상세
-
-### 4.1 회원가입 및 인증
-
-#### 회원가입 단계
-1. **기수 선택**: 활성화된 기수(그룹) 선택
-2. **이메일 입력**: 알림 수신용 (필수)
-3. **기본 정보**: 이름, 연락처
-4. **비밀번호**: 4자리 숫자
-5. **알림 동의**: SMS/이메일 수신 동의
-
-#### 로그인
-- 기수 + 이름 + 연락처 + 비밀번호 조합
-
-### 4.2 자료 제출 시스템
-
-#### 필수 제출 자료
-| 항목 | 형식 | 검증 |
+#### 3.1.1 회원가입/로그인
+| 기능 | 설명 | 상태 |
 |------|------|------|
-| 사업자등록증 | PDF, JPG, PNG | 10MB 이하 |
-| 프로필 사진 | JPG, PNG | 1000px 이하 |
-| 브랜드명 | 텍스트 | 필수 |
-| 이메일 주소 | 텍스트 | 이메일 형식 |
-| 대표 번호 | 텍스트 | 전화번호 형식 |
-| 계좌 번호 | 텍스트 | 필수 |
+| 회원가입 | 4단계 마법사 (기본정보→연락처→비밀번호→알림동의) | ✅ 구현완료 |
+| 로그인 | 클라이언트명 + 연락처 + PIN | ✅ 구현완료 |
+| 로그아웃 | 세션 종료 | ✅ 구현완료 |
 
-#### 선택 제출 자료
-- 인쇄물 주소 (별도 배송지)
-- 홈페이지 스타일
-- 블로그 디자인 요청사항
+#### 3.1.2 대시보드
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 환영 메시지 | 사용자명, 회사명 표시 | ✅ 구현완료 |
+| 진행률 | 자료 제출 진행률 % | ✅ 구현완료 |
+| 빠른 액션 | 자료 제출, 진행현황 링크 | ✅ 구현완료 |
+| 자료 제출 현황 | 프로그레스바 + 항목 리스트 | ✅ 구현완료 |
+| 제작 진행 현황 | 워크플로우 상태 표시 | ✅ 구현완료 |
 
-### 4.3 제작 진행 관리
+#### 3.1.3 계약 요청
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 패키지 선택 | 패키지 목록 조회 및 선택 | ✅ 구현완료 |
+| 계약 정보 입력 | 사업자 정보, 담당자 정보 | ✅ 구현완료 |
+| 전자 서명 | 캔버스 기반 서명 | ✅ 구현완료 |
+| 계약 제출 | 계약번호 생성, 이메일 발송 | ✅ 구현완료 |
+| 계약 목록 | 내 계약 목록 조회 | ✅ 구현완료 |
+| 계약 상세 | 계약 상세 정보, PDF 다운로드 | ✅ 구현완료 |
 
-#### 워크플로우 상태
-| 상태 | 설명 | 사용자 권한 |
-|------|------|------------|
-| 대기 | 자료 제출 전 | 업로드 가능 |
-| 시안중 | 디자인 작업 중 | 읽기만 가능 |
-| 발주대기 | 시안 완료, 확인 대기 | 발주 요청 가능 |
-| 발주완료 | 인쇄소 제작 중 | 변경 불가 |
-| 제작완료 | 인쇄 완료 | 읽기만 가능 |
-| 발송완료 | 택배 발송 | 운송장 확인 가능 |
+#### 3.1.4 자료 제출
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 필수 자료 | 사업자등록증, 프로필사진, 브랜드명 등 6개 | ✅ 구현완료 |
+| 선택 자료 | 배송지, 웹사이트 스타일 등 5개 | ✅ 구현완료 |
+| 파일 업로드 | S3/R2 presigned URL 방식 | ✅ 구현완료 |
+| 자동 저장 | DRAFT/SUBMITTED 상태 관리 | ✅ 구현완료 |
 
-#### 시안 확인 및 발주
-- **시안 확인**: PDF 다운로드 및 미리보기
-- **발주 전 경고**:
-  - 발주 후 정보 변경 불가
-  - 오탈자 미검수 시 재발주 비용 본인 부담
-  - 수정 횟수 제한 (최대 2회)
+#### 3.1.5 진행 현황
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 워크플로우 목록 | 8가지 타입 지원 | ✅ 구현완료 |
+| 단계별 진행도 | 타입별 다른 단계 | ✅ 구현완료 |
+| 시안 확인 | 이미지 링크, 승인/수정 요청 | ✅ 구현완료 |
+| 배송 조회 | 5개 택배사 지원 | ✅ 구현완료 |
 
-### 4.4 광고 성과 대시보드 (bas_meta 연동)
+#### 3.1.6 광고 성과
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 요약 카드 | 노출수, 클릭, 광고비, 전환 | ⚠️ UI만 완성 |
+| 캠페인 테이블 | 캠페인별 성과 | ⚠️ 더미 데이터 |
+| Meta API 연동 | 실제 데이터 조회 | ❌ 미구현 |
 
-#### 연동 방식
-- bas_meta 시스템의 데이터베이스 공유
-- 클라이언트별 광고 성과 조회
-- 실시간 데이터 동기화
+#### 3.1.7 프로필/알림
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 프로필 조회 | 내 정보 확인 | ✅ 구현완료 |
+| 프로필 수정 | 정보 수정 | ❌ 미구현 |
+| 알림 센터 | 알림 목록 | ❌ 미구현 |
 
-#### 제공 기능
-| 기능 | 설명 |
-|------|------|
-| 일간 대시보드 | 오늘 노출, 클릭, 비용, 리드 |
-| 주간 리포트 | 주간 성과 요약, 효율 등급 (S/A/B/C/D) |
-| 캠페인 상세 | 광고별 상세 성과 |
-| 기간 비교 | 기간별 성과 비교 |
+### 3.2 관리자 영역 (admin.polarad.co.kr)
 
-### 4.5 알림 시스템
+#### 3.2.1 대시보드
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 통계 카드 | 사용자, 클라이언트, 토큰, 워크플로우 | ✅ 구현완료 |
+| 최근 워크플로우 | 최근 5건 | ✅ 구현완료 |
+| 토큰 만료 임박 | 14일 이내 만료 | ✅ 구현완료 |
 
-#### 알림 채널
-| 채널 | 용도 |
-|------|------|
-| SMS | 마감일 알림, 긴급 알림 |
-| 이메일 | 상세 안내, 시안 완료 알림 |
-| 텔레그램 | 관리자 알림, 광고 리포트 |
+#### 3.2.2 사용자 관리
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 목록 조회 | 검색, 필터, 페이지네이션 | ✅ 구현완료 |
+| 상세 조회 | 기본정보, 제출자료, 워크플로우 | ✅ 구현완료 |
+| 수정 | 사용자 정보 수정 | ✅ 구현완료 |
+| 비활성화 | 사용자 비활성화 | ✅ 구현완료 |
 
-#### 자동 알림 트리거
-| 시점 | 내용 |
-|------|------|
-| 회원가입 완료 | 환영 메시지 + 마감일 안내 |
-| 2주차 시작 | 미제출 자료 리마인더 |
-| 마감 7일 전 | 마감일 알림 (D-7) |
-| 마감 3일 전 | 긴급 알림 (D-3) |
-| 마감 1일 전 | 최종 경고 (D-1) |
-| 시안 완료 | 시안 확인 요청 |
-| 발주 완료 | 발주 확인 + 예상 완료일 |
-| 발송 완료 | 운송장 번호 안내 |
+#### 3.2.3 계약 관리
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 목록 조회 | 상태별 필터, 통계 | ✅ 구현완료 |
+| 상세 조회 | 계약 정보, 타임라인 | ✅ 구현완료 |
+| 승인/거절 | 계약 처리, 거절 사유 | ✅ 구현완료 |
+| PDF 다운로드 | 계약서 PDF 생성 | ✅ 구현완료 |
 
----
+#### 3.2.4 워크플로우 관리
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 목록 조회 | 유형별, 상태별 필터 | ✅ 구현완료 |
+| 상세 조회 | 진행 단계, 시안, 배송 정보 | ✅ 구현완료 |
+| 상태 변경 | 드롭다운 상태 변경 | ✅ 구현완료 |
+| 시안 업로드 | 시안 URL 등록 | ✅ 구현완료 |
 
-## 5. 관리자 기능
+#### 3.2.5 클라이언트 관리 (Meta)
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 목록 조회 | 클라이언트 목록 | ✅ 구현완료 |
+| 상세 조회 | Meta 토큰, 서비스 기간 | ✅ 구현완료 |
+| 토큰 관리 | 토큰 갱신, 상태 확인 | ✅ 구현완료 |
+| CRUD | 생성, 수정, 삭제 | ✅ 구현완료 |
 
-### 5.1 관리자 대시보드
-
-#### 통계 현황
-- 전체 사용자 수
-- 자료 제출률
-- 발주 대기 건수
-- 발송 완료 건수
-
-#### 기수별 진행률
-- 기수별 제출 현황
-- 기수별 제작 진행 현황
-
-### 5.2 사용자 관리
-
-| 기능 | 설명 |
-|------|------|
-| 목록 조회 | 필터, 검색, 정렬 |
-| 상세 보기 | 제출 현황, 워크플로우 상태 |
-| 일괄 등록 | CSV 업로드 |
-| 알림 발송 | 선택 사용자 일괄 알림 |
-
-### 5.3 워크플로우 관리
-
-| 기능 | 설명 |
-|------|------|
-| 시안 업로드 | PDF 업로드 + 자동 알림 발송 |
-| 발주 승인 | 사용자 발주 요청 승인 |
-| 택배 정보 입력 | 운송장 번호 + 자동 알림 발송 |
-| 상태 변경 | 수동 상태 변경 |
-
-### 5.4 기수(그룹) 관리
-
-| 필드 | 설명 |
-|------|------|
-| 기수명 | "1기", "2기" 등 |
-| 교육 시작일 | 서비스 시작일 |
-| 자료 제출 마감일 | 자동 알림 기준일 |
-| 활성화 여부 | 회원가입 허용 여부 |
-
-### 5.5 알림 관리
-
-| 기능 | 설명 |
-|------|------|
-| 발송 이력 조회 | 채널별, 상태별 필터 |
-| 수동 발송 | 커스텀 메시지 발송 |
-| 재발송 | 실패 건 재발송 |
+#### 3.2.6 토큰/알림/설정
+| 기능 | 설명 | 상태 |
+|------|------|------|
+| 토큰 관리 | 만료 임박/만료됨/재인증 필요 | ✅ 구현완료 |
+| 알림 관리 | 발송 이력, 일괄 발송 | ✅ 구현완료 |
+| 설정 | 텔레그램, 이메일 설정 | ✅ 구현완료 |
 
 ---
 
-## 6. 기술 아키텍처
+## 4. 기술 스택
 
-### 6.1 시스템 구성
-
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                           Frontend                                    │
-│                    (Next.js 15 + TypeScript)                         │
-├───────────────┬───────────────┬──────────────────────────────────────┤
-│  고객 포털    │  관리자 대시보드 │  광고 대시보드 (bas_meta)           │
-│  /user/*      │  /admin/*      │  /analytics/*                       │
-└───────────────┴───────────────┴──────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                         API Layer                                     │
-│                   (Next.js API Routes)                               │
-├───────────────┬───────────────┬──────────────────────────────────────┤
-│  Auth API     │  Workflow API  │  Analytics API                      │
-│  User API     │  Notification  │  (bas_meta 연동)                    │
-│  Cohort API   │  API           │                                     │
-└───────────────┴───────────────┴──────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                        Database Layer                                 │
-│                    (PostgreSQL - Supabase)                           │
-├───────────────┬───────────────┬──────────────────────────────────────┤
-│  users        │  workflows     │  clients (bas_meta)                 │
-│  cohorts      │  submissions   │  raw_data (bas_meta)                │
-│  notifications│  workflow_logs │  weekly_summary (bas_meta)          │
-└───────────────┴───────────────┴──────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                       External Services                               │
-├───────────────┬───────────────┬──────────────────────────────────────┤
-│  AWS S3       │  NCP SENS     │  Telegram Bot API                    │
-│  (파일 저장)   │  (SMS 발송)    │  (알림/리포트)                       │
-├───────────────┼───────────────┼──────────────────────────────────────┤
-│  SendGrid     │  Meta API     │  Vercel Cron                         │
-│  (이메일)      │  (광고 데이터) │  (자동 작업)                         │
-└───────────────┴───────────────┴──────────────────────────────────────┘
-```
-
-### 6.2 기술 스택
-
+### 4.1 공통
 | 영역 | 기술 |
 |------|------|
-| Frontend | Next.js 15, TypeScript, Tailwind CSS, shadcn/ui |
-| Backend | Next.js API Routes, Prisma ORM |
+| Language | TypeScript |
+| Framework | Next.js 15 (App Router) |
+| UI | Tailwind CSS, shadcn/ui |
+| ORM | Prisma |
 | Database | PostgreSQL (Supabase) |
-| Auth | NextAuth.js v5 |
-| File Storage | AWS S3 / Cloudflare R2 |
-| SMS | NCP SENS |
-| Email | SendGrid |
-| Notification | Telegram Bot API |
+| File Storage | Cloudflare R2 / AWS S3 |
 | Hosting | Vercel |
 
-### 6.3 데이터베이스 스키마 (핵심)
+### 4.2 관리자 전용
+| 영역 | 기술 |
+|------|------|
+| Meta API | Graph API v22.0 |
+| 토큰 암호화 | AES-256-CBC |
+| 알림 | Telegram Bot API |
+| 이메일 | Resend |
+| Cron | Vercel Cron / Railway |
+
+### 4.3 사용자 전용
+| 영역 | 기술 |
+|------|------|
+| 전자서명 | Canvas API |
+| PDF | @react-pdf/renderer |
+| 파일업로드 | Presigned URL |
+
+---
+
+## 5. 데이터베이스 스키마
+
+### 5.1 핵심 테이블
 
 ```prisma
 // 사용자 (고객)
 model User {
-  id          String   @id
-  cohortId    String   // 기수 참조
-  name        String
-  email       String   @unique
-  phone       String
-  password    String   // bcrypt 해시
+  id              String   @id @default(cuid())
+  clientName      String   // 업체명
+  name            String   // 담당자명
+  email           String   @unique
+  phone           String
+  password        String   // bcrypt 해시
+  smsConsent      Boolean
+  emailConsent    Boolean
+  telegramEnabled Boolean
+  telegramChatId  String?
+  isActive        Boolean  @default(true)
+  lastLoginAt     DateTime?
+  clientId        String?  @unique // Client 연결
 
-  // 알림 동의
-  smsConsent    Boolean
-  emailConsent  Boolean
-
-  // 관계
-  submissions   Submission[]
-  workflows     Workflow[]
-  notifications Notification[]
+  submission      Submission?
+  workflows       Workflow[]
+  contracts       Contract[]
+  notifications   UserNotification[]
 }
 
-// 기수
-model Cohort {
-  id              String   @id
-  name            String   // "1기", "2기"
-  startDate       DateTime
-  deadlineDate    DateTime
-  isActive        Boolean
+// 관리자
+model Admin {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String
+  password  String
+  role      AdminRole // SUPER, MANAGER, OPERATOR
+  isActive  Boolean   @default(true)
+}
+
+// 클라이언트 (Meta 광고 계정)
+model Client {
+  id                 String     @id @default(cuid())
+  clientId           String     @unique
+  clientName         String
+  email              String     @unique
+  metaAdAccountId    String?
+  metaAccessToken    String?    // 암호화 저장
+  metaRefreshToken   String?
+  tokenExpiresAt     DateTime?
+  authStatus         AuthStatus // ACTIVE, AUTH_REQUIRED, TOKEN_EXPIRED
+  servicePeriodStart DateTime?
+  servicePeriodEnd   DateTime?
+  telegramChatId     String?
+  telegramEnabled    Boolean    @default(false)
+  planType           PlanType
+  isActive           Boolean    @default(true)
+
+  user               User?
+  notificationLogs   NotificationLog[]
+  tokenRefreshLogs   TokenRefreshLog[]
+}
+
+// 계약
+model Contract {
+  id              String         @id @default(cuid())
+  contractNumber  String         @unique
+  userId          String
+  packageId       String
+  companyName     String
+  ceoName         String
+  businessNumber  String
+  address         String
+  contactName     String
+  contactPhone    String
+  contactEmail    String
+  contractPeriod  Int            @default(12)
+  monthlyFee      Int
+  setupFee        Int            @default(0)
+  totalAmount     Int
+  startDate       DateTime?
+  endDate         DateTime?
+  clientSignature String?        // base64
+  signedAt        DateTime?
+  status          ContractStatus // PENDING, SUBMITTED, APPROVED, REJECTED, ACTIVE
+  approvedAt      DateTime?
+  approvedBy      String?
+  rejectedAt      DateTime?
+  rejectReason    String?
+
+  user            User
+  package         Package
+  logs            ContractLog[]
 }
 
 // 자료 제출
 model Submission {
-  id              String   @id
-  userId          String
-
-  // 필수 자료
-  businessLicense String?  // 사업자등록증 URL
-  profilePhoto    String?  // 프로필 사진 URL
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  businessLicense String? // S3 URL
+  profilePhoto    String?
   brandName       String?
-  email           String?
-  phone           String?
+  contactEmail    String?
+  contactPhone    String?
   bankAccount     String?
-
-  // 상태
-  isComplete      Boolean
+  deliveryAddress String?
+  websiteStyle    String?
+  websiteColor    String?
+  blogDesignNote  String?
+  additionalNote  String?
+  status          SubmissionStatus
+  isComplete      Boolean @default(false)
   completedAt     DateTime?
+
+  user            User
 }
 
-// 워크플로우 (제작 진행)
+// 워크플로우
 model Workflow {
-  id              String   @id
-  userId          String
-  type            String   // "명함", "명찰", "계약서", "대봉투", "홈페이지"
-  status          String   // "대기", "시안중", "발주대기", "발주완료", "제작완료", "발송완료"
+  id               String         @id @default(cuid())
+  userId           String
+  type             WorkflowType   // NAMECARD, NAMETAG, CONTRACT, ENVELOPE, WEBSITE, BLOG, META_ADS
+  status           WorkflowStatus // PENDING, SUBMITTED, IN_PROGRESS, DESIGN_UPLOADED, ORDER_REQUESTED, ORDER_APPROVED, COMPLETED, SHIPPED
+  designUrl        String?
+  finalUrl         String?
+  courier          String?
+  trackingNumber   String?
+  revisionCount    Int            @default(0)
+  revisionNote     String?
+  adminNote        String?
 
-  // 날짜 추적
-  submittedAt     DateTime?
-  designUploadedAt DateTime?
-  orderRequestedAt DateTime?
-  orderApprovedAt DateTime?
-  completedAt     DateTime?
-  shippedAt       DateTime?
-
-  // 파일
-  designUrl       String?
-
-  // 택배
-  courier         String?
-  trackingNumber  String?
+  user             User
+  logs             WorkflowLog[]
 }
 
-// bas_meta 연동 (기존 테이블 참조)
-// - clients: 광고 클라이언트 정보
-// - raw_data: 광고 성과 원본 데이터
-// - weekly_summary: 주간 집계 데이터
+// Meta 광고 데이터 (향후 추가)
+model MetaRawData {
+  id           BigInt   @id @default(autoincrement())
+  clientId     String
+  date         DateTime @db.Date
+  adId         String
+  adName       String
+  campaignId   String
+  campaignName String
+  platform     String   // facebook, instagram
+  device       String   // mobile, desktop
+  impressions  Int
+  reach        Int
+  clicks       Int
+  leads        Int
+  spend        Decimal
+
+  @@unique([clientId, date, adId, platform, device])
+  @@index([clientId, date])
+}
 ```
 
 ---
 
-## 7. 개발 로드맵
+## 6. 개발 로드맵
 
-### Phase 1: Core (3주)
-- [ ] 회원가입/로그인 시스템
-- [ ] 자료 제출 시스템
-- [ ] 파일 업로드 (S3 연동)
-- [ ] 기본 대시보드 UI
+### Phase 1: Monorepo 전환 (현재)
+- [x] PRD 문서 업데이트 (Monorepo 구조)
+- [ ] Turborepo + pnpm workspace 설정
+- [ ] packages/database 설정 (공유 Prisma)
+- [ ] packages/ui 설정 (공유 컴포넌트)
+- [ ] apps/admin 생성 및 관리자 코드 이동
+- [ ] apps/client 생성 및 사용자 코드 이동
+- [ ] robots.txt 및 검색 제외 설정
 
-### Phase 2: Workflow (2주)
-- [ ] 워크플로우 상태 관리
-- [ ] 시안 업로드 기능
-- [ ] 발주 요청/승인 기능
-- [ ] 택배 정보 관리
+### Phase 2: 앱별 정리 및 최적화
+- [ ] admin: 라우팅 구조 정리
+- [ ] admin: RBAC 권한 시스템 강화
+- [ ] client: 프로필 수정 기능
+- [ ] client: 알림 센터 기능
+- [ ] 공통: Toast 알림 전환 (alert → toast)
 
-### Phase 3: Admin (2주)
-- [ ] 관리자 대시보드
-- [ ] 사용자 관리
-- [ ] 기수 관리
-- [ ] 통계 및 차트
+### Phase 3: Meta API 연동
+- [ ] Prisma 스키마에 Meta 테이블 추가
+- [ ] lib/meta 모듈 구현
+- [ ] Meta API 엔드포인트 구현
+- [ ] 광고 성과 페이지 실데이터 연동
+- [ ] 데이터 수집 Cron Job 설정
 
-### Phase 4: Notification (1주)
-- [ ] SMS 알림 연동 (NCP SENS)
-- [ ] 이메일 알림 연동 (SendGrid)
-- [ ] 자동 알림 스케줄러 (Cron)
-- [ ] 알림 이력 관리
-
-### Phase 5: bas_meta 연동 (1주)
-- [ ] 광고 성과 대시보드 연동
-- [ ] 클라이언트별 성과 조회
-- [ ] 텔레그램 리포트 연동
-
-### Phase 6: 최적화 (1주)
+### Phase 4: 배포 및 최적화
+- [ ] Vercel 배포 설정 (각 앱별 프로젝트)
+- [ ] 도메인 연결 (admin/client.polarad.co.kr)
 - [ ] 성능 최적화
 - [ ] 보안 강화
-- [ ] 테스트 및 QA
 
 ---
 
-## 8. 성공 지표 (KPI)
+## 7. 환경 변수
+
+### 7.1 공통
+```bash
+# Database
+DATABASE_URL=postgresql://...
+DIRECT_URL=postgresql://...
+
+# Auth
+NEXTAUTH_SECRET=...
+```
+
+### 7.2 관리자 프로젝트
+```bash
+# Meta API
+META_APP_ID=
+META_APP_SECRET=
+
+# 토큰 암호화
+TOKEN_ENCRYPTION_KEY=<64자 hex>
+
+# Telegram
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_ADMIN_CHAT_ID=
+
+# Email (Resend)
+RESEND_API_KEY=
+
+# AI (선택)
+GEMINI_API_KEY=
+```
+
+### 7.3 사용자 프로젝트
+```bash
+# File Upload
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+R2_ENDPOINT=
+```
+
+---
+
+## 8. 배포 계획
+
+### 8.1 Monorepo 구조
+
+> **참고**: polarad.co.kr(랜딩 페이지)는 별도 프로젝트로 관리합니다.
+
+```
+polarad/                          # GitHub: polasales/polarad
+├── apps/
+│   ├── admin/                    # 관리자 페이지
+│   │   ├── app/
+│   │   ├── public/robots.txt     # 검색 제외
+│   │   ├── package.json
+│   │   └── ...
+│   └── client/                   # 사용자(고객) 페이지
+│       ├── app/
+│       ├── public/robots.txt     # 검색 제외
+│       ├── package.json
+│       └── ...
+├── packages/
+│   ├── database/                 # 공유 Prisma 스키마
+│   │   ├── prisma/
+│   │   │   └── schema.prisma
+│   │   └── package.json
+│   ├── ui/                       # 공유 UI 컴포넌트
+│   │   └── package.json
+│   └── config/                   # 공유 설정 (ESLint, TypeScript)
+│       └── package.json
+├── package.json                  # 루트 package.json
+├── turbo.json                    # Turborepo 설정
+└── pnpm-workspace.yaml           # pnpm workspace 설정
+```
+
+### 8.2 배포 정보
+
+| 앱 | 도메인 | Vercel 프로젝트 | 역할 | 경로 | 검색 노출 |
+|-----|--------|----------------|------|------|----------|
+| admin | admin.polarad.co.kr | polarad-admin | 관리자 대시보드 | apps/admin | ❌ 차단 |
+| client | client.polarad.co.kr | polarad-client | 사용자 대시보드 | apps/client | ❌ 차단 |
+| web | polarad.co.kr | polarad-web (별도) | 랜딩 페이지 | 별도 관리 | ✅ 허용 |
+
+### 8.3 GitHub Repository
+
+- **Repository**: polasales/polarad
+- **구조**: Monorepo (Turborepo + pnpm)
+- **브랜치 전략**: main → develop → feature/*
+
+---
+
+## 9. 성공 지표 (KPI)
 
 | 지표 | 목표 |
 |------|------|
 | 자료 제출 완료율 | 95% 이상 |
-| 마감일 내 제출율 | 90% 이상 |
-| 시안 승인까지 평균 시간 | 3일 이내 |
-| 알림 발송 성공률 | 99% 이상 |
+| 계약 승인 처리 시간 | 24시간 이내 |
 | 시스템 가동률 | 99.9% |
-
----
-
-## 9. 리스크 및 대응
-
-| 리스크 | 대응 방안 |
-|--------|----------|
-| 파일 업로드 용량 초과 | 클라이언트 압축, 용량 제한 명시 |
-| SMS 발송 실패 | 재발송 로직, 이메일 대체 발송 |
-| Meta API 토큰 만료 | 만료 알림 시스템 (bas_meta 연동) |
-| 동시 접속 증가 | Vercel 오토스케일링 |
-
----
-
-## 10. 부록
-
-### 10.1 용어 정의
-| 용어 | 정의 |
-|------|------|
-| 기수 (Cohort) | 서비스 이용 그룹 단위 |
-| 워크플로우 | 제작 진행 단위 (명함, 홈페이지 등) |
-| 시안 | 디자인 초안 파일 |
-| 발주 | 인쇄소 제작 요청 |
-
-### 10.2 관련 시스템
-| 시스템 | 역할 |
-|--------|------|
-| bas_meta | Meta 광고 데이터 수집 및 분석 |
-| NCP SENS | SMS 발송 서비스 |
-| Supabase | 데이터베이스 호스팅 |
-
-### 10.3 참고 문서
-- [스타트패키지 아키텍처](../../../startpackage/ARCHITECTURE.md)
-- [관리자 대시보드 기획](../../../startpackage/docs/ADMIN_DASHBOARD_SPEC.md)
-- [회원가입 플로우](../../../startpackage/SIGNUP_FLOW.md)
+| 알림 발송 성공률 | 99% 이상 |
 
 ---
 

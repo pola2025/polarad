@@ -29,6 +29,9 @@ const CATEGORIES = {
 
 type CategoryKey = keyof typeof CATEGORIES;
 
+// 현재 연도 가져오기 (항상 2025년 사용)
+const CURRENT_YEAR = '2025';
+
 // 요일별 카테고리 매핑 (0=일, 1=월, 2=화, ...)
 const DAY_CATEGORY_MAP: Record<number, CategoryKey> = {
   0: 'faq',              // 일요일
@@ -81,10 +84,10 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 6. 쓰레드(Threads) 활용: 쓰레드 시작하기, 인스타그램 연동, 콘텐츠 전략, 팔로워 확보
 
 **검색 최적화 제목 예시**:
-- "인스타그램 릴스 만드는 법 2025 완벽 가이드 (초보자용)"
+- "인스타그램 릴스 만드는 법 ${CURRENT_YEAR} 완벽 가이드 (초보자용)"
 - "인스타그램 릴스 데드존 위치 확인 방법 총정리"
 - "페이스북 광고 예산 설정 방법 - 소액으로 시작하기"
-- "인스타그램 해시태그 추천 2025 (업종별 정리)"
+- "인스타그램 해시태그 추천 ${CURRENT_YEAR} (업종별 정리)"
 - "쓰레드 팔로워 늘리는 법 7가지 전략"`,
 
     'google-ads': `Google 광고(검색/디스플레이/유튜브) 관련 블로그 주제를 1개 제안하세요.
@@ -95,10 +98,10 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 - 검색 의도 반영: 정보형("~방법", "~하는 법"), 비교형("~vs~"), 리스트형("~가지")
 
 **검색 최적화 제목 예시**:
-- "구글 광고 품질점수 올리는 방법 2025 (10점 만드는 비법)"
+- "구글 광고 품질점수 올리는 방법 ${CURRENT_YEAR} (10점 만드는 비법)"
 - "유튜브 광고 단가 비용 총정리 - CPV, CPM 기준"
 - "구글 애즈 키워드 플래너 사용법 완벽 가이드"
-- "GDN 배너 광고 사이즈 규격 2025 총정리"`,
+- "GDN 배너 광고 사이즈 규격 ${CURRENT_YEAR} 총정리"`,
 
     'marketing-trends': `디지털 마케팅 트렌드 관련 블로그 주제를 1개 제안하세요.
 
@@ -108,8 +111,8 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 - 검색 의도: 정보 수집형, 트렌드 파악형
 
 **검색 최적화 제목 예시**:
-- "2025 디지털 마케팅 트렌드 TOP 10 총정리"
-- "AI 마케팅 도구 추천 2025 - 무료/유료 비교"
+- "${CURRENT_YEAR} 디지털 마케팅 트렌드 TOP 10 총정리"
+- "AI 마케팅 도구 추천 ${CURRENT_YEAR} - 무료/유료 비교"
 - "숏폼 콘텐츠 마케팅 전략 완벽 가이드"
 - "퍼포먼스 마케팅 뜻과 실전 활용법"`,
 
@@ -121,7 +124,7 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 - 검색 의도: 문제 해결형, 트러블슈팅형
 
 **검색 최적화 제목 예시**:
-- "인스타그램 계정 정지 해제 방법 2025 (이의제기 템플릿)"
+- "인스타그램 계정 정지 해제 방법 ${CURRENT_YEAR} (이의제기 템플릿)"
 - "페이스북 광고 계정 비활성화 복구하는 법"
 - "인스타그램 팔로워 급감 원인과 해결 방법"
 - "메타 비즈니스 관리자 오류 해결 총정리"`
@@ -130,6 +133,8 @@ async function generateTopic(category: CategoryKey): Promise<string> {
   const prompt = `${topicPrompts[category]}
 
 카테고리: ${categoryLabel}
+
+**중요**: 제목에 연도를 포함할 경우 반드시 ${CURRENT_YEAR}년을 사용하세요. 2024년은 절대 사용하지 마세요.
 
 반드시 제목만 한 줄로 응답하세요. 다른 설명 없이 제목만 출력하세요.`;
 

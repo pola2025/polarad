@@ -39,6 +39,7 @@ interface ContractFormData {
   contactEmail: string;
   contractPeriod: number;
   additionalNotes: string;
+  termsAgreed: boolean;
   clientSignature: string;
 }
 
@@ -63,8 +64,9 @@ export default function ContractPage() {
     contactName: "",
     contactPhone: "",
     contactEmail: "",
-    contractPeriod: 12,
+    contractPeriod: 1,
     additionalNotes: "",
+    termsAgreed: false,
     clientSignature: "",
   });
 
@@ -151,6 +153,9 @@ export default function ContractPage() {
         newErrors.contactEmail = "올바른 이메일 형식을 입력해주세요";
       }
     } else if (step === 3) {
+      if (!formData.termsAgreed) {
+        newErrors.termsAgreed = "서비스 이용약관에 동의해주세요";
+      }
       if (!formData.clientSignature) {
         newErrors.clientSignature = "서명을 입력해주세요";
       }
@@ -221,15 +226,17 @@ export default function ContractPage() {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
     if ("touches" in e) {
       return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top,
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY,
       };
     }
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
     };
   };
 
@@ -272,9 +279,7 @@ export default function ContractPage() {
   };
 
   const selectedPackage = packages.find((p) => p.id === formData.packageId);
-  const totalAmount = selectedPackage
-    ? selectedPackage.price * formData.contractPeriod + (selectedPackage.name === "CUSTOM" ? 0 : 0)
-    : 0;
+  const totalAmount = selectedPackage ? selectedPackage.price : 0;
 
   if (isLoading) {
     return (
@@ -369,7 +374,7 @@ export default function ContractPage() {
                 </div>
                 <p className="text-2xl font-bold text-blue-600 mb-2">
                   {pkg.price === 0 ? "별도 협의" : `${pkg.price.toLocaleString()}원`}
-                  {pkg.price > 0 && <span className="text-sm font-normal text-gray-500">/월</span>}
+                  {pkg.price > 0 && <span className="text-sm font-normal text-gray-500"> (VAT 포함)</span>}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                   {pkg.description}
@@ -392,35 +397,6 @@ export default function ContractPage() {
             </p>
           )}
 
-          {/* 계약 기간 선택 */}
-          {formData.packageId && selectedPackage?.name !== "CUSTOM" && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                계약 기간
-              </h3>
-              <div className="grid grid-cols-3 gap-4">
-                {[6, 12, 24].map((months) => (
-                  <button
-                    key={months}
-                    onClick={() => handleInputChange("contractPeriod", months)}
-                    className={`p-4 rounded-lg border-2 text-center transition-all ${
-                      formData.contractPeriod === months
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                        : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
-                    }`}
-                  >
-                    <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {months}개월
-                    </p>
-                    {months === 12 && (
-                      <span className="text-xs text-blue-600 font-medium">추천</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -550,17 +526,11 @@ export default function ContractPage() {
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-400">계약 기간</span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {formData.contractPeriod}개월
-                </span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-400">월 서비스 비용</span>
+                <span className="text-gray-600 dark:text-gray-400">서비스 비용</span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {selectedPackage?.price === 0
                     ? "별도 협의"
-                    : `${selectedPackage?.price.toLocaleString()}원`}
+                    : `${selectedPackage?.price.toLocaleString()}원 (VAT 포함)`}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
@@ -591,6 +561,148 @@ export default function ContractPage() {
                     : `${totalAmount.toLocaleString()}원`}
                 </span>
               </div>
+            </div>
+          </div>
+
+          {/* 표준계약서 약관 */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              서비스 이용약관
+            </h3>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-64 overflow-y-auto text-sm text-gray-700 dark:text-gray-300 space-y-4">
+              <h4 className="font-semibold text-gray-900 dark:text-white">제1조 (목적)</h4>
+              <p>
+                본 약관은 폴라애드(이하 "회사")가 제공하는 온라인 영업 올인원 패키지 서비스(이하 "서비스")의
+                이용에 관하여 회사와 클라이언트(이하 "고객") 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제2조 (서비스 내용)</h4>
+              <p>회사가 제공하는 서비스의 내용은 다음과 같습니다:</p>
+              <ul className="list-disc list-inside ml-2 space-y-1">
+                <li>인쇄물 제작: 명함 200매, 대봉투 500매, 계약서 500매, 명찰</li>
+                <li>홈페이지 제작: 10페이지 이내, 반응형 디자인</li>
+                <li>도메인 및 호스팅: 1년 무료 제공 (2년차부터 연 66,000원)</li>
+                <li>광고 지원: Meta 광고 연동, 자동화 설정, 실시간 알림, 리포팅 대시보드</li>
+              </ul>
+              <p className="text-gray-500 text-xs mt-2">
+                ※ 상기 서비스 범위를 초과하는 추가 작업은 별도 협의 및 비용이 발생합니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제3조 (계약 금액 및 결제)</h4>
+              <p>
+                1. 서비스 이용 금액은 3,300,000원(VAT 포함)입니다.<br />
+                2. 결제는 계약 체결 후 7일 이내에 선금 100%를 완료해야 하며, 미입금 시 계약은 자동 해지됩니다.<br />
+                3. 결제 방법은 계좌이체 또는 카드결제가 가능합니다.<br />
+                4. 세금계산서는 입금 확인 후 발행됩니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제4조 (서비스 진행 절차)</h4>
+              <p>
+                1. 진행 절차: 계약 → 입금 → 자료 수령 → 디자인 제작 → 시안 확인 → 수정 → 최종 컨펌 → 발주요청(고객) → 발주/배포 → 완료<br />
+                2. 고객은 회사의 자료 요청일로부터 7일 이내에 필요 자료를 제공해야 합니다.<br />
+                3. 자료 미제공 시 제작 일정이 지연되며, 30일 이상 자료 미제공 시 계약 해지 및 기 진행 비용 공제 후 환불됩니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제5조 (제작 기간)</h4>
+              <p>
+                1. 인쇄물: 고객의 최종 발주요청 확정 후 7영업일 이내 배송<br />
+                2. 홈페이지: 자료 수령 후 14영업일 이내 제작 완료<br />
+                3. 단, 다음의 경우 제작 기간이 연장됩니다:<br />
+                &nbsp;&nbsp;- 고객의 시안 컨펌 지연<br />
+                &nbsp;&nbsp;- 고객의 수정 요청 (3회 초과 시 추가 비용 발생)<br />
+                &nbsp;&nbsp;- 고객의 자료 제공 지연<br />
+                &nbsp;&nbsp;- 명절, 공휴일 등 회사 휴무일<br />
+                4. 도메인 및 호스팅은 계약일로부터 1년간 무료 제공됩니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white text-red-600 dark:text-red-400">제6조 (인쇄물 발주 및 책임)</h4>
+              <p className="text-red-600 dark:text-red-400 font-medium">
+                1. 고객은 발주요청 전 인쇄물의 오탈자, 내용, 디자인을 반드시 최종 확인해야 합니다.<br />
+                2. 고객의 발주요청은 최종 컨펌으로 간주되며, 발주 후에는 수정 및 취소가 불가합니다.<br />
+                3. 발주 후 발견된 오탈자, 내용 오류로 인한 재제작 비용은 전액 고객이 부담합니다.<br />
+                4. 회사의 귀책사유(디자인 오류, 인쇄 불량 등)로 인한 재제작은 회사가 부담합니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제7조 (고객의 의무)</h4>
+              <p>
+                1. 고객은 서비스 이용에 필요한 자료(로고, 이미지, 텍스트 등)를 기한 내 제공해야 합니다.<br />
+                2. 고객이 제공한 자료의 저작권, 초상권 등 법적 문제에 대한 책임은 고객에게 있습니다.<br />
+                3. 고객은 시안 확인 요청 시 3영업일 이내에 피드백을 제공해야 합니다.<br />
+                4. 고객은 제공된 서비스를 제3자에게 재판매하거나 양도할 수 없습니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제8조 (회사의 의무)</h4>
+              <p>
+                1. 회사는 약정된 서비스를 전문성을 가지고 성실히 제공합니다.<br />
+                2. 회사는 고객의 개인정보를 보호하며, 관련 법령을 준수합니다.<br />
+                3. 회사는 제작물의 원본 파일을 1년간 보관하며, 이후 삭제될 수 있습니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제9조 (저작권 및 소유권)</h4>
+              <p>
+                1. 제작 완료된 결과물의 저작권은 대금 완납 시 고객에게 이전됩니다.<br />
+                2. 회사는 포트폴리오 목적으로 제작물을 활용할 수 있습니다.<br />
+                3. 제작 과정에서 발생한 중간 산출물의 저작권은 회사에 귀속됩니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제10조 (계약 해지 및 환불)</h4>
+              <p>
+                1. 계약 후 작업 착수 전: 전액 환불<br />
+                2. 자료 수령 후 ~ 시안 제작 전: 계약금의 70% 환불<br />
+                3. 시안 제작 후 ~ 최종 컨펌 전: 계약금의 50% 환불<br />
+                4. 최종 컨펌 후 또는 인쇄물 발주 후: 환불 불가<br />
+                5. 고객의 귀책사유로 인한 계약 해지 시 위 기준에 따라 환불됩니다.<br />
+                6. 환불은 요청일로부터 7영업일 이내에 처리됩니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제11조 (면책 조항)</h4>
+              <p>
+                1. 천재지변, 전쟁, 정부 규제 등 불가항력적 사유로 인한 서비스 지연 또는 불이행에 대해 회사는 책임을 지지 않습니다.<br />
+                2. 고객의 자료 제공 지연, 컨펌 지연, 연락 두절 등 고객 귀책사유로 인한 일정 지연에 대해 회사는 책임을 지지 않습니다.<br />
+                3. 고객이 제공한 자료의 저작권, 초상권 침해 등으로 인한 법적 분쟁은 고객이 책임집니다.<br />
+                4. 발주 후 발견된 오탈자 및 내용 오류는 고객의 귀책사유로 간주됩니다.<br />
+                5. 호스팅 서버의 장애, 해킹 등 외부 요인으로 인한 손해에 대해 회사는 책임을 지지 않습니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제12조 (손해배상)</h4>
+              <p>
+                1. 회사의 귀책사유로 인한 손해배상 범위는 고객이 지불한 서비스 이용료를 초과하지 않습니다.<br />
+                2. 간접 손해, 영업 손실, 기대 이익의 상실 등에 대해서는 배상 책임을 지지 않습니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제13조 (분쟁 해결)</h4>
+              <p>
+                1. 본 계약과 관련하여 분쟁이 발생한 경우 양 당사자는 원만한 합의를 위해 노력합니다.<br />
+                2. 합의가 이루어지지 않을 경우 회사 소재지 관할 법원을 전속관할로 합니다.
+              </p>
+
+              <h4 className="font-semibold text-gray-900 dark:text-white">제14조 (기타)</h4>
+              <p>
+                1. 본 약관에 명시되지 않은 사항은 관련 법령 및 상관례에 따릅니다.<br />
+                2. 본 약관은 2024년 12월 1일부터 시행됩니다.
+              </p>
+            </div>
+
+            {/* 약관 동의 체크박스 */}
+            <div className="mt-4 space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.termsAgreed}
+                  onChange={(e) => handleInputChange("termsAgreed", e.target.checked)}
+                  className="w-5 h-5 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  위 서비스 이용약관을 모두 읽었으며, 이에 동의합니다. <span className="text-red-500">*</span>
+                </span>
+              </label>
+              {errors.termsAgreed && (
+                <p className="text-sm text-red-500 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.termsAgreed}
+                </p>
+              )}
             </div>
           </div>
 
@@ -635,10 +747,10 @@ export default function ContractPage() {
             )}
           </div>
 
-          {/* 동의 사항 */}
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              본 계약 요청서를 제출함으로써, 위 내용에 동의하며 계약 체결을 요청합니다.
+          {/* 안내 사항 */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              <strong>안내:</strong> 본 계약 요청서를 제출하면 담당자가 검토 후 연락드립니다.
               계약서는 승인 후 입력하신 이메일로 발송됩니다.
             </p>
           </div>
