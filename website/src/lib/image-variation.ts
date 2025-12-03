@@ -83,7 +83,11 @@ export interface VariationCombo {
 }
 
 // 기존 이미지들의 조합 기록 파일 경로
-const USED_COMBOS_PATH = path.join(process.cwd(), 'src', 'lib', 'used-image-combos.json');
+// Vercel 서버리스 환경에서는 /tmp만 쓰기 가능
+const isVercel = process.env.VERCEL === '1';
+const USED_COMBOS_PATH = isVercel
+  ? '/tmp/used-image-combos.json'
+  : path.join(process.cwd(), 'src', 'lib', 'used-image-combos.json');
 
 // 사용된 조합 로드
 export async function loadUsedCombos(): Promise<VariationCombo[]> {
