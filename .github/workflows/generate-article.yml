@@ -9,22 +9,43 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Call Generate Article API
+        id: generate
         run: |
+          echo "🚀 글 생성 API 호출 시작..."
+          echo "시간: $(TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M:%S KST')"
+
           response=$(curl -s -w "\n%{http_code}" \
+            --max-time 300 \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "https://www.polarad.co.kr/api/cron/generate-article")
 
           http_code=$(echo "$response" | tail -n1)
           body=$(echo "$response" | sed '$d')
 
-          echo "Response: $body"
-          echo "HTTP Code: $http_code"
+          echo "📄 Response: $body"
+          echo "📊 HTTP Code: $http_code"
 
           if [ "$http_code" -ne 200 ]; then
-            echo "API call failed with status $http_code"
+            echo "❌ API 호출 실패: $http_code"
             exit 1
           fi
 
-          echo "Article generated successfully!"
+          # 결과 파싱
+          if echo "$body" | grep -q '"skipped":true'; then
+            echo "⏭️ 오늘은 실행 요일이 아닙니다."
+          elif echo "$body" | grep -q '"success":true'; then
+            title=$(echo "$body" | grep -o '"title":"[^"]*"' | cut -d'"' -f4)
+            echo "✅ 글 생성 성공!"
+            echo "📝 제목: $title"
+          else
+            echo "⚠️ 알 수 없는 응답"
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ 글 생성 실패 - 로그를 확인하세요"
+          echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
