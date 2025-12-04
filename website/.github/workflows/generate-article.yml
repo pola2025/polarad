@@ -1,0 +1,30 @@
+name: Auto Generate Article
+
+on:
+  schedule:
+    # 월/수/금/일 오전 9시 (KST) = UTC 00:00
+    - cron: '0 0 * * 0,1,3,5'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Generate Article API
+        run: |
+          response=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://www.polarad.co.kr/api/cron/generate-article")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Response: $body"
+          echo "HTTP Code: $http_code"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "API call failed with status $http_code"
+            exit 1
+          fi
+
+          echo "Article generated successfully!"
