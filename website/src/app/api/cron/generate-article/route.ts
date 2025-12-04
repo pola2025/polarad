@@ -676,9 +676,13 @@ async function generateThumbnailForGitHub(title: string, slug: string): Promise<
 }
 
 export async function GET(request: Request) {
-  // Cron 인증 확인
+  const url = new URL(request.url);
+  const forceCategory = url.searchParams.get('category') as CategoryKey | null;
+  const forceRun = url.searchParams.get('force') === 'true';
+
+  // Cron 인증 확인 (force 파라미터가 없을 때만)
   const authHeader = request.headers.get('authorization');
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  if (!forceRun && CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -688,13 +692,20 @@ export async function GET(request: Request) {
   const kstDate = new Date(now.getTime() + kstOffset);
   const dayOfWeek = kstDate.getUTCDay();
 
-  // 오늘이 실행 요일인지 확인
-  const category = DAY_CATEGORY_MAP[dayOfWeek];
-  if (!category) {
+  // 카테고리 결정: force 파라미터 > 요일별 매핑
+  let category: CategoryKey | undefined = forceCategory && CATEGORIES[forceCategory] ? forceCategory : DAY_CATEGORY_MAP[dayOfWeek];
+
+  // 요일 체크 (force가 아닐 때만)
+  if (!forceRun && !category) {
     return NextResponse.json({
       message: `오늘(${dayOfWeek})은 실행 요일이 아닙니다. 실행 요일: 월(1), 수(3), 금(5), 일(0)`,
       skipped: true
     });
+  }
+
+  // force 모드인데 카테고리가 없으면 기본값 사용
+  if (!category) {
+    category = 'marketing-trends';
   }
 
   try {
