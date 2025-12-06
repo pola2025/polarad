@@ -19,6 +19,8 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
 const CRON_SECRET = process.env.CRON_SECRET;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = '-1003280236380'; // 마케팅 소식 알림 채널
 
 const CATEGORIES = {
   'meta-ads': { label: 'Meta 광고', folder: 'meta-ads' },
@@ -45,6 +47,108 @@ const DAY_CATEGORY_MAP: Record<number, CategoryKey> = {
   3: 'google-ads',       // 수요일
   5: 'marketing-trends'  // 금요일
 };
+
+// 다음 작성 일정 계산 (월/수/금/일)
+function getNextScheduleDate(): { date: string; dayName: string; category: string } {
+  const now = new Date();
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(now.getTime() + kstOffset);
+
+  const scheduleDays = [0, 1, 3, 5]; // 일, 월, 수, 금
+  const dayNames: Record<number, string> = { 0: '일요일', 1: '월요일', 3: '수요일', 5: '금요일' };
+
+  let currentDay = kstDate.getUTCDay();
+  let daysToAdd = 1;
+
+  // 다음 실행 요일 찾기
+  for (let i = 1; i <= 7; i++) {
+    const nextDay = (currentDay + i) % 7;
+    if (scheduleDays.includes(nextDay)) {
+      daysToAdd = i;
+      currentDay = nextDay;
+      break;
+    }
+  }
+
+  const nextDate = new Date(kstDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+  const dateStr = `${nextDate.getUTCMonth() + 1}월 ${nextDate.getUTCDate()}일`;
+
+  return {
+    date: dateStr,
+    dayName: dayNames[currentDay] || '',
+    category: CATEGORIES[DAY_CATEGORY_MAP[currentDay]]?.label || ''
+  };
+}
+
+// 텔레그램 알림 전송
+async function sendTelegramNotification(
+  type: 'success' | 'error',
+  data: {
+    title?: string;
+    slug?: string;
+    category?: string;
+    errorMessage?: string;
+  }
+): Promise<void> {
+  if (!TELEGRAM_BOT_TOKEN) {
+    console.log('⚠️ TELEGRAM_BOT_TOKEN 미설정 - 알림 스킵');
+    return;
+  }
+
+  const nextSchedule = getNextScheduleDate();
+  let message: string;
+
+  const scheduleInfo = `📆 *작성 일정 (매주 오전 9시)*
+• 월: Meta 광고
+• 수: Google 광고
+• 금: 마케팅 트렌드
+• 일: 궁금해요`;
+
+  if (type === 'success') {
+    const articleUrl = `https://polarad.co.kr/marketing-news/${data.slug}`;
+    message = `✅ *마케팅 소식 자동 작성 완료*
+
+📝 *제목:* ${data.title}
+📁 *카테고리:* ${data.category}
+🔗 *링크:* [바로가기](${articleUrl})
+
+📅 *다음 작성:* ${nextSchedule.date} (${nextSchedule.dayName}) - ${nextSchedule.category}
+
+${scheduleInfo}`;
+  } else {
+    message = `❌ *마케팅 소식 자동 작성 실패*
+
+⚠️ *오류:* ${data.errorMessage}
+
+📅 *다음 작성:* ${nextSchedule.date} (${nextSchedule.dayName}) - ${nextSchedule.category}
+
+${scheduleInfo}
+
+🔧 로그를 확인해주세요.`;
+  }
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'Markdown',
+        disable_web_page_preview: false
+      })
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      console.error('텔레그램 알림 실패:', error);
+    } else {
+      console.log('📨 텔레그램 알림 전송 완료');
+    }
+  } catch (error) {
+    console.error('텔레그램 알림 오류:', error);
+  }
+}
 
 function generateSlug(title: string): string {
   return title.toLowerCase()
@@ -821,13 +925,28 @@ ${content}
     };
 
     console.log('✅ 완료!', result);
+
+    // 9. 텔레그램 알림 (성공)
+    await sendTelegramNotification('success', {
+      title: seoTitle,
+      slug,
+      category: CATEGORIES[category].label
+    });
+
     return NextResponse.json(result);
 
   } catch (error) {
     console.error('❌ 에러:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    // 텔레그램 알림 (실패)
+    await sendTelegramNotification('error', {
+      errorMessage
+    });
+
     return NextResponse.json({
       error: 'Generation failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: errorMessage
     }, { status: 500 });
   }
 }
