@@ -12,6 +12,8 @@ import {
   Eye,
   ChevronDown,
   Loader2,
+  Plus,
+  X,
 } from "lucide-react";
 
 interface Contract {
@@ -44,6 +46,22 @@ interface Stats {
   rejected: number;
 }
 
+interface User {
+  id: string;
+  clientName: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface Package {
+  id: string;
+  name: string;
+  displayName: string;
+  price: number;
+  description: string | null;
+}
+
 const STATUS_LABELS: Record<string, string> = {
   PENDING: "대기",
   SUBMITTED: "승인 대기",
@@ -72,6 +90,19 @@ export default function AdminContractsPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
+  // 계약서 생성 모달 상태
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [userSearch, setUserSearch] = useState("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+  const [contractPeriod, setContractPeriod] = useState(12);
+  const [monthlyFee, setMonthlyFee] = useState<number | "">("");
+  const [setupFee, setSetupFee] = useState<number | "">(0);
+  const [additionalNotes, setAdditionalNotes] = useState("");
+  const [creating, setCreating] = useState(false);
+
   const fetchContracts = useCallback(async () => {
     try {
       const params = new URLSearchParams();
@@ -93,6 +124,99 @@ export default function AdminContractsPage() {
   useEffect(() => {
     fetchContracts();
   }, [fetchContracts]);
+
+  // 사용자 검색
+  const searchUsers = useCallback(async (search: string) => {
+    if (!search || search.length < 2) {
+      setUsers([]);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/users?search=${encodeURIComponent(search)}&limit=10`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setUsers(data.data || []);
+    } catch (error) {
+      console.error("사용자 검색 오류:", error);
+    }
+  }, []);
+
+  // 패키지 목록 조회
+  const fetchPackages = useCallback(async () => {
+    try {
+      const res = await fetch("/api/packages");
+      if (!res.ok) return;
+      const data = await res.json();
+      setPackages(data.packages || []);
+    } catch (error) {
+      console.error("패키지 조회 오류:", error);
+    }
+  }, []);
+
+  // 모달 열기
+  const openCreateModal = () => {
+    setShowCreateModal(true);
+    fetchPackages();
+    setSelectedUser(null);
+    setSelectedPackage(null);
+    setUserSearch("");
+    setContractPeriod(12);
+    setMonthlyFee("");
+    setSetupFee(0);
+    setAdditionalNotes("");
+  };
+
+  // 패키지 선택 시 금액 자동 설정
+  const handlePackageSelect = (pkg: Package) => {
+    setSelectedPackage(pkg);
+    setMonthlyFee(pkg.price);
+  };
+
+  // 계약서 생성
+  const handleCreateContract = async () => {
+    if (!selectedUser || !selectedPackage) {
+      alert("사용자와 패키지를 선택해주세요.");
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const res = await fetch("/api/admin/contracts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: selectedUser.id,
+          packageId: selectedPackage.id,
+          contractPeriod,
+          monthlyFee: monthlyFee || selectedPackage.price,
+          setupFee: setupFee || 0,
+          additionalNotes,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "계약서 생성 실패");
+      }
+
+      alert(data.message || "계약서가 생성되었습니다.");
+      setShowCreateModal(false);
+      fetchContracts();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "계약서 생성 중 오류가 발생했습니다");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  // 사용자 검색 디바운스
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchUsers(userSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [userSearch, searchUsers]);
 
   const handleApprove = async (id: string) => {
     if (!confirm("이 계약을 승인하시겠습니까?")) return;
@@ -159,6 +283,13 @@ export default function AdminContractsPage() {
     <div className="space-y-4 lg:space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">계약 관리</h1>
+        <button
+          onClick={openCreateModal}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+        >
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">계약서 생성</span>
+        </button>
       </div>
 
       {/* 통계 카드 */}
@@ -422,6 +553,193 @@ export default function AdminContractsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* 계약서 생성 모달 */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">계약서 생성</h2>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              {/* 사용자 선택 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  사용자 선택 <span className="text-red-500">*</span>
+                </label>
+                {selectedUser ? (
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">{selectedUser.clientName}</p>
+                      <p className="text-sm text-gray-500">{selectedUser.name} · {selectedUser.email}</p>
+                    </div>
+                    <button
+                      onClick={() => setSelectedUser(null)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      placeholder="이름 또는 이메일로 검색..."
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                    {users.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {users.map((user) => (
+                          <button
+                            key={user.id}
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setUserSearch("");
+                              setUsers([]);
+                            }}
+                            className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <p className="font-medium text-gray-900 dark:text-white">{user.clientName}</p>
+                            <p className="text-sm text-gray-500">{user.name} · {user.email}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* 패키지 선택 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  패키지 선택 <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {packages.map((pkg) => (
+                    <button
+                      key={pkg.id}
+                      onClick={() => handlePackageSelect(pkg)}
+                      className={`p-3 text-left border rounded-lg transition-colors ${
+                        selectedPackage?.id === pkg.id
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                          : "border-gray-300 dark:border-gray-600 hover:border-blue-300"
+                      }`}
+                    >
+                      <p className="font-medium text-gray-900 dark:text-white">{pkg.displayName}</p>
+                      <p className="text-sm text-gray-500">{formatCurrency(pkg.price)}/월</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 계약 기간 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  계약 기간
+                </label>
+                <select
+                  value={contractPeriod}
+                  onChange={(e) => setContractPeriod(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  <option value={6}>6개월</option>
+                  <option value={12}>12개월</option>
+                  <option value={24}>24개월</option>
+                </select>
+              </div>
+
+              {/* 월 요금 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  월 요금 (원)
+                </label>
+                <input
+                  type="number"
+                  value={monthlyFee}
+                  onChange={(e) => setMonthlyFee(e.target.value ? Number(e.target.value) : "")}
+                  placeholder={selectedPackage ? String(selectedPackage.price) : "패키지 선택 시 자동 입력"}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+
+              {/* 셋업 비용 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  셋업 비용 (원)
+                </label>
+                <input
+                  type="number"
+                  value={setupFee}
+                  onChange={(e) => setSetupFee(e.target.value ? Number(e.target.value) : "")}
+                  placeholder="0"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+
+              {/* 추가 메모 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  추가 메모
+                </label>
+                <textarea
+                  value={additionalNotes}
+                  onChange={(e) => setAdditionalNotes(e.target.value)}
+                  rows={3}
+                  placeholder="특이사항이나 추가 조건을 입력하세요..."
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                />
+              </div>
+
+              {/* 요약 */}
+              {selectedUser && selectedPackage && (
+                <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <strong>{selectedUser.clientName}</strong>에게{" "}
+                    <strong>{selectedPackage.displayName}</strong> 패키지로{" "}
+                    <strong>{contractPeriod}개월</strong> 계약서를 발송합니다.
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    월 {formatCurrency(Number(monthlyFee) || selectedPackage.price)} × {contractPeriod}개월
+                    {Number(setupFee) > 0 && ` + 셋업 ${formatCurrency(Number(setupFee))}`}
+                    {" = "}
+                    <strong>
+                      총 {formatCurrency(
+                        (Number(monthlyFee) || selectedPackage.price) * contractPeriod + (Number(setupFee) || 0)
+                      )}
+                    </strong>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3 p-4 border-t dark:border-gray-700">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleCreateContract}
+                disabled={!selectedUser || !selectedPackage || creating}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {creating && <Loader2 className="w-4 h-4 animate-spin" />}
+                계약서 생성
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

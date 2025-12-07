@@ -141,7 +141,21 @@ async function uploadImageToGitHub(
     const filePath = `website/public/images/instagram/${slug}-square.jpg`;
     const base64Content = imageBuffer.toString('base64');
 
-    // GitHub에 파일 업로드
+    // 기존 파일 확인 (SHA 필요)
+    let sha: string | undefined;
+    const checkRes = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
+      {
+        headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
+      }
+    );
+    if (checkRes.ok) {
+      const existingFile = await checkRes.json();
+      sha = existingFile.sha;
+      console.log('📂 기존 파일 발견, SHA:', sha);
+    }
+
+    // GitHub에 파일 업로드 (기존 파일 있으면 업데이트)
     const res = await fetch(
       `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
       {
@@ -152,7 +166,8 @@ async function uploadImageToGitHub(
         },
         body: JSON.stringify({
           message: `📸 Instagram 이미지: ${slug}`,
-          content: base64Content
+          content: base64Content,
+          ...(sha ? { sha } : {})
         })
       }
     );
@@ -164,11 +179,26 @@ async function uploadImageToGitHub(
     }
 
     // Vercel 배포 후 접근 가능한 URL 반환
-    // 배포 완료 대기 (약 30초)
-    console.log('⏳ Vercel 배포 대기 중 (30초)...');
-    await new Promise(resolve => setTimeout(resolve, 30000));
-
     const imageUrl = `https://polarad.co.kr/images/instagram/${slug}-square.jpg`;
+
+    // 배포 완료까지 대기 (최대 90초, 10초 간격으로 확인)
+    console.log('⏳ Vercel 배포 대기 중...');
+    for (let i = 0; i < 9; i++) {
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      try {
+        const checkRes = await fetch(imageUrl, { method: 'HEAD' });
+        if (checkRes.ok) {
+          console.log(`✅ 이미지 접근 가능 (${(i + 1) * 10}초 후)`);
+          return imageUrl;
+        }
+      } catch {
+        // 아직 배포 안됨, 계속 대기
+      }
+      console.log(`⏳ 배포 대기 중... (${(i + 1) * 10}초)`);
+    }
+
+    // 90초 후에도 안되면 그냥 URL 반환 (Instagram API에서 재시도 가능)
+    console.log('⚠️ 90초 대기 후에도 이미지 확인 불가, 진행 시도');
     return imageUrl;
   } catch (error) {
     console.error('GitHub 업로드 오류:', error);

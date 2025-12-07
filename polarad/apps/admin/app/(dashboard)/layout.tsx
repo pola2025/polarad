@@ -15,11 +15,17 @@ import {
   Megaphone,
   Menu,
   X,
+  FileText,
+  MessageSquare,
+  Palette,
 } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "대시보드", icon: LayoutDashboard },
   { href: "/users", label: "사용자 관리", icon: UserCircle },
+  { href: "/submissions", label: "자료 제출 관리", icon: FileText },
+  { href: "/designs", label: "시안 관리", icon: Palette },
+  { href: "/communications", label: "문의 관리", icon: MessageSquare },
   { href: "/contracts", label: "계약 관리", icon: FileSignature },
   { href: "/workflows", label: "워크플로우 관리", icon: Package },
   { href: "/clients", label: "클라이언트 관리", icon: Users },

@@ -36,14 +36,19 @@ async function getTokenPayload(request: NextRequest) {
     if (!token) return null
 
     const { payload } = await jwtVerify(token, JWT_SECRET)
+    console.log('[Middleware] Token valid, type:', (payload as { type?: string }).type)
     return payload as { type: string; userId: string }
-  } catch {
+  } catch (error) {
+    console.log('[Middleware] Token verify failed:', error)
     return null
   }
 }
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // 디버그 로그
+  console.log('[Middleware]', pathname, 'Cookie:', request.cookies.get('auth-token')?.value?.substring(0, 20))
 
   // 1. 정적 파일 스킵
   if (isStaticPath(pathname)) {

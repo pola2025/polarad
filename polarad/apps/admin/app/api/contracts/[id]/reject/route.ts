@@ -69,8 +69,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // 거절 알림 이메일 발송
     try {
       await sendEmail({
-        to: contract.contactEmail,
-        subject: `[폴라애드] ${contract.companyName} 계약 요청 결과 안내`,
+        to: contract.contactEmail || "",
+        subject: `[폴라애드] ${contract.companyName || ""} 계약 요청 결과 안내`,
         html: `
           <!DOCTYPE html>
           <html>
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
                 <h1>계약 요청 결과 안내</h1>
               </div>
               <div class="content">
-                <p>안녕하세요, <strong>${contract.companyName}</strong> 담당자님.</p>
+                <p>안녕하세요, <strong>${contract.companyName || ""}</strong> 담당자님.</p>
 
                 <p>죄송합니다. 요청하신 계약이 승인되지 않았습니다.</p>
 
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (contract.user.telegramEnabled && contract.user.telegramChatId) {
       try {
         const telegramMessage = formatContractRejectedMessage(
-          contract.companyName,
+          contract.companyName || "",
           contract.contractNumber,
           reason
         );

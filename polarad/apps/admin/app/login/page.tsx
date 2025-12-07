@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
 import { LogIn, Shield } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +51,7 @@ export default function AdminLoginPage() {
       }
 
       // 성공 시 대시보드로 이동
-      router.push("/");
+      window.location.href = "/";
     } catch (err) {
       setError(err instanceof Error ? err.message : "로그인에 실패했습니다");
     } finally {

@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
     const hasToken = !!client.encryptedAccessToken;
 
     // 최신 데이터 날짜
-    const latestData = await prisma.metaRawData.findFirst({
+    const latestData = await prisma.rawData.findFirst({
       where: { clientId },
       orderBy: { date: "desc" },
       select: { date: true },
@@ -375,7 +375,7 @@ export async function POST(request: NextRequest) {
 
                 try {
                   for (const record of batch) {
-                    await prisma.metaRawData.upsert({
+                    await prisma.rawData.upsert({
                       where: {
                         clientId_date_adId_platform_device: {
                           clientId: record.clientId,

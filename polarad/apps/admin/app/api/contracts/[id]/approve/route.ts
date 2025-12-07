@@ -76,13 +76,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
       const pdfBuffer = await generateContractPDF({
         contractNumber: contract.contractNumber,
-        companyName: contract.companyName,
-        ceoName: contract.ceoName,
-        businessNumber: contract.businessNumber,
-        address: contract.address,
-        contactName: contract.contactName,
-        contactPhone: contract.contactPhone,
-        contactEmail: contract.contactEmail,
+        companyName: contract.companyName || "",
+        ceoName: contract.ceoName || "",
+        businessNumber: contract.businessNumber || "",
+        address: contract.address || "",
+        contactName: contract.contactName || "",
+        contactPhone: contract.contactPhone || "",
+        contactEmail: contract.contactEmail || "",
         packageName: contract.package.name,
         packageDisplayName: contract.package.displayName,
         monthlyFee: contract.monthlyFee,
@@ -95,9 +95,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       });
 
       await sendContractEmail(
-        contract.contactEmail,
+        contract.contactEmail || "",
         contract.contractNumber,
-        contract.companyName,
+        contract.companyName || "",
         pdfBuffer
       );
 
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (contract.user.telegramEnabled && contract.user.telegramChatId) {
       try {
         const telegramMessage = formatContractApprovedMessage(
-          contract.companyName,
+          contract.companyName || "",
           contract.contractNumber,
           contract.package.displayName,
           startDate,

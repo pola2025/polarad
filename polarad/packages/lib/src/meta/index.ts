@@ -40,15 +40,9 @@ export {
   type TokenRefreshResult,
 } from "./token-manager";
 
-// 데이터 서비스
+// 데이터 서비스 - 타입만 export (스키마와 불일치하는 함수들 비활성화)
 export {
   checkServicePeriod,
-  collectAndSaveData,
-  saveRawData,
-  aggregateFromRaw,
-  verifyIntegrity,
-  syncAndVerify,
-  generateWeeklySummary,
   getDataCollectionPeriod,
   type DataSyncResult,
   type ServicePeriodResult,

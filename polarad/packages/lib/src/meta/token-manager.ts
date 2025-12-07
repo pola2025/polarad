@@ -13,9 +13,8 @@
  *    - 새 토큰을 DB에 암호화하여 저장
  */
 
-import { prisma } from "@polarad/database";
+import { prisma, type AuthStatus } from "@polarad/database";
 import { decrypt, encrypt } from "./encryption";
-import type { AuthStatus } from "@prisma/client";
 
 export interface TokenValidationResult {
   valid: boolean;

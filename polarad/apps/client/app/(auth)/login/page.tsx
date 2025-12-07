@@ -58,6 +58,7 @@ function LoginContent() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           clientName: formData.clientName,
           phone: formData.phone.replace(/-/g, ""),
@@ -66,13 +67,15 @@ function LoginContent() {
       });
 
       const data = await response.json();
+      console.log("Login response:", response.status, data);
 
       if (!response.ok) {
         throw new Error(data.error || "로그인에 실패했습니다");
       }
 
-      // 성공 시 대시보드로 이동
-      router.push("/dashboard");
+      // 성공 시 대시보드로 이동 (전체 페이지 새로고침으로 쿠키 반영)
+      console.log("Login success, redirecting to /dashboard...");
+      window.location.replace("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "로그인에 실패했습니다");
     } finally {
