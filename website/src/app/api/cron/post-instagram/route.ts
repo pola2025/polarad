@@ -6,6 +6,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import sharp from 'sharp';
 import {
   generateInstagramCaption,
   publishToInstagram,
@@ -17,6 +18,8 @@ const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
 const CRON_SECRET = process.env.CRON_SECRET;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = '-1003280236380';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO; // format: "owner/repo"
 
 interface AirtableRecord {
   id: string;
@@ -25,11 +28,14 @@ interface AirtableRecord {
     slug: string;
     category: string;
     description: string;
+    content: string; // 블로그 전체 내용 (AI 캡션 생성용)
     tags: string;
     thumbnailUrl: string;
     instagram_posted?: boolean;
     instagram_post_id?: string;
     instagram_permalink?: string;
+    instagram_image?: Array<{ url: string }>; // 정사각형 리사이즈 이미지
+    instagram_caption?: string; // AI 생성 캡션
   };
 }
 
@@ -106,11 +112,109 @@ async function getUnpostedArticles(): Promise<AirtableRecord[]> {
   }
 }
 
+// 이미지를 1080x1080 정사각형으로 리사이즈
+async function resizeImageToSquare(imageUrl: string): Promise<Buffer> {
+  const response = await fetch(imageUrl);
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  return sharp(buffer)
+    .resize(1080, 1080, {
+      fit: 'cover',
+      position: 'center',
+    })
+    .jpeg({ quality: 90 })
+    .toBuffer();
+}
+
+// GitHub에 이미지 업로드 후 URL 반환
+async function uploadImageToGitHub(
+  imageBuffer: Buffer,
+  slug: string
+): Promise<string | null> {
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    console.error('GitHub 설정 없음');
+    return null;
+  }
+
+  try {
+    const filePath = `website/public/images/instagram/${slug}-square.jpg`;
+    const base64Content = imageBuffer.toString('base64');
+
+    // GitHub에 파일 업로드
+    const res = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${GITHUB_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `📸 Instagram 이미지: ${slug}`,
+          content: base64Content
+        })
+      }
+    );
+
+    if (!res.ok) {
+      const error = await res.text();
+      console.error('GitHub 업로드 실패:', error);
+      return null;
+    }
+
+    // Vercel 배포 후 접근 가능한 URL 반환
+    // 배포 완료 대기 (약 30초)
+    console.log('⏳ Vercel 배포 대기 중 (30초)...');
+    await new Promise(resolve => setTimeout(resolve, 30000));
+
+    const imageUrl = `https://polarad.co.kr/images/instagram/${slug}-square.jpg`;
+    return imageUrl;
+  } catch (error) {
+    console.error('GitHub 업로드 오류:', error);
+    return null;
+  }
+}
+
+// Airtable에 Instagram 이미지 URL 저장
+async function saveImageUrlToAirtable(
+  recordId: string,
+  imageUrl: string
+): Promise<boolean> {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
+    return false;
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}/${recordId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            instagram_image: [{ url: imageUrl }]
+          }
+        })
+      }
+    );
+
+    return res.ok;
+  } catch (error) {
+    console.error('Airtable 이미지 URL 저장 실패:', error);
+    return false;
+  }
+}
+
 // Airtable 레코드 업데이트 (Instagram 게시 완료 표시)
 async function updateAirtableRecord(
   recordId: string,
   instagramPostId: string,
-  instagramPermalink: string
+  instagramPermalink: string,
+  instagramCaption: string
 ): Promise<boolean> {
   if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
     return false;
@@ -129,7 +233,8 @@ async function updateAirtableRecord(
           fields: {
             instagram_posted: true,
             instagram_post_id: instagramPostId,
-            instagram_permalink: instagramPermalink
+            instagram_permalink: instagramPermalink,
+            instagram_caption: instagramCaption
           }
         })
       }
@@ -178,7 +283,7 @@ export async function GET(request: Request) {
     }
 
     const article = unpostedArticles[0];
-    const { title, slug, category, description, tags, thumbnailUrl } = article.fields;
+    const { title, slug, category, description, content, tags, thumbnailUrl } = article.fields;
 
     console.log(`📝 게시 대상: ${title}`);
 
@@ -195,20 +300,47 @@ export async function GET(request: Request) {
       });
     }
 
-    // 3. Instagram 캡션 생성
+    // 3. 이미지 리사이즈 (1080x1080 정사각형)
+    console.log('🖼️ 이미지 리사이즈 중 (1080x1080)...');
+    const resizedImageBuffer = await resizeImageToSquare(imageUrl);
+    console.log('✅ 이미지 리사이즈 완료');
+
+    // 4. GitHub에 리사이즈된 이미지 업로드
+    console.log('📤 GitHub에 이미지 업로드 중...');
+    const instagramImageUrl = await uploadImageToGitHub(resizedImageBuffer, slug);
+
+    if (!instagramImageUrl) {
+      console.error('❌ GitHub 이미지 업로드 실패');
+      await sendTelegramNotification('error', {
+        errorMessage: 'GitHub 이미지 업로드 실패'
+      });
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to upload image to GitHub'
+      }, { status: 500 });
+    }
+
+    console.log('✅ GitHub 이미지 업로드 완료:', instagramImageUrl);
+
+    // 5. Airtable에 이미지 URL 저장
+    await saveImageUrlToAirtable(article.id, instagramImageUrl);
+
+    // 6. Instagram 캡션 생성 (AI로 블로그 내용 재구성)
     const tagsArray = tags ? tags.split(',').map(t => t.trim()) : [];
-    const caption = generateInstagramCaption({
+    console.log('🤖 AI 캡션 생성 중...');
+    const caption = await generateInstagramCaption({
       title,
       description,
       category,
       tags: tagsArray,
-      slug
+      slug,
+      content // 블로그 전체 내용 전달
     });
 
-    console.log('📝 캡션 생성 완료');
+    console.log('📝 AI 캡션 생성 완료');
 
-    // 4. Instagram 게시
-    const result = await publishToInstagram(imageUrl, caption);
+    // 7. Instagram 게시 (GitHub에서 호스팅되는 정사각형 이미지 사용)
+    const result = await publishToInstagram(instagramImageUrl, caption);
 
     if (!result.success) {
       console.error('❌ Instagram 게시 실패:', result.error);
@@ -223,14 +355,15 @@ export async function GET(request: Request) {
 
     console.log(`✅ Instagram 게시 완료: ${result.permalink}`);
 
-    // 5. Airtable 업데이트
+    // 8. Airtable 업데이트 (게시 완료 표시 + 캡션 저장)
     await updateAirtableRecord(
       article.id,
       result.postId || '',
-      result.permalink || ''
+      result.permalink || '',
+      caption
     );
 
-    // 6. 텔레그램 알림
+    // 9. 텔레그램 알림
     await sendTelegramNotification('success', {
       title,
       instagramUrl: result.permalink
@@ -242,7 +375,8 @@ export async function GET(request: Request) {
       slug,
       instagram: {
         postId: result.postId,
-        permalink: result.permalink
+        permalink: result.permalink,
+        imageUrl: instagramImageUrl
       }
     });
 

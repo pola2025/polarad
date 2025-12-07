@@ -1,11 +1,13 @@
 /**
  * Instagram Content Publishing API 유틸리티
  * Meta Graph API를 사용하여 Instagram 게시글 자동 발행
+ * Gemini AI로 블로그 컨텐츠를 인스타그램 맞춤형으로 재구성
  */
 
 // 환경변수 대신 하드코딩 (보안상 환경변수 권장하지만 요청에 따라)
 const INSTAGRAM_ACCESS_TOKEN = 'EAAfTImZCqPSQBQD3XFpcA1wGECplqeFbqtdZB0nL0AZCb5HFzWgOrJpeefCw0L3Otk32gxrDwiZAP3LZA558C6ggTVxVHau4ovsuWI3HC1Rk4emZAujYqORLsOo3ZB9DZB1IPzQAJZBUREZB5fp7If7WsI92ZAxOMJYBeop1sVOO5ZC3p9Yj5ncGQNZBrrC9O542DgQUHjwZDZD';
 const INSTAGRAM_ACCOUNT_ID = '17841441970375843';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const GRAPH_API_VERSION = 'v21.0';
 const GRAPH_API_BASE = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
@@ -23,6 +25,7 @@ interface CaptionData {
   category: string;
   tags: string[];
   slug: string;
+  content?: string; // 블로그 전체 내용 (AI 재구성용)
 }
 
 /**
@@ -46,24 +49,101 @@ const CATEGORY_HASHTAGS: Record<string, string[]> = {
 };
 
 /**
- * 마케팅 소식을 Instagram 캡션으로 변환
+ * Gemini AI를 사용하여 블로그 컨텐츠를 인스타그램용으로 재구성
  */
-export function generateInstagramCaption(data: CaptionData): string {
+async function generateAICaption(title: string, content: string, category: string): Promise<string> {
+  if (!GEMINI_API_KEY) {
+    console.log('⚠️ GEMINI_API_KEY 미설정 - 기본 캡션 사용');
+    return '';
+  }
+
+  const prompt = `당신은 인스타그램 마케팅 전문가입니다. 아래 블로그 글을 인스타그램 게시물용 캡션으로 재구성해주세요.
+
+**블로그 제목**: ${title}
+
+**블로그 내용**:
+${content.slice(0, 3000)}
+
+**요구사항**:
+1. 핵심 포인트 3-5개를 추출하여 짧은 문장으로 정리
+2. 각 포인트 앞에 ✅, 💡, 📌, 🔥, ⚡ 등 적절한 이모지 사용
+3. 첫 줄은 시선을 끄는 후크 문장 (질문 또는 강렬한 문장)
+4. 마지막에 "더 자세한 내용은 프로필 링크에서!" 같은 CTA 포함
+5. 전체 길이는 300자 이내로 간결하게
+6. 해시태그는 포함하지 마세요 (별도 추가됨)
+7. MDX 문법, 코드 블록, 컴포넌트 태그는 모두 제거
+
+**예시 형식**:
+🔥 [후크 문장]
+
+✅ [핵심 포인트 1]
+✅ [핵심 포인트 2]
+💡 [핵심 포인트 3]
+
+👉 프로필 링크에서 전체 가이드 확인하세요!
+
+캡션만 출력하세요. 다른 설명 없이 바로 캡션 텍스트만 작성하세요.`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 500 }
+      })
+    });
+
+    const result = await res.json();
+    const aiCaption = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+
+    if (aiCaption) {
+      console.log('✅ AI 캡션 생성 완료');
+      return aiCaption;
+    }
+  } catch (error) {
+    console.error('AI 캡션 생성 실패:', error);
+  }
+
+  return '';
+}
+
+/**
+ * 마케팅 소식을 Instagram 캡션으로 변환
+ * content가 제공되면 AI로 재구성, 아니면 기본 템플릿 사용
+ */
+export async function generateInstagramCaption(data: CaptionData): Promise<string> {
   const categoryEmoji = CATEGORY_EMOJIS[data.category] || '📢';
   const categoryHashtags = CATEGORY_HASHTAGS[data.category] || ['#마케팅', '#광고', '#디지털마케팅', '#SNS마케팅', '#폴라애드'];
 
-  // 설명에서 첫 150자 추출 (Instagram 미리보기 최적화)
-  const shortDescription = data.description.length > 150
-    ? data.description.slice(0, 147) + '...'
-    : data.description;
+  let mainContent: string;
 
-  // Instagram 스타일 캡션 구성
-  const caption = `${categoryEmoji} ${data.title}
+  // 블로그 전체 내용이 있으면 AI로 재구성
+  if (data.content && data.content.length > 100) {
+    const aiCaption = await generateAICaption(data.title, data.content, data.category);
+    if (aiCaption) {
+      mainContent = aiCaption;
+    } else {
+      // AI 실패 시 기본 템플릿
+      mainContent = `${categoryEmoji} ${data.title}
 
-${shortDescription}
+${data.description.length > 150 ? data.description.slice(0, 147) + '...' : data.description}
 
 ✨ 자세한 내용이 궁금하다면?
-👉 프로필 링크에서 확인하세요!
+👉 프로필 링크에서 확인하세요!`;
+    }
+  } else {
+    // content가 없으면 기본 템플릿
+    mainContent = `${categoryEmoji} ${data.title}
+
+${data.description.length > 150 ? data.description.slice(0, 147) + '...' : data.description}
+
+✨ 자세한 내용이 궁금하다면?
+👉 프로필 링크에서 확인하세요!`;
+  }
+
+  // 해시태그 추가
+  const caption = `${mainContent}
 
 📍 폴라애드 마케팅 소식
 💡 매주 월/수/금/일 업데이트
@@ -228,7 +308,7 @@ export async function postMarketingNewsToInstagram(
 ): Promise<InstagramPostResult> {
   try {
     // 1. 캡션 생성
-    const caption = generateInstagramCaption(data);
+    const caption = await generateInstagramCaption(data);
     console.log('📝 Instagram 캡션 생성 완료');
 
     // 2. 이미지 리사이징 (1080x1080)
