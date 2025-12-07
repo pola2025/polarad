@@ -106,11 +106,13 @@ async function sendTelegramNotification(
 
   if (type === 'success') {
     const articleUrl = `https://polarad.co.kr/marketing-news/${data.slug}`;
+
     message = `✅ *마케팅 소식 자동 작성 완료*
 
 📝 *제목:* ${data.title}
 📁 *카테고리:* ${data.category}
 🔗 *링크:* [바로가기](${articleUrl})
+📸 *Instagram:* 09:30 자동 게시 예정
 
 📅 *다음 작성:* ${nextSchedule.date} (${nextSchedule.dayName}) - ${nextSchedule.category}
 
@@ -926,7 +928,7 @@ ${content}
 
     console.log('✅ 완료!', result);
 
-    // 9. 텔레그램 알림 (성공)
+    // 9. 텔레그램 알림 (성공) - Instagram은 별도 Cron에서 처리
     await sendTelegramNotification('success', {
       title: seoTitle,
       slug,
