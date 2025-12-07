@@ -178,8 +178,8 @@ async function uploadImageToGitHub(
       return null;
     }
 
-    // Vercel 배포 후 접근 가능한 URL 반환
-    const imageUrl = `https://polarad.co.kr/images/instagram/${slug}-square.jpg`;
+    // Vercel 배포 후 접근 가능한 URL 반환 (www 포함 - 리다이렉트 방지)
+    const imageUrl = `https://www.polarad.co.kr/images/instagram/${slug}-square.jpg`;
 
     // 배포 완료까지 대기 (최대 90초, 10초 간격으로 확인)
     console.log('⏳ Vercel 배포 대기 중...');
