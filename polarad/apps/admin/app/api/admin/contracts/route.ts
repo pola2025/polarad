@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     });
 
     const statsMap = stats.reduce(
-      (acc, item) => {
+      (acc: Record<string, number>, item) => {
         acc[item.status.toLowerCase()] = item._count;
         return acc;
       },
