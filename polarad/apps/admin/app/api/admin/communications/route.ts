@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     });
 
     // 읽지 않은 사용자 메시지 수 계산
-    const threadsWithUnread = threads.map((thread) => {
+    const threadsWithUnread = threads.map((thread: typeof threads[number]) => {
       const lastMessage = thread.messages[0];
       const hasUnreadUserMessage =
         lastMessage &&
