@@ -12,7 +12,7 @@
     "Vercel_client": "Root Directory = polarad/apps/client"
   },
   "scripts": {
-    "postinstall": "npx prisma generate --schema=packages/database/prisma/schema.prisma",
+    "postinstall": "npx prisma@6 generate --schema=packages/database/prisma/schema.prisma",
     "dev": "turbo dev",
     "dev:admin": "turbo dev --filter=@polarad/admin",
     "dev:client": "turbo dev --filter=@polarad/client",
