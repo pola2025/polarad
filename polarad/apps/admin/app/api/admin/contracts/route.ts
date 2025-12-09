@@ -105,12 +105,12 @@ export async function GET(request: NextRequest) {
       _count: true,
     });
 
-    const statsMap = stats.reduce(
-      (acc: Record<string, number>, item) => {
+    const statsMap = stats.reduce<Record<string, number>>(
+      (acc, item) => {
         acc[item.status.toLowerCase()] = item._count;
         return acc;
       },
-      {} as Record<string, number>
+      {}
     );
 
     return NextResponse.json({
