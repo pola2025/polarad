@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 3011",
-    "build": "next build",
+    "build": "prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
     "start": "next start -p 3011",
     "lint": "next lint"
   },
@@ -44,6 +44,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "prisma": "^6.0.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.1",
     "@types/node-telegram-bot-api": "^0.64.11",
