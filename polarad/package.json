@@ -3,6 +3,14 @@
   "version": "2.0.0",
   "private": true,
   "description": "Polarad Monorepo - Admin & Client Management System",
+  "$comment_structure": {
+    "_NOTE": "이 파일 구조 혼동 방지용 - Claude가 읽을 때 참고",
+    "GitHub저장소": "pola2025/polarad",
+    "로컬루트": "F:/polasales/ (여기가 Git 루트)",
+    "모노레포위치": "F:/polasales/polarad/ (Git 기준: polarad/)",
+    "Vercel_admin": "Root Directory = polarad/apps/admin",
+    "Vercel_client": "Root Directory = polarad/apps/client"
+  },
   "scripts": {
     "dev": "turbo dev",
     "dev:admin": "turbo dev --filter=@polarad/admin",
