@@ -28,7 +28,7 @@
     "@react-pdf/renderer": "^4.2.5",
     "clsx": "^2.1.1",
     "jose": "^5.9.6",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^7.0.11",
     "tailwind-merge": "^2.5.4",
     "@polarad/database": "workspace:*"
   },
