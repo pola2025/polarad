@@ -11,39 +11,39 @@ const JWT_SECRET = new TextEncoder().encode(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { password } = body;
 
     // 필수 필드 검증
-    if (!email || !password) {
+    if (!password) {
       return NextResponse.json(
-        { error: "이메일과 비밀번호를 입력해주세요" },
+        { error: "비밀번호를 입력해주세요" },
         { status: 400 }
       );
     }
 
-    // 관리자 찾기
-    const admin = await prisma.admin.findUnique({
-      where: { email },
+    // 활성화된 관리자 목록 가져오기
+    const admins = await prisma.admin.findMany({
+      where: { isActive: true },
     });
 
-    if (!admin) {
+    if (admins.length === 0) {
       return NextResponse.json(
-        { error: "등록된 관리자 정보를 찾을 수 없습니다" },
+        { error: "등록된 관리자가 없습니다" },
         { status: 401 }
       );
     }
 
-    // 활성 상태 확인
-    if (!admin.isActive) {
-      return NextResponse.json(
-        { error: "비활성화된 계정입니다" },
-        { status: 401 }
-      );
+    // 비밀번호가 일치하는 관리자 찾기
+    let matchedAdmin = null;
+    for (const admin of admins) {
+      const isValidPassword = await bcrypt.compare(password, admin.password);
+      if (isValidPassword) {
+        matchedAdmin = admin;
+        break;
+      }
     }
 
-    // 비밀번호 확인
-    const isValidPassword = await bcrypt.compare(password, admin.password);
-    if (!isValidPassword) {
+    if (!matchedAdmin) {
       return NextResponse.json(
         { error: "비밀번호가 일치하지 않습니다" },
         { status: 401 }
@@ -52,10 +52,10 @@ export async function POST(request: NextRequest) {
 
     // JWT 토큰 생성 (관리자용)
     const token = await new SignJWT({
-      userId: admin.id,
-      email: admin.email,
-      name: admin.name,
-      role: admin.role,
+      userId: matchedAdmin.id,
+      email: matchedAdmin.email,
+      name: matchedAdmin.name,
+      role: matchedAdmin.role,
       type: "admin",
     })
       .setProtectedHeader({ alg: "HS256" })
@@ -76,10 +76,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       admin: {
-        id: admin.id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
+        id: matchedAdmin.id,
+        name: matchedAdmin.name,
+        email: matchedAdmin.email,
+        role: matchedAdmin.role,
       },
     });
   } catch (error) {

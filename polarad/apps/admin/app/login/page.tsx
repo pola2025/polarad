@@ -7,28 +7,14 @@ import { LogIn, Shield } from "lucide-react";
 export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const updateField = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setError(null);
-  };
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    if (!formData.email) {
-      setError("이메일을 입력해주세요");
-      setIsLoading(false);
-      return;
-    }
-    if (!formData.password) {
+    if (!password) {
       setError("비밀번호를 입력해주세요");
       setIsLoading(false);
       return;
@@ -38,10 +24,7 @@ export default function AdminLoginPage() {
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+        body: JSON.stringify({ password }),
       });
 
       const data = await response.json();
@@ -87,25 +70,6 @@ export default function AdminLoginPage() {
               </div>
             )}
 
-            {/* 이메일 */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-300 mb-2"
-              >
-                이메일
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => updateField("email", e.target.value)}
-                placeholder="admin@polarad.co.kr"
-                autoComplete="email"
-                className="w-full px-4 py-3 rounded-xl border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              />
-            </div>
-
             {/* 비밀번호 */}
             <div>
               <label
@@ -117,10 +81,14 @@ export default function AdminLoginPage() {
               <input
                 id="password"
                 type="password"
-                value={formData.password}
-                onChange={(e) => updateField("password", e.target.value)}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError(null);
+                }}
                 placeholder="••••••••"
                 autoComplete="current-password"
+                autoFocus
                 className="w-full px-4 py-3 rounded-xl border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
