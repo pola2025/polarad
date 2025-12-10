@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next'
 import path from 'path'
+import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin'
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@polarad/ui', '@polarad/database'],
@@ -17,6 +18,12 @@ const nextConfig: NextConfig = {
         ],
       },
     ]
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.plugins = [...config.plugins, new PrismaPlugin()]
+    }
+    return config
   },
 }
 
