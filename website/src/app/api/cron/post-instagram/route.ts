@@ -352,8 +352,11 @@ export async function GET(request: Request) {
 
     console.log('✅ GitHub 이미지 업로드 완료:', instagramImageUrl);
 
-    // 5. Airtable에 이미지 URL 저장
+    // 5. Airtable에 이미지 URL 저장 + 게시 중 표시 (중복 방지)
     await saveImageUrlToAirtable(article.id, instagramImageUrl);
+
+    // 중복 게시 방지: 게시 시작 전 먼저 instagram_posted를 true로 설정
+    await updateAirtableRecord(article.id, 'POSTING_IN_PROGRESS', '', '');
 
     // 6. Instagram 캡션 생성 (AI로 블로그 내용 재구성)
     const tagsArray = tags ? tags.split(',').map(t => t.trim()) : [];

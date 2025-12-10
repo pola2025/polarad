@@ -50,6 +50,7 @@ const CATEGORY_HASHTAGS: Record<string, string[]> = {
 
 /**
  * Gemini AI를 사용하여 블로그 컨텐츠를 인스타그램용으로 재구성
+ * 홈페이지 유도 없이 핵심 내용만 요약하여 독립적인 정보 제공
  */
 async function generateAICaption(title: string, content: string, category: string): Promise<string> {
   if (!GEMINI_API_KEY) {
@@ -57,30 +58,33 @@ async function generateAICaption(title: string, content: string, category: strin
     return '';
   }
 
-  const prompt = `당신은 인스타그램 마케팅 전문가입니다. 아래 블로그 글을 인스타그램 게시물용 캡션으로 재구성해주세요.
+  const prompt = `당신은 인스타그램 마케팅 콘텐츠 작성 전문가입니다. 아래 블로그 글의 핵심 정보를 인스타그램 게시물로 재구성해주세요.
 
 **블로그 제목**: ${title}
 
 **블로그 내용**:
-${content.slice(0, 3000)}
+${content.slice(0, 4000)}
 
 **요구사항**:
-1. 핵심 포인트 3-5개를 추출하여 짧은 문장으로 정리
-2. 각 포인트 앞에 ✅, 💡, 📌, 🔥, ⚡ 등 적절한 이모지 사용
-3. 첫 줄은 시선을 끄는 후크 문장 (질문 또는 강렬한 문장)
-4. 마지막에 "더 자세한 내용은 프로필 링크에서!" 같은 CTA 포함
-5. 전체 길이는 300자 이내로 간결하게
-6. 해시태그는 포함하지 마세요 (별도 추가됨)
-7. MDX 문법, 코드 블록, 컴포넌트 태그는 모두 제거
+1. 블로그 내용의 핵심 팩트와 실용적인 정보만 추출
+2. 읽는 사람이 이 게시물만 보고도 유용한 정보를 얻을 수 있어야 함
+3. 핵심 포인트 3-5개를 짧고 명확한 문장으로 정리
+4. 각 포인트 앞에 ✅, 💡, 📌, 🔥, ⚡, 👉 등 적절한 이모지 사용
+5. 첫 줄은 주제를 명확히 전달하는 제목 형식 (이모지 포함)
+6. 전체 길이는 400자 이내
+7. 해시태그는 포함하지 마세요 (별도 추가됨)
+8. MDX 문법, 코드 블록, 컴포넌트 태그, HTML 태그 모두 제거
+9. "프로필 링크", "자세한 내용은", "홈페이지 방문" 같은 외부 유도 문구 절대 금지
 
 **예시 형식**:
-🔥 [후크 문장]
+🔥 [제목: 핵심 주제를 한 줄로]
 
-✅ [핵심 포인트 1]
-✅ [핵심 포인트 2]
-💡 [핵심 포인트 3]
+✅ [핵심 정보 1 - 구체적인 팩트]
+✅ [핵심 정보 2 - 실용적인 팁]
+💡 [핵심 정보 3 - 알아두면 좋은 점]
+📌 [핵심 정보 4 - 주의사항 또는 추가 정보]
 
-👉 프로필 링크에서 전체 가이드 확인하세요!
+💬 [마무리 한 줄 - 공감 유도 또는 질문]
 
 캡션만 출력하세요. 다른 설명 없이 바로 캡션 텍스트만 작성하세요.`;
 
@@ -124,29 +128,24 @@ export async function generateInstagramCaption(data: CaptionData): Promise<strin
     if (aiCaption) {
       mainContent = aiCaption;
     } else {
-      // AI 실패 시 기본 템플릿
+      // AI 실패 시 기본 템플릿 (내용 요약만)
       mainContent = `${categoryEmoji} ${data.title}
 
-${data.description.length > 150 ? data.description.slice(0, 147) + '...' : data.description}
+${data.description.length > 200 ? data.description.slice(0, 197) + '...' : data.description}
 
-✨ 자세한 내용이 궁금하다면?
-👉 프로필 링크에서 확인하세요!`;
+💬 도움이 되셨다면 저장해두세요!`;
     }
   } else {
-    // content가 없으면 기본 템플릿
+    // content가 없으면 기본 템플릿 (내용 요약만)
     mainContent = `${categoryEmoji} ${data.title}
 
-${data.description.length > 150 ? data.description.slice(0, 147) + '...' : data.description}
+${data.description.length > 200 ? data.description.slice(0, 197) + '...' : data.description}
 
-✨ 자세한 내용이 궁금하다면?
-👉 프로필 링크에서 확인하세요!`;
+💬 도움이 되셨다면 저장해두세요!`;
   }
 
-  // 해시태그 추가
+  // 해시태그만 추가 (폴라애드 문구 제외)
   const caption = `${mainContent}
-
-📍 폴라애드 마케팅 소식
-💡 매주 월/수/금/일 업데이트
 
 ${categoryHashtags.join(' ')}`;
 
