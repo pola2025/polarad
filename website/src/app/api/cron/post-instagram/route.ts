@@ -127,7 +127,7 @@ async function resizeImageToSquare(imageUrl: string): Promise<Buffer> {
     .toBuffer();
 }
 
-// GitHub에 이미지 업로드 후 URL 반환
+// GitHub에 이미지 업로드 후 URL 반환 (Raw URL 사용으로 즉시 접근 가능)
 async function uploadImageToGitHub(
   imageBuffer: Buffer,
   slug: string
@@ -178,27 +178,28 @@ async function uploadImageToGitHub(
       return null;
     }
 
-    // Vercel 배포 후 접근 가능한 URL 반환 (www 포함 - 리다이렉트 방지)
-    const imageUrl = `https://www.polarad.co.kr/images/instagram/${slug}-square.jpg`;
+    // GitHub Raw URL 사용 - Vercel 배포 대기 없이 즉시 접근 가능
+    // Instagram Graph API가 즉시 이미지에 접근 가능
+    const imageUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${filePath}`;
 
-    // 배포 완료까지 대기 (최대 90초, 10초 간격으로 확인)
-    console.log('⏳ Vercel 배포 대기 중...');
-    for (let i = 0; i < 9; i++) {
-      await new Promise(resolve => setTimeout(resolve, 10000));
+    // Raw URL 접근 가능 확인 (최대 10초 대기)
+    console.log('🔍 GitHub Raw URL 접근 확인 중...');
+    for (let i = 0; i < 5; i++) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
       try {
         const checkRes = await fetch(imageUrl, { method: 'HEAD' });
         if (checkRes.ok) {
-          console.log(`✅ 이미지 접근 가능 (${(i + 1) * 10}초 후)`);
+          console.log(`✅ GitHub Raw URL 접근 가능 (${(i + 1) * 2}초 후)`);
           return imageUrl;
         }
       } catch {
-        // 아직 배포 안됨, 계속 대기
+        // 아직 접근 불가, 계속 대기
       }
-      console.log(`⏳ 배포 대기 중... (${(i + 1) * 10}초)`);
+      console.log(`⏳ Raw URL 확인 중... (${(i + 1) * 2}초)`);
     }
 
-    // 90초 후에도 안되면 그냥 URL 반환 (Instagram API에서 재시도 가능)
-    console.log('⚠️ 90초 대기 후에도 이미지 확인 불가, 진행 시도');
+    // 10초 후에도 안되면 그냥 URL 반환
+    console.log('⚠️ Raw URL 확인 타임아웃, 진행 시도');
     return imageUrl;
   } catch (error) {
     console.error('GitHub 업로드 오류:', error);
