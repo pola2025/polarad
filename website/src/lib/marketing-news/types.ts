@@ -1,6 +1,6 @@
 // 마케팅 소식 타입 정의
 
-export type ArticleCategory = 'meta-ads' | 'google-ads' | 'marketing-trends' | 'ai-trends' | 'faq';
+export type ArticleCategory = 'meta-ads' | 'instagram-reels' | 'threads' | 'google-ads' | 'marketing-trends' | 'ai-trends' | 'faq';
 
 export type ArticleStatus = 'draft' | 'published' | 'archived';
 
@@ -45,6 +45,14 @@ export const CATEGORIES: Record<ArticleCategory, { label: string; description: s
   'meta-ads': {
     label: 'Meta 광고',
     description: 'Facebook/Instagram 광고 설정, 최적화, 성과 분석 가이드'
+  },
+  'instagram-reels': {
+    label: '인스타그램 릴스',
+    description: '릴스 제작, 알고리즘, 조회수 올리는 법 가이드'
+  },
+  'threads': {
+    label: '쓰레드',
+    description: 'Meta Threads 활용법, 팔로워 늘리기, 콘텐츠 전략'
   },
   'google-ads': {
     label: 'Google 광고',

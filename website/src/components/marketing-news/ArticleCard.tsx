@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight } from 'lucide-react';
 import type { ArticleListItem } from '@/lib/marketing-news/types';
 import { CATEGORIES } from '@/lib/marketing-news/types';
 import { ViewCounter } from './ViewCounter';
@@ -46,14 +46,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
               {article.description}
             </p>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-4 text-sm text-gray-500 whitespace-nowrap">
                 <span className="flex items-center gap-1">
                   <Calendar size={14} />
                   {formatDate(article.publishedAt)}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock size={14} />
-                  {article.readingTime}분
                 </span>
                 <ViewCounter slug={article.slug} showIcon />
               </div>
@@ -93,14 +89,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           {article.description}
         </p>
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-3 text-xs text-gray-500">
+          <div className="flex items-center gap-3 text-xs text-gray-500 whitespace-nowrap">
             <span className="flex items-center gap-1">
               <Calendar size={12} />
               {formatDate(article.publishedAt)}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock size={12} />
-              {article.readingTime}분
             </span>
             <ViewCounter slug={article.slug} showIcon />
           </div>

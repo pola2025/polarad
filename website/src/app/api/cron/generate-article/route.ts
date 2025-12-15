@@ -24,8 +24,8 @@ const TELEGRAM_CHAT_ID = '-1003280236380'; // 마케팅 소식 알림 채널
 
 const CATEGORIES = {
   'meta-ads': { label: 'Meta 광고', folder: 'meta-ads' },
-  'google-ads': { label: 'Google 광고', folder: 'google-ads' },
-  'marketing-trends': { label: '마케팅 트렌드', folder: 'marketing-trends' },
+  'instagram-reels': { label: '인스타그램 릴스', folder: 'instagram-reels' },
+  'threads': { label: '쓰레드', folder: 'threads' },
   'faq': { label: '궁금해요', folder: 'faq' }
 } as const;
 
@@ -44,8 +44,8 @@ const CURRENT_YEAR = getCurrentYear();
 const DAY_CATEGORY_MAP: Record<number, CategoryKey> = {
   0: 'faq',              // 일요일
   1: 'meta-ads',         // 월요일
-  3: 'google-ads',       // 수요일
-  5: 'marketing-trends'  // 금요일
+  3: 'instagram-reels',  // 수요일
+  5: 'threads'           // 금요일
 };
 
 // 다음 작성 일정 계산 (월/수/금/일)
@@ -100,8 +100,8 @@ async function sendTelegramNotification(
 
   const scheduleInfo = `📆 *작성 일정 (매주 오전 9시)*
 • 월: Meta 광고
-• 수: Google 광고
-• 금: 마케팅 트렌드
+• 수: 인스타그램 릴스
+• 금: 쓰레드
 • 일: 궁금해요`;
 
   if (type === 'success') {
@@ -182,6 +182,8 @@ async function generateTopic(category: CategoryKey): Promise<string> {
   const topicPrompts: Record<CategoryKey, string> = {
     'meta-ads': `Meta(페이스북/인스타그램) 광고 또는 인스타그램 활용 관련 블로그 주제를 1개 제안하세요.
 
+**[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. Meta 플랫폼(페이스북, 인스타그램, 쓰레드)만 다룹니다.
+
 **[SEO 키워드 전략 - 필수 적용]**:
 - 네이버/구글에서 실제 검색량이 높은 롱테일 키워드 타겟팅
 - 제목 형식: "[메인키워드] + [구체적 수식어] + [연도/숫자]"
@@ -202,33 +204,55 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 - "인스타그램 해시태그 추천 ${CURRENT_YEAR} (업종별 정리)"
 - "쓰레드 팔로워 늘리는 법 7가지 전략"`,
 
-    'google-ads': `Google 광고(검색/디스플레이/유튜브) 관련 블로그 주제를 1개 제안하세요.
+    'instagram-reels': `인스타그램 릴스 관련 블로그 주제를 1개 제안하세요.
+
+**[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. 인스타그램 릴스만 다룹니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
 - 네이버/구글에서 실제 검색량이 높은 롱테일 키워드 타겟팅
 - 제목 형식: "[메인키워드] + [구체적 수식어] + [연도/숫자]"
 - 검색 의도 반영: 정보형("~방법", "~하는 법"), 비교형("~vs~"), 리스트형("~가지")
 
-**검색 최적화 제목 예시**:
-- "구글 광고 품질점수 올리는 방법 ${CURRENT_YEAR} (10점 만드는 비법)"
-- "유튜브 광고 단가 비용 총정리 - CPV, CPM 기준"
-- "구글 애즈 키워드 플래너 사용법 완벽 가이드"
-- "GDN 배너 광고 사이즈 규격 ${CURRENT_YEAR} 총정리"`,
+**주제 범위 (아래 중 하나 선택)**:
+1. 릴스 제작: 릴스 만드는 법, 편집 앱 추천, 트랜지션, 효과음
+2. 릴스 알고리즘: 조회수 올리는 법, 추천 알고리즘, 최적 업로드 시간
+3. 릴스 트렌드: 인기 음악, 트렌드 챌린지, 바이럴 포맷
+4. 릴스 수익화: 보너스 프로그램, 브랜드 협찬, 인플루언서 성장
+5. 릴스 사이즈/스펙: 최적 비율, 해상도, 길이 제한
 
-    'marketing-trends': `디지털 마케팅 트렌드 관련 블로그 주제를 1개 제안하세요.
+**검색 최적화 제목 예시**:
+- "인스타그램 릴스 만드는 법 ${CURRENT_YEAR} 완벽 가이드"
+- "릴스 조회수 올리는 방법 7가지 (알고리즘 공략)"
+- "인스타 릴스 편집 앱 추천 TOP 5 - 무료/유료 비교"
+- "릴스 최적 업로드 시간 ${CURRENT_YEAR} 완전 정리"
+- "인스타그램 릴스 트렌드 음악 찾는 법"`,
+
+    'threads': `Meta 쓰레드(Threads) 관련 블로그 주제를 1개 제안하세요.
+
+**[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. Meta 쓰레드만 다룹니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
-- 네이버/구글에서 실제 검색량이 높은 트렌드 키워드
-- 제목 형식: "[연도] + [메인키워드] + [트렌드/전망/예측]"
-- 검색 의도: 정보 수집형, 트렌드 파악형
+- 네이버/구글에서 실제 검색량이 높은 롱테일 키워드 타겟팅
+- 제목 형식: "[메인키워드] + [구체적 수식어] + [연도/숫자]"
+- 검색 의도 반영: 정보형("~방법", "~하는 법"), 비교형("~vs~"), 리스트형("~가지")
+
+**주제 범위 (아래 중 하나 선택)**:
+1. 쓰레드 시작하기: 가입 방법, 프로필 설정, 인스타그램 연동
+2. 쓰레드 성장: 팔로워 늘리기, 인게이지먼트 높이기, 알고리즘 이해
+3. 쓰레드 콘텐츠: 글쓰기 팁, 바이럴 콘텐츠, 해시태그 전략
+4. 쓰레드 vs 트위터(X): 기능 비교, 장단점, 선택 가이드
+5. 쓰레드 비즈니스 활용: 브랜드 마케팅, 고객 소통, 트래픽 유도
 
 **검색 최적화 제목 예시**:
-- "${CURRENT_YEAR} 디지털 마케팅 트렌드 TOP 10 총정리"
-- "AI 마케팅 도구 추천 ${CURRENT_YEAR} - 무료/유료 비교"
-- "숏폼 콘텐츠 마케팅 전략 완벽 가이드"
-- "퍼포먼스 마케팅 뜻과 실전 활용법"`,
+- "쓰레드 팔로워 늘리는 법 ${CURRENT_YEAR} 완벽 가이드"
+- "쓰레드 시작하기 - 가입부터 첫 게시물까지"
+- "쓰레드 vs 트위터 비교 ${CURRENT_YEAR} (어떤 걸 선택할까)"
+- "쓰레드 알고리즘 작동 원리와 노출 늘리는 법"
+- "쓰레드 마케팅 전략 5가지 - 비즈니스 활용법"`,
 
     'faq': `SNS/광고 플랫폼 사용 중 겪는 문제 해결 관련 블로그 주제를 1개 제안하세요.
+
+**[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. Meta 플랫폼(페이스북, 인스타그램, 쓰레드)만 다룹니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
 - 네이버/구글에서 실제로 검색되는 문제 해결 키워드
@@ -811,7 +835,7 @@ export async function GET(request: Request) {
 
   // force 모드인데 카테고리가 없으면 기본값 사용
   if (!category) {
-    category = 'marketing-trends';
+    category = 'meta-ads';
   }
 
   try {
