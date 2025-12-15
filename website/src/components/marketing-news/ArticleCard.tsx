@@ -11,7 +11,7 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, featured = false }: ArticleCardProps) {
-  const categoryInfo = CATEGORIES[article.category];
+  const categoryInfo = CATEGORIES[article.category] || { label: article.category, description: '' };
 
   if (featured) {
     return (
