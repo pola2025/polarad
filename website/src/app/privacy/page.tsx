@@ -14,7 +14,7 @@ export default function PrivacyPage() {
 
         <div className="prose prose-gray max-w-none">
           <p className="text-gray-600 mb-6">
-            <strong>폴라애드</strong>(이하 "회사")는 개인정보보호법에 따라 이용자의 개인정보 보호 및 권익을 보호하고
+            <strong>폴라애드</strong>(이하 &quot;회사&quot;)는 개인정보보호법에 따라 이용자의 개인정보 보호 및 권익을 보호하고
             개인정보와 관련한 이용자의 고충을 원활하게 처리할 수 있도록 다음과 같은 처리방침을 두고 있습니다.
           </p>
           <p className="text-sm text-gray-500 mb-8">시행일: 2025년 1월 1일</p>

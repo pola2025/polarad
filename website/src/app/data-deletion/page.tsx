@@ -39,7 +39,7 @@ export default function DataDeletionPage() {
               <h3 className="font-semibold text-green-900 mb-3">방법 2: 문의 양식</h3>
               <p className="text-green-800">
                 웹사이트의 <a href="/contact" className="underline font-medium">문의하기</a> 페이지를 통해
-                "데이터 삭제 요청"을 선택하고 요청해주세요.
+                &quot;데이터 삭제 요청&quot;을 선택하고 요청해주세요.
               </p>
             </div>
           </section>

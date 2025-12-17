@@ -14,7 +14,7 @@ export default function TermsPage() {
 
         <div className="prose prose-gray max-w-none">
           <p className="text-gray-600 mb-6">
-            본 약관은 <strong>폴라애드</strong>(이하 "회사")가 제공하는 마케팅 서비스의 이용조건 및 절차,
+            본 약관은 <strong>폴라애드</strong>(이하 &quot;회사&quot;)가 제공하는 마케팅 서비스의 이용조건 및 절차,
             회사와 이용자의 권리, 의무, 책임사항과 기타 필요한 사항을 규정함을 목적으로 합니다.
           </p>
           <p className="text-sm text-gray-500 mb-8">시행일: 2025년 1월 1일</p>
@@ -23,7 +23,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">제1조 (목적)</h2>
             <p className="text-gray-700">
               본 약관은 회사가 운영하는 웹사이트(polarad.co.kr)에서 제공하는 온라인 마케팅 서비스
-              (이하 "서비스")의 이용과 관련하여 회사와 이용자의 권리, 의무 및 책임사항,
+              (이하 &quot;서비스&quot;)의 이용과 관련하여 회사와 이용자의 권리, 의무 및 책임사항,
               기타 필요한 사항을 규정함을 목적으로 합니다.
             </p>
           </section>
@@ -31,9 +31,9 @@ export default function TermsPage() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">제2조 (정의)</h2>
             <ul className="list-disc pl-6 text-gray-700 space-y-2">
-              <li><strong>"서비스"</strong>란 회사가 제공하는 마케팅 대행, 홈페이지 제작, 광고 운영 등 일체의 서비스를 말합니다.</li>
-              <li><strong>"이용자"</strong>란 회사의 서비스에 접속하여 본 약관에 따라 회사가 제공하는 서비스를 받는 회원 및 비회원을 말합니다.</li>
-              <li><strong>"회원"</strong>이란 회사에 개인정보를 제공하여 회원등록을 한 자로서, 회사의 정보를 지속적으로 제공받으며, 회사가 제공하는 서비스를 계속적으로 이용할 수 있는 자를 말합니다.</li>
+              <li><strong>&quot;서비스&quot;</strong>란 회사가 제공하는 마케팅 대행, 홈페이지 제작, 광고 운영 등 일체의 서비스를 말합니다.</li>
+              <li><strong>&quot;이용자&quot;</strong>란 회사의 서비스에 접속하여 본 약관에 따라 회사가 제공하는 서비스를 받는 회원 및 비회원을 말합니다.</li>
+              <li><strong>&quot;회원&quot;</strong>이란 회사에 개인정보를 제공하여 회원등록을 한 자로서, 회사의 정보를 지속적으로 제공받으며, 회사가 제공하는 서비스를 계속적으로 이용할 수 있는 자를 말합니다.</li>
             </ul>
           </section>
 
