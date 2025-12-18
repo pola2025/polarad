@@ -26,9 +26,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const canonicalUrl = `https://polarad.co.kr/marketing-news/category/${category}`;
 
+  // 글이 없는 카테고리는 검색 엔진에서 제외
+  const articles = await getArticlesByCategory(category as ArticleCategory);
+  const hasArticles = articles.length > 0;
+
   return {
     title: categoryInfo.label,
     description: categoryInfo.description,
+    // 글이 없는 카테고리는 noindex 처리
+    robots: hasArticles ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: canonicalUrl,
     },

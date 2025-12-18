@@ -64,21 +64,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // 마케팅 뉴스 카테고리 페이지 - 각 카테고리의 최신 글 날짜 사용
-  const categoryPages: MetadataRoute.Sitemap = await Promise.all(
+  // 마케팅 뉴스 카테고리 페이지 - 글이 있는 카테고리만 포함
+  const categoryPagesRaw = await Promise.all(
     Object.keys(CATEGORIES).map(async (category) => {
       const categoryArticles = await getArticlesByCategory(category as ArticleCategory)
-      const lastModified = categoryArticles.length > 0
-        ? new Date(categoryArticles[0].publishedAt)
-        : currentDate
+
+      // 글이 없는 카테고리는 sitemap에서 제외
+      if (categoryArticles.length === 0) {
+        return null
+      }
 
       return {
         url: `${baseUrl}/marketing-news/category/${category}`,
-        lastModified,
+        lastModified: new Date(categoryArticles[0].publishedAt),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
       }
     })
+  )
+
+  const categoryPages: MetadataRoute.Sitemap = categoryPagesRaw.filter(
+    (page): page is NonNullable<typeof page> => page !== null
   )
 
   // 마케팅 뉴스 개별 글
