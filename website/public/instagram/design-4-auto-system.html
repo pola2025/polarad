@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolarAD Instagram - 자동화 접수 시스템</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Pretendard', -apple-system, sans-serif; }
+
+        .instagram-post {
+            width: 1080px;
+            height: 1350px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 80px;
+        }
+
+        /* Animated Circles */
+        .bg-circles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        .circle-1 { width: 600px; height: 600px; top: -200px; right: -200px; }
+        .circle-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; border-color: rgba(139, 92, 246, 0.1); }
+        .circle-3 { width: 300px; height: 300px; top: 40%; left: 50%; transform: translate(-50%, -50%); border-color: rgba(34, 197, 94, 0.08); }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .logo img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-name { font-size: 28px; font-weight: 700; color: #fff; }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .icon-box {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 50px;
+            box-shadow: 0 30px 60px rgba(59, 130, 246, 0.3);
+        }
+        .icon-box svg {
+            width: 70px;
+            height: 70px;
+            stroke: white;
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .title {
+            font-size: 64px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            letter-spacing: -2px;
+        }
+        .title .gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 28px;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 60px;
+        }
+
+        /* Features */
+        .features {
+            display: flex;
+            gap: 30px;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 100px;
+        }
+        .feature-dot {
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+        .feature span {
+            font-size: 22px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        .website {
+            font-size: 24px;
+            color: #64748b;
+        }
+        .website span { color: #3b82f6; font-weight: 600; }
+        .cta {
+            padding: 20px 44px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 60px;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="instagram-post">
+        <div class="bg-circles">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+
+        <div class="content">
+            <div class="header">
+                <div class="logo"><img src="logo.png" alt="PolarAD"></div>
+                <span class="brand-name">PolarAD</span>
+            </div>
+
+            <div class="main">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+
+                <h1 class="title">
+                    체계적인<br>
+                    <span class="gradient">자동화 접수 시스템</span>
+                </h1>
+
+                <p class="subtitle">
+                    24시간 자동으로 고객 문의를 접수하고<br>
+                    실시간 알림으로 빠르게 대응하세요
+                </p>
+
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-dot"></div>
+                        <span>실시간 알림</span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-dot"></div>
+                        <span>자동 분류</span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-dot"></div>
+                        <span>DB 관리</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="website">🌐 <span>polarad.co.kr</span></div>
+                <div class="cta">무료 상담 →</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

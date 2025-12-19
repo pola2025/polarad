@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolarAD Instagram Post 2 - 문제 제기</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .instagram-post {
+            width: 1080px;
+            height: 1350px;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 80px;
+        }
+
+        /* Dramatic Red Gradient */
+        .bg-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .bg-effect::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -20%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%);
+        }
+
+        .bg-effect::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            left: 0;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
+        }
+
+        /* Noise Texture */
+        .noise {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Header Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 100px;
+            width: fit-content;
+            margin-bottom: 60px;
+        }
+
+        .badge-dot {
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .badge-text {
+            font-size: 20px;
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Main Question */
+        .main-question {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-text {
+            font-size: 68px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+            letter-spacing: -3px;
+            margin-bottom: 50px;
+        }
+
+        .question-text .red {
+            color: #ef4444;
+        }
+
+        .question-text .gray {
+            color: #6b7280;
+        }
+
+        /* Pain Points List */
+        .pain-points {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            margin-bottom: 60px;
+        }
+
+        .pain-point {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .pain-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pain-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #ef4444;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .pain-text {
+            font-size: 26px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .pain-text strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Solution Teaser */
+        .solution-teaser {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 30px 40px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+        }
+
+        .solution-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .solution-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .solution-text {
+            font-size: 28px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .solution-sub {
+            font-size: 20px;
+            color: #64748b;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 40px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .swipe-hint {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .swipe-hint svg {
+            width: 24px;
+            height: 24px;
+            stroke: #64748b;
+            stroke-width: 2;
+            fill: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="instagram-post">
+        <div class="bg-effect"></div>
+        <div class="noise"></div>
+
+        <div class="content">
+            <div class="badge">
+                <div class="badge-dot"></div>
+                <span class="badge-text">영업 대표님께 드리는 질문</span>
+            </div>
+
+            <div class="main-question">
+                <h1 class="question-text">
+                    아직도<br>
+                    <span class="red">남들이 버린 DB</span><span class="gray">에</span><br>
+                    전화를 돌리고<br>
+                    계십니까?
+                </h1>
+
+                <div class="pain-points">
+                    <div class="pain-point">
+                        <div class="pain-icon">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </div>
+                        <span class="pain-text">공유 DB로 <strong>경쟁만 치열</strong></span>
+                    </div>
+                    <div class="pain-point">
+                        <div class="pain-icon">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </div>
+                        <span class="pain-text"><strong>미팅 성사율 5%</strong> 미만</span>
+                    </div>
+                    <div class="pain-point">
+                        <div class="pain-icon">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </div>
+                        <span class="pain-text">매월 <strong>수백만 원 DB 비용</strong></span>
+                    </div>
+                </div>
+
+                <div class="solution-teaser">
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div>
+                        <div class="solution-text">체계적인 자동화 접수 시스템</div>
+                        <div class="solution-sub">영업에만 집중하시면 됩니다</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="brand">
+                    <div class="brand-logo">
+                        <img src="logo.png" alt="PolarAD 로고">
+                    </div>
+                    <span class="brand-name">PolarAD</span>
+                </div>
+                <div class="swipe-hint">
+                    다음으로 →
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolarAD Instagram Post 3 - 솔루션</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .instagram-post {
+            width: 1080px;
+            height: 1350px;
+            background: linear-gradient(180deg, #0f172a 0%, #1a1a2e 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 70px;
+        }
+
+        /* Gradient Orbs */
+        .orbs {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .orb1 {
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .orb2 {
+            position: absolute;
+            bottom: 10%;
+            left: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .orb3 {
+            position: absolute;
+            top: 40%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 100px;
+            margin-bottom: 30px;
+        }
+
+        .header-badge span {
+            font-size: 18px;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .header-title {
+            font-size: 52px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+        }
+
+        .header-title .gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-sub {
+            font-size: 24px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        /* Package Cards */
+        .packages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .package-card {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            padding: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .package-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .package-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .package-icon.blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .package-icon.purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .package-icon.amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .package-icon svg {
+            width: 42px;
+            height: 42px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .package-info {
+            flex: 1;
+        }
+
+        .package-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .package-desc {
+            font-size: 18px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .package-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .package-item {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+            font-size: 15px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* Promo Banner */
+        .promo-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 28px 40px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            margin-top: 30px;
+        }
+
+        .promo-icon {
+            font-size: 40px;
+        }
+
+        .promo-text {
+            text-align: left;
+        }
+
+        .promo-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        .promo-sub {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .promo-sub strong {
+            color: #ffffff;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .brand-url {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .cta-button {
+            padding: 20px 44px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 60px;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-button svg {
+            width: 22px;
+            height: 22px;
+            stroke: white;
+            stroke-width: 2.5;
+            fill: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="instagram-post">
+        <div class="orbs">
+            <div class="orb1"></div>
+            <div class="orb2"></div>
+            <div class="orb3"></div>
+        </div>
+
+        <div class="content">
+            <div class="header">
+                <div class="header-badge">
+                    <span>✨ 올인원 패키지</span>
+                </div>
+                <h1 class="header-title">
+                    <span class="gradient">체계적인 자동화</span><br>
+                    접수 시스템
+                </h1>
+                <p class="header-sub">영업에만 집중하시면 됩니다</p>
+            </div>
+
+            <div class="packages">
+                <div class="package-card">
+                    <div class="package-icon blue">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </div>
+                    <div class="package-info">
+                        <div class="package-title">Conversion Basecamp</div>
+                        <div class="package-desc">고객을 설득하고 DB를 추출하는 전환 기지</div>
+                        <div class="package-items">
+                            <span class="package-item">반응형 웹</span>
+                            <span class="package-item">SEO 최적화</span>
+                            <span class="package-item">DB 폼 연동</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="package-card">
+                    <div class="package-icon purple">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    </div>
+                    <div class="package-info">
+                        <div class="package-title">Lead Magnet Engine</div>
+                        <div class="package-desc">잠재 고객을 정밀 타겟팅하여 유입</div>
+                        <div class="package-items">
+                            <span class="package-item">Meta 광고</span>
+                            <span class="package-item">타겟 최적화</span>
+                            <span class="package-item">광고 세팅</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="package-card">
+                    <div class="package-icon amber">
+                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <div class="package-info">
+                        <div class="package-title">Authority Kit</div>
+                        <div class="package-desc">미팅 현장에서 신뢰도를 높이는 브랜딩 키트</div>
+                        <div class="package-items">
+                            <span class="package-item">명함 200매</span>
+                            <span class="package-item">대봉투</span>
+                            <span class="package-item">계약서 양식</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="promo-banner">
+                <span class="promo-icon">🎁</span>
+                <div class="promo-text">
+                    <div class="promo-title">선착순 10개 기업 프로모션</div>
+                    <div class="promo-sub">자동화 시스템 <strong>2년간 무료</strong> 제공</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="brand">
+                    <div class="brand-logo">
+                        <img src="logo.png" alt="PolarAD 로고">
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-name">PolarAD</span>
+                        <span class="brand-url">polarad.co.kr</span>
+                    </div>
+                </div>
+                <div class="cta-button">
+                    무료 상담
+                    <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -117,6 +117,15 @@ export default function TermsPage() {
             </p>
           </section>
 
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">제11조 (연락처)</h2>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-gray-600">이메일: mkt@polarad.co.kr</p>
+              <p className="text-gray-600">전화: 032-345-9834</p>
+              <p className="text-gray-600">웹사이트: polarad.co.kr</p>
+            </div>
+          </section>
+
           <div className="border-t pt-6 mt-8">
             <p className="text-sm text-gray-500">
               본 약관은 2025년 1월 1일부터 시행됩니다.

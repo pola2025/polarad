@@ -102,8 +102,8 @@ export default function PrivacyPage() {
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-700"><strong>개인정보 보호책임자</strong></p>
               <p className="text-gray-600">성명: 이재호</p>
-              <p className="text-gray-600">이메일: admin@polarad.co.kr</p>
-              <p className="text-gray-600">연락처: 문의 양식을 통해 연락</p>
+              <p className="text-gray-600">이메일: mkt@polarad.co.kr</p>
+              <p className="text-gray-600">연락처: 032-345-9834</p>
             </div>
           </section>
 

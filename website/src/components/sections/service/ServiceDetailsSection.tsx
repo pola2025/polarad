@@ -218,10 +218,6 @@ export default function ServiceDetailsSection() {
                                     </li>
                                     <li className="flex items-start gap-2 whitespace-nowrap">
                                         <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                                        결제 모듈 탑재 가능 (토스페이먼츠)
-                                    </li>
-                                    <li className="flex items-start gap-2 whitespace-nowrap">
-                                        <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                                         기본 DB 자동화 1개 (문의 폼 자동 수집)
                                     </li>
                                 </ul>
@@ -234,7 +230,7 @@ export default function ServiceDetailsSection() {
                                     페이지 정의 기준
                                 </h4>
                                 <ul className="space-y-1 text-[11px] sm:text-xs lg:text-sm text-gray-600">
-                                    <li className="whitespace-nowrap">• <strong className="text-gray-800">1페이지</strong> = 헤더/푸터 포함 5개 섹션 이하</li>
+                                    <li className="whitespace-nowrap">• <strong className="text-gray-800">1페이지</strong> = 헤더/푸터 제외 5개 섹션 이하</li>
                                     <li className="whitespace-nowrap">• <strong className="text-gray-800">섹션</strong> = 설명 또는 서비스 안내 항목 1개 영역</li>
                                     <li className="whitespace-nowrap">• 섹션이 5개 초과 시 추가 페이지로 계산</li>
                                 </ul>
@@ -246,7 +242,7 @@ export default function ServiceDetailsSection() {
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center py-2 border-b border-gray-200">
                                         <span className="text-gray-700">추가 페이지</span>
-                                        <span className="font-semibold text-gray-900">220,000원 / 페이지</span>
+                                        <span className="font-semibold text-gray-900">200,000원 / 페이지 (VAT 별도)</span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b border-gray-200">
                                         <span className="text-gray-700">기획 변경</span>
@@ -258,22 +254,23 @@ export default function ServiceDetailsSection() {
                                 </p>
                             </div>
 
-                            {/* 2년차 유지비용 */}
+                            {/* 2년부터 유지비용 */}
                             <div>
-                                <h4 className="font-semibold text-gray-900 mb-3">2년차 이후 유지 비용 (선택)</h4>
+                                <h4 className="font-semibold text-gray-900 mb-3">2년부터 유지 비용</h4>
                                 <div className="space-y-2">
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-center py-2 border-b border-gray-200 gap-1">
-                                        <span className="text-gray-700">도메인 + 호스팅 연장</span>
-                                        <span className="font-semibold text-gray-900">500,000원/년</span>
+                                        <span className="text-gray-700">도메인 + 호스팅</span>
+                                        <span className="font-semibold text-gray-900">본인 부담/년</span>
                                     </div>
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-center py-2 border-b border-gray-200 gap-1">
-                                        <span className="text-gray-700">도메인 + 호스팅 + DB 자동화</span>
-                                        <span className="font-semibold text-gray-900">1,000,000원/년</span>
+                                        <span className="text-gray-700">Meta 자동화 지원 서비스</span>
+                                        <span className="font-semibold text-gray-900">200,000원/월</span>
                                     </div>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-2">
-                                    * DB 자동화 1개 기준, 추가 자동화 개당 100,000원/년 (VAT 별도)
-                                </p>
+                                <ul className="text-xs text-gray-500 mt-2 space-y-1">
+                                    <li>* 도메인 + 호스팅: 트래픽 월 100GB, 도메인 1년 2~3만원 수준</li>
+                                    <li>* Meta 자동화 지원: 입력폼 1개 기준, 3개월 단위 결제 (VAT 별도)</li>
+                                </ul>
                             </div>
                         </div>
                     </AccordionItem>

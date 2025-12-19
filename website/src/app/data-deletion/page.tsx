@@ -31,7 +31,7 @@ export default function DataDeletionPage() {
                 아래 이메일로 데이터 삭제 요청을 보내주세요.
               </p>
               <p className="text-blue-900 font-mono bg-blue-100 px-3 py-2 rounded inline-block">
-                admin@polarad.co.kr
+                mkt@polarad.co.kr
               </p>
             </div>
 
@@ -124,7 +124,8 @@ export default function DataDeletionPage() {
 
           <div className="bg-gray-50 rounded-xl p-6 mt-8">
             <h3 className="font-semibold text-gray-900 mb-3">문의처</h3>
-            <p className="text-gray-700">이메일: admin@polarad.co.kr</p>
+            <p className="text-gray-700">이메일: mkt@polarad.co.kr</p>
+            <p className="text-gray-700">전화: 032-345-9834</p>
             <p className="text-gray-700">웹사이트: <a href="https://polarad.co.kr" className="text-blue-600 hover:underline">polarad.co.kr</a></p>
           </div>
 

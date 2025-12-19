@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인스타그램 콘텐츠 자동 생성 시스템 기획안</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .highlight { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-gray-100 p-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4">📸 인스타그램 콘텐츠 자동 생성 시스템</h1>
+            <p class="text-gray-400 text-lg">기획안 v1.0 | 2025-12-17</p>
+        </div>
+
+        <!-- 현황 분석 -->
+        <section class="card rounded-2xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">📊</span>
+                현황 분석
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/5 rounded-xl p-6">
+                    <h3 class="font-semibold text-blue-400 mb-4">보유 템플릿 (9종)</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li>1️⃣ <strong>브랜드 소개</strong> - 로고 + 헤드라인 + 피처</li>
+                        <li>2️⃣ <strong>문제 제기</strong> - 큰 텍스트 + 리스트</li>
+                        <li>3️⃣ <strong>솔루션/패키지</strong> - 3개 카드 레이아웃</li>
+                        <li>4️⃣ <strong>자동화 시스템</strong> - 아이콘 + 피처 뱃지</li>
+                        <li>5️⃣ <strong>Meta 리포트</strong> - 대시보드 목업</li>
+                        <li>6️⃣ <strong>프로모션</strong> - 강조 텍스트 + CTA</li>
+                        <li>7️⃣ <strong>홈페이지 제작</strong> - 피처 리스트</li>
+                        <li>8️⃣ <strong>인쇄물</strong> - 아이템 리스트</li>
+                        <li>9️⃣ <strong>영업 집중</strong> - 간결한 메시지</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white/5 rounded-xl p-6">
+                    <h3 class="font-semibold text-red-400 mb-4">현재 작업 프로세스</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center text-xs">1</span>
+                            <span>HTML 파일 열어서 수동 수정</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center text-xs">2</span>
+                            <span>브라우저에서 열기</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center text-xs">3</span>
+                            <span>스크린샷 캡쳐 도구 사용</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center text-xs">4</span>
+                            <span>캡션 수동 작성</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center text-xs">5</span>
+                            <span>파일 정리 및 저장</span>
+                        </div>
+                    </div>
+                    <p class="text-red-400 text-sm mt-4">⏱️ 게시물 1개당 약 15-20분 소요</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 시스템 구조 -->
+        <section class="card rounded-2xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">🏗️</span>
+                시스템 구조
+            </h2>
+
+            <div class="bg-white/5 rounded-xl p-6 mb-6">
+                <pre class="text-sm text-gray-300 overflow-x-auto">
+scripts/
+└── instagram-generator/
+    ├── index.js              # 메인 CLI 진입점
+    ├── templates/            # EJS 템플릿
+    │   ├── intro.ejs
+    │   ├── problem.ejs
+    │   ├── solution.ejs
+    │   ├── auto-system.ejs
+    │   ├── meta-report.ejs
+    │   ├── promo.ejs
+    │   ├── website.ejs
+    │   ├── print.ejs
+    │   └── focus.ejs
+    ├── content/              # 콘텐츠 데이터
+    │   ├── sample.json       # 예시 데이터
+    │   └── batch.json        # 일괄 생성용
+    ├── utils/
+    │   ├── renderer.js       # HTML 렌더링
+    │   ├── screenshot.js     # Playwright 캡쳐
+    │   └── caption.js        # 캡션 생성
+    └── output/               # 생성된 파일
+        ├── images/
+        └── captions/
+                </pre>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                    <h4 class="font-semibold text-blue-400 mb-2">1. 입력</h4>
+                    <p class="text-sm text-gray-400">JSON 데이터로 콘텐츠 정의</p>
+                </div>
+                <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
+                    <h4 class="font-semibold text-purple-400 mb-2">2. 처리</h4>
+                    <p class="text-sm text-gray-400">EJS → HTML → Playwright 캡쳐</p>
+                </div>
+                <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+                    <h4 class="font-semibold text-green-400 mb-2">3. 출력</h4>
+                    <p class="text-sm text-gray-400">PNG 이미지 + 캡션 텍스트</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 콘텐츠 데이터 구조 -->
+        <section class="card rounded-2xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">📝</span>
+                콘텐츠 데이터 구조 (JSON)
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/5 rounded-xl p-6">
+                    <h3 class="font-semibold text-green-400 mb-4">단일 게시물</h3>
+                    <pre class="text-xs text-gray-300 overflow-x-auto">
+{
+  "template": "intro",
+  "content": {
+    "headline": ["체계적인", "자동화 접수 시스템"],
+    "highlightIndex": 1,
+    "subHeadline": "안정적인 매출창출을 위한\\n온라인 영업 솔루션",
+    "features": [
+      { "icon": "monitor", "text": "홈페이지" },
+      { "icon": "target", "text": "Meta 광고" },
+      { "icon": "printer", "text": "인쇄물" }
+    ],
+    "cta": "무료 상담 신청 →"
+  },
+  "caption": {
+    "intro": "체계적인 자동화 접수 시스템 📊",
+    "body": "홈페이지부터 광고, 인쇄물까지...",
+    "hashtags": ["폴라애드", "온라인마케팅"]
+  }
+}
+                    </pre>
+                </div>
+
+                <div class="bg-white/5 rounded-xl p-6">
+                    <h3 class="font-semibold text-amber-400 mb-4">대시보드 템플릿</h3>
+                    <pre class="text-xs text-gray-300 overflow-x-auto">
+{
+  "template": "meta-report",
+  "content": {
+    "title": ["Meta 광고", "자동리포트 시스템"],
+    "subtitle": "광고 성과를 한눈에",
+    "dateRange": "2025.01.01 - 01.07",
+    "kpi": [
+      { "label": "총 지출", "value": "₩2.8M",
+        "change": "예산 대비 94%" },
+      { "label": "DB 수집", "value": "127건",
+        "change": "▲ 23%" },
+      { "label": "DB당 단가", "value": "₩22K",
+        "change": "▼ 12% 개선" }
+    ],
+    "chartData": [130, 160, 90, 180, 140, 110, 80]
+  }
+}
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 기술 스택 -->
+        <section class="card rounded-2xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-cyan-500/20 rounded-xl flex items-center justify-center">⚙️</span>
+                기술 스택 제안
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="text-left py-3 px-4 text-gray-400">영역</th>
+                            <th class="text-left py-3 px-4 text-gray-400">선택</th>
+                            <th class="text-left py-3 px-4 text-gray-400">이유</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        <tr class="border-b border-white/5">
+                            <td class="py-3 px-4 font-medium">런타임</td>
+                            <td class="py-3 px-4"><span class="text-green-400">Node.js</span></td>
+                            <td class="py-3 px-4">프로젝트 기존 환경, npm 생태계</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="py-3 px-4 font-medium">템플릿 엔진</td>
+                            <td class="py-3 px-4"><span class="text-blue-400">EJS</span></td>
+                            <td class="py-3 px-4">HTML과 유사, 학습 비용 낮음</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="py-3 px-4 font-medium">스크린샷</td>
+                            <td class="py-3 px-4"><span class="text-purple-400">Playwright</span></td>
+                            <td class="py-3 px-4">MCP 서버로 이미 설정됨, 안정적</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="py-3 px-4 font-medium">CLI</td>
+                            <td class="py-3 px-4"><span class="text-amber-400">Commander.js</span></td>
+                            <td class="py-3 px-4">간단한 명령어 파싱</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-medium">데이터 포맷</td>
+                            <td class="py-3 px-4"><span class="text-cyan-400">JSON</span></td>
+                            <td class="py-3 px-4">구조화, 에디터 지원 좋음</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 구현 단계 -->
+        <section class="card rounded-2xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center">📋</span>
+                구현 단계
+            </h2>
+
+            <div class="space-y-4">
+                <!-- Phase 1 -->
+                <div class="bg-green-500/10 border-l-4 border-green-500 rounded-r-xl p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-green-500/20 rounded-full text-xs text-green-400 font-semibold">1순위</span>
+                        <h3 class="font-bold text-lg">단일 콘텐츠 생성 CLI</h3>
+                    </div>
+                    <ul class="text-sm text-gray-400 space-y-2 ml-4">
+                        <li>✓ 기존 HTML → EJS 템플릿 변환 (9종)</li>
+                        <li>✓ JSON 데이터 스키마 정의</li>
+                        <li>✓ Playwright 스크린샷 기능</li>
+                        <li>✓ 캡션 자동 생성 (템플릿 기반)</li>
+                        <li>✓ 기본 CLI 인터페이스</li>
+                    </ul>
+                    <p class="text-xs text-gray-500 mt-3">
+                        사용법: <code class="bg-black/30 px-2 py-1 rounded">npm run ig:generate -- --template intro --data content.json</code>
+                    </p>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="bg-blue-500/10 border-l-4 border-blue-500 rounded-r-xl p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-blue-500/20 rounded-full text-xs text-blue-400 font-semibold">2순위</span>
+                        <h3 class="font-bold text-lg">일괄 생성 기능</h3>
+                    </div>
+                    <ul class="text-sm text-gray-400 space-y-2 ml-4">
+                        <li>✓ 배치 JSON 파일 지원 (여러 게시물)</li>
+                        <li>✓ 순차/병렬 처리 옵션</li>
+                        <li>✓ 진행률 표시</li>
+                        <li>✓ 출력 디렉토리 자동 정리</li>
+                    </ul>
+                    <p class="text-xs text-gray-500 mt-3">
+                        사용법: <code class="bg-black/30 px-2 py-1 rounded">npm run ig:batch -- --input batch.json --output ./output</code>
+                    </p>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="bg-gray-500/10 border-l-4 border-gray-500 rounded-r-xl p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="px-3 py-1 bg-gray-500/20 rounded-full text-xs text-gray-400 font-semibold">3순위 (선택)</span>
+                        <h3 class="font-bold text-lg">웹 UI</h3>
+                    </div>
+                    <ul class="text-sm text-gray-400 space-y-2 ml-4">
+                        <li>○ 템플릿 미리보기</li>
+                        <li>○ 폼 기반 콘텐츠 입력</li>
+                        <li>○ 실시간 프리뷰</li>
+                        <li>○ 다운로드 버튼</li>
+                    </ul>
+                    <p class="text-xs text-gray-500 mt-3">
+                        별도 Next.js 페이지 또는 독립 앱으로 구현 가능
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 예상 결과 -->
+        <section class="card rounded-2xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-pink-500/20 rounded-xl flex items-center justify-center">✨</span>
+                예상 결과
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/5 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-300 mb-4">Before (수동)</h3>
+                    <ul class="space-y-2 text-sm text-red-400">
+                        <li>❌ 게시물 1개당 15-20분</li>
+                        <li>❌ 반복적인 수정 작업</li>
+                        <li>❌ 일관성 유지 어려움</li>
+                        <li>❌ 오타/실수 위험</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white/5 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-300 mb-4">After (자동화)</h3>
+                    <ul class="space-y-2 text-sm text-green-400">
+                        <li>✅ 게시물 1개당 1-2분 (데이터 입력만)</li>
+                        <li>✅ 명령어 한 줄로 생성</li>
+                        <li>✅ 템플릿 기반 일관성</li>
+                        <li>✅ JSON 검증으로 오류 방지</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 다음 단계 -->
+        <section class="card rounded-2xl p-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center">🚀</span>
+                다음 단계
+            </h2>
+
+            <div class="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-6">
+                <p class="text-gray-300 mb-4">구현 방향에 동의하시면 1순위 작업을 시작합니다:</p>
+
+                <div class="space-y-3">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded" checked disabled>
+                        <span class="text-gray-400">EJS 템플릿 변환 (9종)</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded" checked disabled>
+                        <span class="text-gray-400">CLI 스크립트 작성</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded" checked disabled>
+                        <span class="text-gray-400">Playwright 스크린샷 연동</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded" checked disabled>
+                        <span class="text-gray-400">샘플 데이터 및 테스트</span>
+                    </label>
+                </div>
+
+                <div class="mt-6 p-4 bg-black/30 rounded-lg">
+                    <p class="text-sm text-gray-400">
+                        💡 <strong>권장</strong>: 1순위만 먼저 구현하고 테스트한 후,<br>
+                        필요에 따라 2순위/3순위 확장
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-500 text-sm mt-12 pb-8">
+            PolarAD Instagram Content Generator | 기획안 v1.0
+        </footer>
+    </div>
+</body>
+</html>
