@@ -26,7 +26,8 @@ const CATEGORIES = {
   'meta-ads': { label: 'Meta 광고', folder: 'meta-ads' },
   'instagram-reels': { label: '인스타그램 릴스', folder: 'instagram-reels' },
   'threads': { label: '쓰레드', folder: 'threads' },
-  'faq': { label: '궁금해요', folder: 'faq' }
+  'faq': { label: '궁금해요', folder: 'faq' },
+  'ai-tips': { label: 'AI 활용 팁', folder: 'ai-tips' }
 } as const;
 
 type CategoryKey = keyof typeof CATEGORIES;
@@ -45,17 +46,18 @@ const DAY_CATEGORY_MAP: Record<number, CategoryKey> = {
   0: 'faq',              // 일요일
   1: 'meta-ads',         // 월요일
   3: 'instagram-reels',  // 수요일
-  5: 'threads'           // 금요일
+  5: 'threads',          // 금요일
+  6: 'ai-tips'           // 토요일
 };
 
-// 다음 작성 일정 계산 (월/수/금/일)
+// 다음 작성 일정 계산 (월/수/금/토/일)
 function getNextScheduleDate(): { date: string; dayName: string; category: string } {
   const now = new Date();
   const kstOffset = 9 * 60 * 60 * 1000;
   const kstDate = new Date(now.getTime() + kstOffset);
 
-  const scheduleDays = [0, 1, 3, 5]; // 일, 월, 수, 금
-  const dayNames: Record<number, string> = { 0: '일요일', 1: '월요일', 3: '수요일', 5: '금요일' };
+  const scheduleDays = [0, 1, 3, 5, 6]; // 일, 월, 수, 금, 토
+  const dayNames: Record<number, string> = { 0: '일요일', 1: '월요일', 3: '수요일', 5: '금요일', 6: '토요일' };
 
   let currentDay = kstDate.getUTCDay();
   let daysToAdd = 1;
@@ -102,6 +104,7 @@ async function sendTelegramNotification(
 • 월: Meta 광고
 • 수: 인스타그램 릴스
 • 금: 쓰레드
+• 토: AI 활용 팁
 • 일: 궁금해요`;
 
   if (type === 'success') {
@@ -263,7 +266,34 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 - "인스타그램 계정 정지 해제 방법 ${CURRENT_YEAR} (이의제기 템플릿)"
 - "페이스북 광고 계정 비활성화 복구하는 법"
 - "인스타그램 팔로워 급감 원인과 해결 방법"
-- "메타 비즈니스 관리자 오류 해결 총정리"`
+- "메타 비즈니스 관리자 오류 해결 총정리"`,
+
+    'ai-tips': `비즈니스에 AI를 활용하는 방법 관련 블로그 주제를 1개 제안하세요.
+
+**[중요]**: 최신 AI 트렌드와 실제 비즈니스 활용 사례를 기반으로 작성하세요. 구글에서 검색 가능한 최신 정보를 바탕으로 합니다.
+
+**[SEO 키워드 전략 - 필수 적용]**:
+- 네이버/구글에서 실제 검색량이 높은 AI 관련 롱테일 키워드 타겟팅
+- 제목 형식: "[AI 도구/기술명] + [활용 방법] + [연도/숫자]"
+- 검색 의도 반영: 정보형("~방법", "~하는 법"), 비교형("~vs~"), 리스트형("~가지", "TOP~")
+
+**주제 범위 (아래 중 하나 선택)**:
+1. ChatGPT 비즈니스 활용: 마케팅 카피 작성, 고객 응대 자동화, 콘텐츠 기획
+2. AI 이미지 생성: Midjourney, DALL-E, Stable Diffusion 활용법, 광고 이미지 제작
+3. AI 영상 제작: Runway, Pika, Sora 등 영상 생성 AI 활용
+4. AI 마케팅 자동화: AI 광고 최적화, 타겟팅, 성과 분석
+5. AI 글쓰기 도구: Claude, Gemini, Notion AI 활용법
+6. AI 생산성 도구: 업무 자동화, 회의록 정리, 이메일 작성
+7. AI 고객 서비스: 챗봇 구축, 고객 문의 자동 응답
+8. AI 데이터 분석: 엑셀/스프레드시트 AI 활용, 비즈니스 인사이트 추출
+
+**검색 최적화 제목 예시**:
+- "ChatGPT 마케팅 활용법 ${CURRENT_YEAR} 완벽 가이드 (실전 프롬프트 포함)"
+- "AI 이미지 생성 도구 비교 ${CURRENT_YEAR} - Midjourney vs DALL-E vs Stable Diffusion"
+- "비즈니스 ChatGPT 활용 사례 10가지 (업종별 정리)"
+- "AI로 광고 카피 작성하는 법 - 실전 프롬프트 템플릿"
+- "Canva AI 기능 활용법 ${CURRENT_YEAR} 완벽 정리"
+- "무료 AI 도구 추천 TOP 10 - 마케팅/디자인/글쓰기"`
   };
 
   const prompt = `${topicPrompts[category]}
@@ -368,7 +398,103 @@ async function generateContent(title: string, category: CategoryKey, seoKeywords
 
   let prompt: string;
 
-  if (category === 'faq') {
+  if (category === 'ai-tips') {
+    prompt = `AI 활용 전문가이자 비즈니스 컨설턴트로서 "${title}" 블로그 글을 작성하세요.
+
+${kw}
+
+**[중요 지침]**:
+- 구글에서 검색 가능한 최신 AI 트렌드와 실제 비즈니스 활용 사례를 바탕으로 작성하세요.
+- 실제 기업/마케터들이 AI를 활용한 성공 사례를 구체적으로 포함하세요.
+- 독자가 바로 따라할 수 있는 실전 가이드와 프롬프트 예시를 제공하세요.
+
+**[네이버 + 구글 동시 SEO 최적화 - 필수]**:
+1. **제목 최적화**: 메인 키워드를 제목 앞쪽에 배치, 40자 이내 권장
+2. **서론 300자 내 키워드 2회 이상**: 네이버 C-Rank 알고리즘 대응
+3. **H2/H3 제목에 키워드 포함**: 구글 크롤링 최적화
+4. **키워드 밀도 1.5-2.5%**: 자연스러운 키워드 배치
+5. **E-E-A-T 신호**: 전문성, 경험, 권위성, 신뢰성 표현 (데이터/사례 인용)
+
+**[콘텐츠 품질 가이드]**:
+- 단순 정보 나열 NO → 실제 활용 사례, 구체적 프롬프트 예시로 작성
+- "직접 테스트한 결과", "실제로 적용해본 후기" 같은 체험형 문체 사용
+- 독자가 바로 따라할 수 있는 구체적인 스텝과 프롬프트 템플릿 제공
+
+**[🎨 시각화 필수 - 가장 중요!]**
+글에서 수치, 비교, 통계, 순위, 요약 데이터가 나오면 **반드시 차트 컴포넌트로 시각화**하세요.
+표(테이블)는 절대 사용 금지! 아래 3가지 컴포넌트 중 선택:
+
+1. **ComparisonChart** - AI 도입 전후 비교, 효율성 비교
+\`\`\`jsx
+<ComparisonChart
+  title="AI 도입 전후 비교"
+  beforeLabel="기존 방식"
+  afterLabel="AI 활용 후"
+  data={[
+    { label: "작업 시간", before: "3시간", after: "30분", change: "-83%" },
+    { label: "비용", before: "50만원", after: "5만원", change: "-90%" }
+  ]}
+/>
+\`\`\`
+
+2. **BarChart** - AI 도구별 비교, 기능별 점수
+\`\`\`jsx
+<BarChart title="AI 도구별 추천 점수" unit="점" color="primary" data={[
+  { label: "ChatGPT", value: 90 },
+  { label: "Claude", value: 85 },
+  { label: "Gemini", value: 80 }
+]} />
+\`\`\`
+
+3. **StatCards** - 핵심 수치, AI 활용 팁 요약
+\`\`\`jsx
+<StatCards stats={[
+  { label: "시간 절약", value: "70%", icon: "⏱️", change: "+70%" },
+  { label: "비용 절감", value: "60%", icon: "💰", change: "+60%" }
+]} />
+\`\`\`
+
+**글 전체에서 최소 2개 이상의 차트를 사용하세요!**
+
+**구조**:
+[서론 - AI 도구의 중요성 + 핵심 키워드 2회 이상, 독자 문제 공감]
+
+## 1. [AI 도구/기술]이란? (정의와 핵심 기능)
+### 주요 특징과 장점
+
+## 2. 비즈니스 활용 사례 ← **여기서 ComparisonChart 사용**
+### 2-1. [활용 사례 1] - 구체적인 사용법과 결과
+### 2-2. [활용 사례 2] - 실제 기업/마케터 성공 사례
+
+## 3. 실전 활용 가이드 ← **여기서 StatCards 또는 BarChart 사용**
+### Step 1: [시작하기]
+### Step 2: [핵심 기능 활용]
+### Step 3: [고급 활용법]
+
+> 💡 **프롬프트 예시**: [실제 사용 가능한 프롬프트 템플릿]
+
+## 4. 주의사항 및 한계점
+
+## 5. 체크리스트
+- [ ] 항목1
+- [ ] 항목2
+
+## 핵심 요약
+
+---
+## 자주 묻는 질문 (FAQ)
+### Q1. [키워드 포함 질문]?
+### Q2~Q3
+
+---
+**[CTA]** AI 활용에 대해 더 궁금한 점이 있다면 폴라애드 전문가와 무료 상담을 받아보세요!
+
+분량: 2500-3500자, FAQ: 3개 이상
+**중요**: 표(테이블)는 사용하지 마세요. 데이터는 글머리 기호로 나열하세요.
+카테고리: ${categoryLabel}
+한국어로 작성하세요.`;
+
+  } else if (category === 'faq') {
     prompt = `구글 SEO 전문가이자 한국 디지털 마케팅 전문가로서 "${title}" 블로그 글을 작성하세요.
 
 ${kw}
