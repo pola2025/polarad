@@ -485,22 +485,61 @@ async function generateCaptionWithGemini(templateType: TemplateType, templateDat
     return getDefaultCaption(templateType, templateData);
   }
 
-  const prompt = `Instagram 게시물 캡션을 작성하세요.
+  const prompt = `당신은 PolarAD(폴라애드) 마케팅 회사의 Instagram 캡션 전문 작성자입니다.
+B2B 영업 대표님들을 위한 자동화 접수 시스템을 제공하는 회사입니다.
 
 **컨텐츠 정보**:
 - 타입: ${templateType}
 - 헤드라인: ${templateData.headline}
 - 서브헤드라인: ${templateData.subHeadline || ''}
+- 아이템: ${JSON.stringify(templateData.items || [])}
 
-**요구사항**:
-1. 300자 이내
-2. 첫 줄에 핵심 메시지 + 이모지
-3. 줄바꿈으로 가독성 확보
-4. "━━━━━━━━━━━" 구분선 사용
-5. 마지막에 "💬 무료 상담 → 프로필 링크" 포함
-6. 해시태그 제외 (별도 추가됨)
+**캡션 작성 가이드라인**:
 
-캡션만 출력하세요.`;
+1. **총 길이**: 900~1200자 (해시태그 제외)
+
+2. **인스타그램 가로폭 최적화**:
+   - 한 줄당 25~30자 이내로 작성
+   - 너무 긴 문장은 자연스럽게 줄바꿈
+   - 빈 줄로 문단 구분하여 가독성 확보
+
+3. **구조 (필수)**:
+
+[도입부 - 3~4줄]
+- 핵심 질문이나 공감 포인트로 시작
+- 이모지 1~2개 활용
+- 독자의 관심을 끄는 후킹
+
+[본문 - 8~12줄]
+- 문제 상황 설명
+- 왜 이것이 중요한지
+- 폴라애드의 솔루션이 어떻게 도움이 되는지
+- 구체적인 예시나 수치 언급
+- 각 문단은 2~3줄 후 빈 줄
+
+[체크리스트 섹션]
+━━━━━━━━━━━━━━━━━
+✅ 포인트 1
+✅ 포인트 2
+✅ 포인트 3
+━━━━━━━━━━━━━━━━━
+
+[마무리 - 2~3줄]
+- 행동 유도 메시지
+- "💬 무료 상담 → 프로필 링크"로 마무리
+
+4. **톤앤매너**:
+- 전문적이면서 친근하게
+- B2B 영업 대표님 대상
+- "~하세요", "~입니다" 존댓말
+- 과장 없이 신뢰감 있게
+
+5. **금지사항**:
+- 해시태그 포함 금지 (별도 추가됨)
+- 이모지 과다 사용 금지 (전체 5~7개 이내)
+- 한 줄에 35자 이상 금지
+
+캡션만 출력하세요. 다른 설명 없이 캡션 텍스트만 작성하세요.`;
 
   try {
     const res = await fetch(
@@ -510,7 +549,7 @@ async function generateCaptionWithGemini(templateType: TemplateType, templateDat
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
+          generationConfig: { temperature: 0.75, maxOutputTokens: 1500 },
         }),
       }
     );
