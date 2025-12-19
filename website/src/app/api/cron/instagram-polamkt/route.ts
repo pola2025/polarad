@@ -75,6 +75,13 @@ async function sendTelegramNotification(
 
 // HTML을 이미지로 캡쳐 (여러 방법 시도)
 async function captureHtmlToImage(html: string): Promise<Buffer | null> {
+  // 디버깅: 환경변수 확인
+  console.log('🔍 환경변수 확인:', {
+    HCTI_API_USER_ID: process.env.HCTI_API_USER_ID ? '설정됨' : '없음',
+    HCTI_API_KEY: process.env.HCTI_API_KEY ? '설정됨' : '없음',
+    SCREENSHOT_SERVICE_URL: SCREENSHOT_SERVICE_URL ? '설정됨' : '없음',
+  });
+
   // 방법 1: 외부 스크린샷 서비스 사용
   if (SCREENSHOT_SERVICE_URL) {
     try {
@@ -102,8 +109,14 @@ async function captureHtmlToImage(html: string): Promise<Buffer | null> {
   const HCTI_API_USER_ID = process.env.HCTI_API_USER_ID;
   const HCTI_API_KEY = process.env.HCTI_API_KEY;
 
+  console.log('🔍 HCTI 환경변수 상세:', {
+    userIdLength: HCTI_API_USER_ID?.length,
+    keyLength: HCTI_API_KEY?.length
+  });
+
   if (HCTI_API_USER_ID && HCTI_API_KEY) {
     try {
+      console.log('📸 htmlcsstoimage API 호출 시작...');
       const response = await fetch('https://hcti.io/v1/image', {
         method: 'POST',
         headers: {
@@ -120,16 +133,23 @@ async function captureHtmlToImage(html: string): Promise<Buffer | null> {
       });
 
       const result = await response.json();
+      console.log('📸 htmlcsstoimage 응답:', result);
 
       if (result.url) {
         // 이미지 URL에서 다운로드
+        console.log('📥 이미지 다운로드 중:', result.url);
         const imageResponse = await fetch(result.url);
         const arrayBuffer = await imageResponse.arrayBuffer();
+        console.log('✅ 이미지 다운로드 완료, 크기:', arrayBuffer.byteLength);
         return Buffer.from(arrayBuffer);
+      } else {
+        console.error('❌ htmlcsstoimage URL 없음:', result);
       }
     } catch (error) {
       console.error('htmlcsstoimage 실패:', error);
     }
+  } else {
+    console.log('⚠️ HCTI 환경변수 미설정, 건너뜀');
   }
 
   // 방법 3: screenshotone.com API 사용
