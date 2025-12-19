@@ -43,30 +43,126 @@ export type TemplateType =
   | 'cta';       // 마무리
 
 /**
+ * 색상 테마 정의 - 다양한 스타일 변화
+ */
+const COLOR_THEMES = {
+  blue: {
+    primary: '#3b82f6',
+    primaryHover: '#2563eb',
+    gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+    aurora: 'radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)',
+    accent: '#60a5fa',
+    bg: 'linear-gradient(145deg, #0f172a 0%, #1e293b 100%)',
+  },
+  purple: {
+    primary: '#8b5cf6',
+    primaryHover: '#7c3aed',
+    gradient: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+    aurora: 'radial-gradient(ellipse at 30% 20%, rgba(139, 92, 246, 0.3) 0%, transparent 50%)',
+    accent: '#a78bfa',
+    bg: 'linear-gradient(145deg, #1e1b4b 0%, #312e81 100%)',
+  },
+  green: {
+    primary: '#10b981',
+    primaryHover: '#059669',
+    gradient: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
+    aurora: 'radial-gradient(ellipse at 30% 20%, rgba(16, 185, 129, 0.3) 0%, transparent 50%)',
+    accent: '#34d399',
+    bg: 'linear-gradient(145deg, #022c22 0%, #064e3b 100%)',
+  },
+  orange: {
+    primary: '#f59e0b',
+    primaryHover: '#d97706',
+    gradient: 'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)',
+    aurora: 'radial-gradient(ellipse at 30% 20%, rgba(245, 158, 11, 0.3) 0%, transparent 50%)',
+    accent: '#fbbf24',
+    bg: 'linear-gradient(145deg, #1c1917 0%, #292524 100%)',
+  },
+  pink: {
+    primary: '#ec4899',
+    primaryHover: '#db2777',
+    gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
+    aurora: 'radial-gradient(ellipse at 30% 20%, rgba(236, 72, 153, 0.3) 0%, transparent 50%)',
+    accent: '#f472b6',
+    bg: 'linear-gradient(145deg, #1f1218 0%, #3b1a2e 100%)',
+  },
+  cyan: {
+    primary: '#06b6d4',
+    primaryHover: '#0891b2',
+    gradient: 'linear-gradient(135deg, #06b6d4 0%, #0e7490 100%)',
+    aurora: 'radial-gradient(ellipse at 30% 20%, rgba(6, 182, 212, 0.3) 0%, transparent 50%)',
+    accent: '#22d3ee',
+    bg: 'linear-gradient(145deg, #0c1a1e 0%, #164e63 100%)',
+  },
+};
+
+const THEME_KEYS = Object.keys(COLOR_THEMES) as Array<keyof typeof COLOR_THEMES>;
+
+type ThemeType = typeof COLOR_THEMES[keyof typeof COLOR_THEMES];
+
+/**
+ * 랜덤 테마 선택
+ */
+function getRandomTheme() {
+  const randomKey = THEME_KEYS[Math.floor(Math.random() * THEME_KEYS.length)];
+  return COLOR_THEMES[randomKey];
+}
+
+/**
+ * 배경 패턴 스타일 (랜덤)
+ */
+function getRandomBackgroundPattern(): string {
+  const patterns = [
+    // 그리드 패턴
+    `background: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+     background-size: 60px 60px;`,
+    // 도트 패턴
+    `background: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+     background-size: 30px 30px;`,
+    // 대각선 패턴
+    `background: repeating-linear-gradient(
+       45deg,
+       transparent,
+       transparent 30px,
+       rgba(255,255,255,0.02) 30px,
+       rgba(255,255,255,0.02) 60px
+     );`,
+    // 노이즈 패턴 (없음)
+    '',
+    // 원형 그라데이션
+    `background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%);`,
+  ];
+  return patterns[Math.floor(Math.random() * patterns.length)];
+}
+
+/**
  * 템플릿 타입별 HTML 생성
  */
 export function generateTemplateHtml(type: TemplateType, data: TemplateData): string {
   const baseStyles = getBaseStyles();
+  const theme = getRandomTheme();
+  const bgPattern = getRandomBackgroundPattern();
 
   switch (type) {
     case 'intro':
-      return generateIntroTemplate(data, baseStyles);
+      return generateIntroTemplate(data, baseStyles, theme, bgPattern);
     case 'problem':
-      return generateProblemTemplate(data, baseStyles);
+      return generateProblemTemplate(data, baseStyles, theme, bgPattern);
     case 'solution':
-      return generateSolutionTemplate(data, baseStyles);
+      return generateSolutionTemplate(data, baseStyles, theme, bgPattern);
     case 'feature':
-      return generateFeatureTemplate(data, baseStyles);
+      return generateFeatureTemplate(data, baseStyles, theme, bgPattern);
     case 'stats':
-      return generateStatsTemplate(data, baseStyles);
+      return generateStatsTemplate(data, baseStyles, theme, bgPattern);
     case 'promo':
-      return generatePromoTemplate(data, baseStyles);
+      return generatePromoTemplate(data, baseStyles, theme, bgPattern);
     case 'service':
-      return generateServiceTemplate(data, baseStyles);
+      return generateServiceTemplate(data, baseStyles, theme, bgPattern);
     case 'cta':
-      return generateCtaTemplate(data, baseStyles);
+      return generateCtaTemplate(data, baseStyles, theme, bgPattern);
     default:
-      return generateIntroTemplate(data, baseStyles);
+      return generateIntroTemplate(data, baseStyles, theme, bgPattern);
   }
 }
 
@@ -139,7 +235,7 @@ function getBaseStyles(): string {
   `;
 }
 
-function generateIntroTemplate(data: TemplateData, baseStyles: string): string {
+function generateIntroTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
     { text: '홈페이지' },
     { text: 'Meta 광고' },
@@ -154,7 +250,7 @@ function generateIntroTemplate(data: TemplateData, baseStyles: string): string {
   <style>
     ${baseStyles}
     .instagram-post {
-      background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      background: ${theme.bg};
       align-items: center;
       justify-content: center;
     }
@@ -163,10 +259,10 @@ function generateIntroTemplate(data: TemplateData, baseStyles: string): string {
       position: absolute;
       top: -50%; left: -50%;
       width: 200%; height: 200%;
-      background:
-        radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.25) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(34, 197, 94, 0.15) 0%, transparent 60%);
+      background: ${theme.aurora};
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .content {
       text-align: center;
@@ -202,7 +298,7 @@ function generateIntroTemplate(data: TemplateData, baseStyles: string): string {
       line-height: 1.3;
     }
     .headline .highlight {
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: ${theme.gradient};
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -237,12 +333,12 @@ function generateIntroTemplate(data: TemplateData, baseStyles: string): string {
     .cta {
       margin-top: 30px;
       padding: 24px 60px;
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: ${theme.gradient};
       border-radius: 60px;
       font-size: 26px;
       font-weight: 700;
       color: white;
-      box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 15px 40px ${theme.primary}66;
     }
     .website {
       position: absolute;
@@ -284,7 +380,7 @@ function generateIntroTemplate(data: TemplateData, baseStyles: string): string {
 </html>`;
 }
 
-function generateProblemTemplate(data: TemplateData, baseStyles: string): string {
+function generateProblemTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
     { text: '공유 DB로', highlight: '경쟁만 치열' },
     { text: '', highlight: '미팅 성사율 5% 미만' },
@@ -299,7 +395,7 @@ function generateProblemTemplate(data: TemplateData, baseStyles: string): string
   <style>
     ${baseStyles}
     .instagram-post {
-      background: #0a0a0a;
+      background: ${theme.bg};
     }
     .bg-effect::before {
       content: '';
@@ -307,6 +403,9 @@ function generateProblemTemplate(data: TemplateData, baseStyles: string): string
       top: -20%; right: -20%;
       width: 80%; height: 80%;
       background: radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%);
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .header {
       display: flex;
@@ -375,13 +474,13 @@ function generateProblemTemplate(data: TemplateData, baseStyles: string): string
       align-items: center;
       gap: 20px;
       padding: 30px 40px;
-      background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.1) 100%);
-      border: 1px solid rgba(59,130,246,0.2);
+      background: linear-gradient(135deg, ${theme.primary}1a 0%, ${theme.accent}1a 100%);
+      border: 1px solid ${theme.primary}33;
       border-radius: 20px;
     }
     .solution-icon {
       width: 60px; height: 60px;
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: ${theme.gradient};
       border-radius: 16px;
       display: flex;
       align-items: center;
@@ -433,7 +532,7 @@ function generateProblemTemplate(data: TemplateData, baseStyles: string): string
 </html>`;
 }
 
-function generateSolutionTemplate(data: TemplateData, baseStyles: string): string {
+function generateSolutionTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
     { icon: '🎯', text: 'Conversion Basecamp', highlight: '고객을 설득하고 DB를 추출하는 전환 기지' },
     { icon: '🧲', text: 'Lead Magnet Engine', highlight: '잠재 고객을 정밀 타겟팅하여 유입' },
@@ -448,15 +547,16 @@ function generateSolutionTemplate(data: TemplateData, baseStyles: string): strin
   <style>
     ${baseStyles}
     .instagram-post {
-      background: linear-gradient(180deg, #0f172a 0%, #1a1a2e 100%);
+      background: ${theme.bg};
     }
     .aurora::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background:
-        radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+      background: ${theme.aurora};
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .header {
       display: flex;
@@ -476,7 +576,7 @@ function generateSolutionTemplate(data: TemplateData, baseStyles: string): strin
       margin-bottom: 16px;
     }
     .title .gradient {
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: ${theme.gradient};
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -498,7 +598,7 @@ function generateSolutionTemplate(data: TemplateData, baseStyles: string): strin
     }
     .card-icon {
       width: 72px; height: 72px;
-      background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(139,92,246,0.2) 100%);
+      background: linear-gradient(135deg, ${theme.primary}33 0%, ${theme.accent}33 100%);
       border-radius: 18px;
       display: flex;
       align-items: center;
@@ -521,6 +621,11 @@ function generateSolutionTemplate(data: TemplateData, baseStyles: string): strin
       margin-top: 30px;
     }
     .promo-text { font-size: 24px; color: #fbbf24; font-weight: 700; }
+    .badge {
+      background: ${theme.primary}1a;
+      border-color: ${theme.primary}4d;
+      color: ${theme.primary};
+    }
   </style>
 </head>
 <body>
@@ -565,7 +670,7 @@ function generateSolutionTemplate(data: TemplateData, baseStyles: string): strin
 </html>`;
 }
 
-function generateFeatureTemplate(data: TemplateData, baseStyles: string): string {
+function generateFeatureTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
     { icon: '🔔', text: '실시간 알림' },
     { icon: '📂', text: '자동 분류' },
@@ -580,7 +685,7 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string): string
   <style>
     ${baseStyles}
     .instagram-post {
-      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+      background: ${theme.bg};
       align-items: center;
       justify-content: center;
     }
@@ -590,7 +695,10 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string): string
       top: 20%; left: 50%;
       transform: translateX(-50%);
       width: 600px; height: 400px;
-      background: radial-gradient(ellipse, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+      background: ${theme.aurora};
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .content {
       text-align: center;
@@ -600,13 +708,13 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string): string
     }
     .icon-large {
       width: 120px; height: 120px;
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: ${theme.gradient};
       border-radius: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 56px;
-      box-shadow: 0 20px 60px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 20px 60px ${theme.primary}66;
     }
     .title {
       font-size: 58px;
@@ -614,7 +722,7 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string): string
       color: #fff;
       line-height: 1.3;
     }
-    .title .blue { color: #3b82f6; }
+    .title .blue { color: ${theme.primary}; }
     .subtitle {
       font-size: 26px;
       color: #94a3b8;
@@ -637,7 +745,7 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string): string
     }
     .feature-icon {
       width: 64px; height: 64px;
-      background: rgba(59, 130, 246, 0.1);
+      background: ${theme.primary}1a;
       border-radius: 16px;
       display: flex;
       align-items: center;
@@ -651,6 +759,7 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string): string
       margin-top: 30px;
     }
     .bottom-text strong { color: #fff; }
+    .website span { color: ${theme.primary}; }
   </style>
 </head>
 <body>
@@ -679,7 +788,7 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string): string
 </html>`;
 }
 
-function generateStatsTemplate(data: TemplateData, baseStyles: string): string {
+function generateStatsTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const stats = data.stats || [
     { label: '총 지출', value: '₩2.8M', change: '예산 대비 94%' },
     { label: 'DB 수집', value: '127건', change: '▲ 23% vs 지난주' },
@@ -694,22 +803,25 @@ function generateStatsTemplate(data: TemplateData, baseStyles: string): string {
   <style>
     ${baseStyles}
     .instagram-post {
-      background: #0a0a0f;
+      background: ${theme.bg};
     }
     .grid-bg {
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-        linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+        linear-gradient(90deg, ${theme.primary}08 1px, transparent 1px),
+        linear-gradient(${theme.primary}08 1px, transparent 1px);
       background-size: 40px 40px;
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .glow {
       position: absolute;
       top: 20%; left: 50%;
       transform: translateX(-50%);
       width: 600px; height: 400px;
-      background: radial-gradient(ellipse, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+      background: ${theme.aurora};
     }
     .header {
       display: flex;
@@ -728,7 +840,7 @@ function generateStatsTemplate(data: TemplateData, baseStyles: string): string {
       line-height: 1.25;
       margin-bottom: 20px;
     }
-    .title .blue { color: #3b82f6; }
+    .title .blue { color: ${theme.primary}; }
     .subtitle { font-size: 26px; color: #64748b; }
     .dashboard {
       flex: 1;
@@ -795,10 +907,16 @@ function generateStatsTemplate(data: TemplateData, baseStyles: string): string {
     .bar {
       width: 100%;
       max-width: 60px;
-      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+      background: ${theme.gradient};
       border-radius: 6px 6px 0 0;
     }
     .bar-label { font-size: 16px; color: #64748b; }
+    .badge {
+      background: ${theme.primary}1a;
+      border-color: ${theme.primary}4d;
+      color: ${theme.primary};
+    }
+    .website span { color: ${theme.primary}; }
   </style>
 </head>
 <body>
@@ -853,7 +971,7 @@ function generateStatsTemplate(data: TemplateData, baseStyles: string): string {
 </html>`;
 }
 
-function generatePromoTemplate(data: TemplateData, baseStyles: string): string {
+function generatePromoTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   return `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -862,7 +980,7 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string): string {
   <style>
     ${baseStyles}
     .instagram-post {
-      background: linear-gradient(145deg, #0f172a 0%, #1e1e3f 50%, #0f172a 100%);
+      background: ${theme.bg};
       align-items: center;
       justify-content: center;
     }
@@ -870,9 +988,10 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string): string {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background:
-        radial-gradient(ellipse at 30% 30%, rgba(234, 179, 8, 0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 70%, rgba(239, 68, 68, 0.15) 0%, transparent 50%);
+      background: ${theme.aurora};
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .content {
       text-align: center;
@@ -900,6 +1019,11 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string): string {
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    .main-text .highlight {
+      background: ${theme.gradient};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
     .sub-text {
       font-size: 32px;
       color: #94a3b8;
@@ -908,7 +1032,7 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string): string {
     .benefit-box {
       padding: 40px 60px;
       background: rgba(255,255,255,0.03);
-      border: 2px solid rgba(234,179,8,0.3);
+      border: 2px solid ${theme.primary}4d;
       border-radius: 24px;
       margin: 20px 0;
     }
@@ -944,6 +1068,7 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string): string {
       color: #0f172a;
       box-shadow: 0 15px 40px rgba(234, 179, 8, 0.4);
     }
+    .website span { color: ${theme.primary}; }
   </style>
 </head>
 <body>
@@ -968,7 +1093,7 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string): string {
 </html>`;
 }
 
-function generateServiceTemplate(data: TemplateData, baseStyles: string): string {
+function generateServiceTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
     { icon: '📱', text: '반응형 웹', highlight: 'PC, 모바일 모두 최적화' },
     { icon: '🔍', text: 'SEO 최적화', highlight: '검색엔진 상위 노출' },
@@ -983,7 +1108,7 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string): string
   <style>
     ${baseStyles}
     .instagram-post {
-      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      background: ${theme.bg};
     }
     .aurora::before {
       content: '';
@@ -991,7 +1116,10 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string): string
       top: 10%; left: 50%;
       transform: translateX(-50%);
       width: 80%; height: 60%;
-      background: radial-gradient(ellipse, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+      background: ${theme.aurora};
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .header {
       display: flex;
@@ -1010,7 +1138,7 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string): string
       line-height: 1.3;
       margin-bottom: 20px;
     }
-    .title .blue { color: #3b82f6; }
+    .title .blue { color: ${theme.primary}; }
     .subtitle {
       font-size: 26px;
       color: #64748b;
@@ -1033,7 +1161,7 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string): string
     }
     .feature-icon {
       width: 64px; height: 64px;
-      background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(139,92,246,0.2) 100%);
+      background: linear-gradient(135deg, ${theme.primary}33 0%, ${theme.accent}33 100%);
       border-radius: 16px;
       display: flex;
       align-items: center;
@@ -1049,6 +1177,12 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string): string
       margin-top: 40px;
     }
     .cta-text { font-size: 22px; color: #64748b; }
+    .badge {
+      background: ${theme.primary}1a;
+      border-color: ${theme.primary}4d;
+      color: ${theme.primary};
+    }
+    .website span { color: ${theme.primary}; }
   </style>
 </head>
 <body>
@@ -1090,7 +1224,7 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string): string
 </html>`;
 }
 
-function generateCtaTemplate(data: TemplateData, baseStyles: string): string {
+function generateCtaTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
     { icon: '🖥️', text: '홈페이지' },
     { icon: '📱', text: 'Meta 광고' },
@@ -1106,7 +1240,7 @@ function generateCtaTemplate(data: TemplateData, baseStyles: string): string {
   <style>
     ${baseStyles}
     .instagram-post {
-      background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      background: ${theme.bg};
       align-items: center;
       justify-content: center;
     }
@@ -1114,9 +1248,10 @@ function generateCtaTemplate(data: TemplateData, baseStyles: string): string {
       content: '';
       position: absolute;
       inset: 0;
-      background:
-        radial-gradient(ellipse at 50% 30%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+      background: ${theme.aurora};
+    }
+    .grid-pattern {
+      ${bgPattern}
     }
     .content {
       text-align: center;
@@ -1132,7 +1267,7 @@ function generateCtaTemplate(data: TemplateData, baseStyles: string): string {
     }
     .quote-mark {
       font-size: 80px;
-      color: #3b82f6;
+      color: ${theme.primary};
       line-height: 1;
     }
     .sub-quote {
@@ -1169,13 +1304,14 @@ function generateCtaTemplate(data: TemplateData, baseStyles: string): string {
     .bottom-message strong { color: #fff; }
     .cta-button {
       padding: 26px 60px;
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: ${theme.gradient};
       border-radius: 60px;
       font-size: 26px;
       font-weight: 700;
       color: white;
-      box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 15px 40px ${theme.primary}66;
     }
+    .website span { color: ${theme.primary}; }
   </style>
 </head>
 <body>
