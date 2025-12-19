@@ -355,7 +355,7 @@ function generateIntroTemplate(data: TemplateData, baseStyles: string, theme: Th
     <div class="content">
       <div class="logo-area">
         <div class="logo-icon">
-          <img src="https://polarad.co.kr/images/polarad-logo.png" alt="PolarAD">
+          <img src="https://www.polarad.co.kr/instagram/logo.png" alt="PolarAD">
         </div>
         <div class="brand-name-large">PolarAD</div>
         <div class="brand-tagline">폴라애드 마케팅</div>
@@ -522,7 +522,7 @@ function generateProblemTemplate(data: TemplateData, baseStyles: string, theme: 
       </div>
       <div class="footer">
         <div class="brand">
-          <div class="logo"><img src="https://polarad.co.kr/images/polarad-logo.png" alt="PolarAD"></div>
+          <div class="logo"><img src="https://www.polarad.co.kr/instagram/logo.png" alt="PolarAD"></div>
           <span class="brand-name">PolarAD</span>
         </div>
       </div>
@@ -635,7 +635,7 @@ function generateSolutionTemplate(data: TemplateData, baseStyles: string, theme:
     <div class="content">
       <div class="header">
         <div class="brand">
-          <div class="logo"><img src="https://polarad.co.kr/images/polarad-logo.png" alt="PolarAD"></div>
+          <div class="logo"><img src="https://www.polarad.co.kr/instagram/logo.png" alt="PolarAD"></div>
           <span class="brand-name">PolarAD</span>
         </div>
         <div class="badge">${data.badge || '✨ 올인원 패키지'}</div>
@@ -926,7 +926,7 @@ function generateStatsTemplate(data: TemplateData, baseStyles: string, theme: Th
     <div class="content">
       <div class="header">
         <div class="brand">
-          <div class="logo"><img src="https://polarad.co.kr/images/polarad-logo.png" alt="PolarAD"></div>
+          <div class="logo"><img src="https://www.polarad.co.kr/instagram/logo.png" alt="PolarAD"></div>
           <span class="brand-name">PolarAD</span>
         </div>
         <div class="badge">${data.badge || '📊 자동 리포팅'}</div>
@@ -1192,7 +1192,7 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string, theme: 
     <div class="content">
       <div class="header">
         <div class="brand">
-          <div class="logo"><img src="https://polarad.co.kr/images/polarad-logo.png" alt="PolarAD"></div>
+          <div class="logo"><img src="https://www.polarad.co.kr/instagram/logo.png" alt="PolarAD"></div>
           <span class="brand-name">PolarAD</span>
         </div>
         <div class="badge">${data.badge || '🖥️ 서비스 소개'}</div>
