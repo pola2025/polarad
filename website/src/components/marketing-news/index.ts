@@ -4,3 +4,4 @@ export { ArticleCTA } from './ArticleCTA';
 export { ShareButtons } from './ShareButtons';
 export { RelatedArticles } from './RelatedArticles';
 export { ConsultModal } from './ConsultModal';
+export { MarkdownContent } from './MarkdownContent';
