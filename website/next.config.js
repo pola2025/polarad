@@ -9,7 +9,15 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'polaad.co.kr',
+        hostname: 'polarad.co.kr',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.polarad.co.kr',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
       },
     ],
   },
@@ -60,10 +68,10 @@ const nextConfig = {
         has: [
           {
             type: 'host',
-            value: 'www.polaad.co.kr',
+            value: 'www.polarad.co.kr',
           },
         ],
-        destination: 'https://polaad.co.kr/:path*',
+        destination: 'https://polarad.co.kr/:path*',
         permanent: true,
       },
     ]
