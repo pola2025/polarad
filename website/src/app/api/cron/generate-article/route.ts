@@ -13,6 +13,7 @@ import {
   saveUsedCombo,
   checkImageDuplicate,
 } from '@/lib/image-variation';
+import { CATEGORIES as ALL_CATEGORIES, type ArticleCategory } from '@/lib/marketing-news';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -22,15 +23,8 @@ const CRON_SECRET = process.env.CRON_SECRET;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = '-1003280236380'; // 마케팅 소식 알림 채널
 
-const CATEGORIES = {
-  'meta-ads': { label: 'Meta 광고', folder: 'meta-ads' },
-  'instagram-reels': { label: '인스타그램 릴스', folder: 'instagram-reels' },
-  'threads': { label: '쓰레드', folder: 'threads' },
-  'faq': { label: '궁금해요', folder: 'faq' },
-  'ai-tips': { label: 'AI 활용 팁', folder: 'ai-tips' }
-} as const;
-
-type CategoryKey = keyof typeof CATEGORIES;
+// 자동 생성에서 사용하는 카테고리 (types.ts의 CATEGORIES 하위 집합)
+type CategoryKey = 'meta-ads' | 'instagram-reels' | 'threads' | 'faq' | 'ai-tips';
 
 // 현재 연도 가져오기 (KST 기준 동적 계산)
 function getCurrentYear(): string {
@@ -78,7 +72,7 @@ function getNextScheduleDate(): { date: string; dayName: string; category: strin
   return {
     date: dateStr,
     dayName: dayNames[currentDay] || '',
-    category: CATEGORIES[DAY_CATEGORY_MAP[currentDay]]?.label || ''
+    category: ALL_CATEGORIES[DAY_CATEGORY_MAP[currentDay]]?.label || ''
   };
 }
 
@@ -180,7 +174,7 @@ function generateSlug(title: string): string {
 
 // AI가 주제 자동 생성
 async function generateTopic(category: CategoryKey): Promise<string> {
-  const categoryLabel = CATEGORIES[category].label;
+  const categoryLabel = ALL_CATEGORIES[category].label;
 
   const topicPrompts: Record<CategoryKey, string> = {
     'meta-ads': `Meta(페이스북/인스타그램) 광고 또는 인스타그램 활용 관련 블로그 주제를 1개 제안하세요.
@@ -391,7 +385,7 @@ JSON 형식으로만 응답: {"primary":"메인키워드","secondary":["보조�
 
 // 콘텐츠 생성
 async function generateContent(title: string, category: CategoryKey, seoKeywords: { primary?: string; secondary?: string[] }) {
-  const categoryLabel = CATEGORIES[category]?.label || category;
+  const categoryLabel = ALL_CATEGORIES[category]?.label || category;
   const kw = seoKeywords.primary
     ? `**SEO 키워드**: 메인: ${seoKeywords.primary}, 보조: ${seoKeywords.secondary?.join(', ') || ''}`
     : '';
@@ -949,7 +943,7 @@ export async function GET(request: Request) {
   const dayOfWeek = kstDate.getUTCDay();
 
   // 카테고리 결정: force 파라미터 > 요일별 매핑
-  let category: CategoryKey | undefined = forceCategory && CATEGORIES[forceCategory] ? forceCategory : DAY_CATEGORY_MAP[dayOfWeek];
+  let category: CategoryKey | undefined = forceCategory && ALL_CATEGORIES[forceCategory as ArticleCategory] ? forceCategory : DAY_CATEGORY_MAP[dayOfWeek];
 
   // 요일 체크 (force가 아닐 때만)
   if (!forceRun && !category) {
@@ -1034,7 +1028,7 @@ ${content}
 `;
 
     // 7. GitHub에 커밋 (website/ 폴더 내에 저장)
-    const categoryFolder = CATEGORIES[category].folder;
+    const categoryFolder = ALL_CATEGORIES[category].folder;
     const mdxPath = `website/content/marketing-news/${categoryFolder}/${slug}.mdx`;
 
     console.log('📤 GitHub 커밋...');
@@ -1082,7 +1076,7 @@ ${content}
     await sendTelegramNotification('success', {
       title: seoTitle,
       slug,
-      category: CATEGORIES[category].label
+      category: ALL_CATEGORIES[category].label
     });
 
     return NextResponse.json(result);
