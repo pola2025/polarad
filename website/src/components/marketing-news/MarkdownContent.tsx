@@ -157,7 +157,7 @@ const markdownComponents: Components = {
 
   // 문단
   p: ({ children }) => (
-    <p className="text-gray-700 leading-relaxed mb-4">{children}</p>
+    <p className="text-gray-700 leading-relaxed mb-4 break-words">{children}</p>
   ),
 
   // 링크
@@ -228,15 +228,15 @@ const markdownComponents: Components = {
     );
   },
   pre: ({ children }) => (
-    <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4">
+    <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 -mx-4 md:mx-0 text-sm">
       {children}
     </pre>
   ),
 
   // 테이블
   table: ({ children }) => (
-    <div className="overflow-x-auto my-6">
-      <table className="min-w-full border-collapse border border-gray-200 rounded-lg">
+    <div className="overflow-x-auto my-6 -mx-4 px-4 md:mx-0 md:px-0">
+      <table className="min-w-full border-collapse border border-gray-200 rounded-lg text-sm md:text-base">
         {children}
       </table>
     </div>

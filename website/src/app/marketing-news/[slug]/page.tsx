@@ -164,7 +164,7 @@ export default async function ArticlePage({ params }: PageProps) {
           <div className="container py-12 md:py-16">
             <div className="grid lg:grid-cols-[1fr_300px] gap-12 xl:gap-16">
               {/* Main Content */}
-              <div className="max-w-3xl">
+              <div className="max-w-3xl min-w-0 overflow-hidden">
                 {/* Thumbnail */}
                 <div className="relative aspect-video rounded-2xl overflow-hidden mb-10 border border-gray-200">
                   <Image
