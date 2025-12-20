@@ -43,7 +43,7 @@ export async function getArticle(slug: string): Promise<Article | null> {
   ];
 
   // 카테고리별 폴더 내 파일도 확인
-  const categories = ['meta-ads', 'instagram-reels', 'threads', 'google-ads', 'marketing-trends', 'ai-trends', 'faq'];
+  const categories = ['meta-ads', 'instagram-reels', 'threads', 'google-ads', 'marketing-trends', 'ai-trends', 'ai-tips', 'faq'];
   for (const category of categories) {
     possiblePaths.push(path.join(CONTENT_DIR, category, `${slug}.mdx`));
   }
