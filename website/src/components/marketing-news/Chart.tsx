@@ -2,7 +2,7 @@
 
 interface ComparisonChartProps {
   title: string;
-  data: {
+  data?: {
     label: string;
     before: number | string;
     after: number | string;
@@ -18,6 +18,11 @@ export function ComparisonChart({
   beforeLabel = 'Before',
   afterLabel = 'After'
 }: ComparisonChartProps) {
+  // 방어적 코딩: data가 없거나 배열이 아니면 렌더링하지 않음
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
   return (
     <div className="my-8 p-6 bg-gray-50 rounded-2xl">
       <h4 className="text-lg font-bold text-gray-900 mb-6 text-center">{title}</h4>
@@ -55,7 +60,7 @@ export function ComparisonChart({
 
 interface BarChartProps {
   title: string;
-  data: {
+  data?: {
     label: string;
     value: number;
     maxValue?: number;
@@ -65,6 +70,11 @@ interface BarChartProps {
 }
 
 export function BarChart({ title, data, unit = '', color = 'primary' }: BarChartProps) {
+  // 방어적 코딩: data가 없거나 배열이 아니면 렌더링하지 않음
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
   const maxValue = Math.max(...data.map(d => d.maxValue || d.value));
 
   const colorClasses = {
@@ -97,7 +107,7 @@ export function BarChart({ title, data, unit = '', color = 'primary' }: BarChart
 }
 
 interface StatCardProps {
-  stats: {
+  stats?: {
     label: string;
     value: string;
     change?: string;
@@ -106,6 +116,11 @@ interface StatCardProps {
 }
 
 export function StatCards({ stats }: StatCardProps) {
+  // 방어적 코딩: stats가 없거나 배열이 아니면 렌더링하지 않음
+  if (!stats || !Array.isArray(stats) || stats.length === 0) {
+    return null;
+  }
+
   return (
     <div className="my-8 grid grid-cols-2 md:grid-cols-3 gap-4">
       {stats.map((stat, index) => (
