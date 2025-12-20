@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/instagram-polamkt",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/content-generator/cron",
+      "schedule": "0 0 * * *"
     }
   ]
 }
