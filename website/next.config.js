@@ -60,22 +60,7 @@ const nextConfig = {
     ]
   },
 
-  // 리다이렉트 (www 제거)
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.polarad.co.kr',
-          },
-        ],
-        destination: 'https://polarad.co.kr/:path*',
-        permanent: true,
-      },
-    ]
-  },
+  // 리다이렉트는 Vercel에서 처리 (next.config.js와 충돌 방지)
 }
 
 module.exports = nextConfig
