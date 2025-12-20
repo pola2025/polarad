@@ -161,7 +161,7 @@ Create a visually appealing marketing thumbnail with modern design.`
     }],
     generationConfig: {
       responseModalities: ["image", "text"],
-    },
+    } as unknown as import("@google/generative-ai").GenerationConfig,
   })
 
   const response = result.response

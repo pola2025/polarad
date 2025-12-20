@@ -272,5 +272,3 @@ export async function GET(request: Request) {
   }
 }
 
-// Export for cron usage
-export { getCurrentIndex, saveCurrentIndex, generateSourceArticles, saveToAirtable }
