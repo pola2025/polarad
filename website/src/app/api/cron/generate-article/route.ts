@@ -24,34 +24,36 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = '-1003280236380'; // 마케팅 소식 알림 채널
 
 // 자동 생성에서 사용하는 카테고리 (types.ts의 CATEGORIES 하위 집합)
-type CategoryKey = 'meta-ads' | 'instagram-reels' | 'threads' | 'faq' | 'ai-tips';
+type CategoryKey = 'meta-ads' | 'instagram-reels' | 'threads' | 'faq' | 'ai-tips' | 'ai-news';
 
-// 현재 연도 가져오기 (KST 기준 동적 계산)
-function getCurrentYear(): string {
+// 콘텐츠에서 사용할 연도 (항상 다음 연도 사용 - 최신 정보 강조)
+function getContentYear(): string {
   const now = new Date();
   const kstOffset = 9 * 60 * 60 * 1000;
   const kstDate = new Date(now.getTime() + kstOffset);
-  return String(kstDate.getUTCFullYear());
+  // 다음 연도 사용 (2025년이면 2026년 사용)
+  return String(kstDate.getUTCFullYear() + 1);
 }
-const CURRENT_YEAR = getCurrentYear();
+const CURRENT_YEAR = getContentYear(); // 현재 2026
 
 // 요일별 카테고리 매핑 (0=일, 1=월, 2=화, ...)
 const DAY_CATEGORY_MAP: Record<number, CategoryKey> = {
   0: 'faq',              // 일요일
   1: 'meta-ads',         // 월요일
+  2: 'ai-news',          // 화요일
   3: 'instagram-reels',  // 수요일
   5: 'threads',          // 금요일
   6: 'ai-tips'           // 토요일
 };
 
-// 다음 작성 일정 계산 (월/수/금/토/일)
+// 다음 작성 일정 계산 (월/화/수/금/토/일)
 function getNextScheduleDate(): { date: string; dayName: string; category: string } {
   const now = new Date();
   const kstOffset = 9 * 60 * 60 * 1000;
   const kstDate = new Date(now.getTime() + kstOffset);
 
-  const scheduleDays = [0, 1, 3, 5, 6]; // 일, 월, 수, 금, 토
-  const dayNames: Record<number, string> = { 0: '일요일', 1: '월요일', 3: '수요일', 5: '금요일', 6: '토요일' };
+  const scheduleDays = [0, 1, 2, 3, 5, 6]; // 일, 월, 화, 수, 금, 토
+  const dayNames: Record<number, string> = { 0: '일요일', 1: '월요일', 2: '화요일', 3: '수요일', 5: '금요일', 6: '토요일' };
 
   let currentDay = kstDate.getUTCDay();
   let daysToAdd = 1;
@@ -96,10 +98,11 @@ async function sendTelegramNotification(
 
   const scheduleInfo = `📆 *작성 일정 (매주 오전 9시)*
 • 월: Meta 광고
+• 화: AI 뉴스
 • 수: 인스타그램 릴스
 • 금: 쓰레드
 • 토: AI 활용 팁
-• 일: 궁금해요`;
+• 일: FAQ`;
 
   if (type === 'success') {
     const articleUrl = `https://polarad.co.kr/marketing-news/${data.slug}`;
@@ -172,9 +175,39 @@ function generateSlug(title: string): string {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50);
 }
 
+// 기존 글 제목 가져오기 (중복 방지용)
+async function getExistingTitles(category: string): Promise<string[]> {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
+    return [];
+  }
+
+  try {
+    // 최근 30일 내 해당 카테고리 글 제목 가져오기
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const filterDate = thirtyDaysAgo.toISOString().split('T')[0];
+
+    const res = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME!)}?filterByFormula=AND(IS_AFTER({date},'${filterDate}'),{category}='${category}')&fields[]=title`,
+      { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
+    );
+
+    const result = await res.json();
+    return result.records?.map((r: { fields: { title: string } }) => r.fields.title).filter(Boolean) || [];
+  } catch (error) {
+    console.error('기존 글 제목 조회 실패:', error);
+    return [];
+  }
+}
+
 // AI가 주제 자동 생성
-async function generateTopic(category: CategoryKey): Promise<string> {
+async function generateTopic(category: CategoryKey, existingTitles: string[] = []): Promise<string> {
   const categoryLabel = ALL_CATEGORIES[category].label;
+
+  // 기존 글 제목 목록 (중복 방지용)
+  const existingTitlesText = existingTitles.length > 0
+    ? `\n\n**[중복 방지 - 아래 제목들과 유사한 주제는 절대 피하세요]**:\n${existingTitles.map((t, i) => `${i + 1}. ${t}`).join('\n')}`
+    : '';
 
   const topicPrompts: Record<CategoryKey, string> = {
     'meta-ads': `Meta(페이스북/인스타그램) 광고 또는 인스타그램 활용 관련 블로그 주제를 1개 제안하세요.
@@ -274,39 +307,79 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 - "페이스북 광고 거부 사유별 해결 방법"
 - "인스타그램 해킹 복구 완벽 가이드"`,
 
-    'ai-tips': `비즈니스에 AI를 활용하는 방법 관련 블로그 주제를 1개 제안하세요.
+    'ai-tips': `GitHub, Reddit 등에서 추천 많이 받거나 유용성 평가가 완료된 AI 도구, MCP 서버, Claude Skills, 플러그인을 소개하는 블로그 주제를 1개 제안하세요.
 
-**[중요]**: 최신 AI 트렌드와 실제 비즈니스 활용 사례를 기반으로 작성하세요. 구글에서 검색 가능한 최신 정보를 바탕으로 합니다.
+**[중요]**: 실제로 GitHub stars가 많거나 Reddit에서 호평받은 도구만 다룹니다. 사용방법, 설치방법, 공식 링크를 포함해야 합니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
-- 네이버/구글에서 실제 검색량이 높은 AI 관련 롱테일 키워드 타겟팅
-- 제목 형식: "[AI 도구/기술명] + [활용 방법] + [연도/숫자]"
-- 검색 의도 반영: 정보형("~방법", "~하는 법"), 비교형("~vs~"), 리스트형("~가지", "TOP~")
+- 네이버/구글에서 실제 검색량이 높은 AI 도구/플러그인 관련 키워드 타겟팅
+- 제목 형식: "[도구명] + [활용 방법/설치 가이드] + [연도]"
+- 검색 의도 반영: 정보형("~사용법", "~설치방법"), 리스트형("추천 TOP~", "~가지")
 
 **주제 범위 (아래 중 하나 선택)**:
-1. ChatGPT 비즈니스 활용: 마케팅 카피 작성, 고객 응대 자동화, 콘텐츠 기획
-2. AI 이미지 생성: Midjourney, DALL-E, Stable Diffusion 활용법, 광고 이미지 제작
-3. AI 영상 제작: Runway, Pika, Sora 등 영상 생성 AI 활용
-4. AI 마케팅 자동화: AI 광고 최적화, 타겟팅, 성과 분석
-5. AI 글쓰기 도구: Claude, Gemini, Notion AI 활용법
-6. AI 생산성 도구: 업무 자동화, 회의록 정리, 이메일 작성
-7. AI 고객 서비스: 챗봇 구축, 고객 문의 자동 응답
-8. AI 데이터 분석: 엑셀/스프레드시트 AI 활용, 비즈니스 인사이트 추출
+1. MCP 서버 추천: Claude Code에서 사용 가능한 유용한 MCP 서버 (filesystem, github, brave-search 등)
+2. Claude Skills/플러그인: 생산성 높이는 Claude 확장 기능
+3. AI 코딩 도구: Cursor, GitHub Copilot, Codeium 등 코딩 보조 AI
+4. AI 이미지 도구: Midjourney, DALL-E, Stable Diffusion, Flux 활용법
+5. AI 자동화 도구: n8n, Make, Zapier AI 기능 활용
+6. 오픈소스 AI 도구: GitHub에서 인기 있는 AI 프로젝트 소개
+7. AI 브라우저 확장: ChatGPT, Claude 관련 유용한 크롬 확장
+8. AI 생산성 앱: Notion AI, Obsidian AI 플러그인, 업무 자동화 도구
+
+**필수 포함 내용**:
+- 공식 GitHub 또는 다운로드 링크
+- 설치 방법 (npm, pip, 또는 GUI 설치)
+- 기본 사용법 예시
+- 장단점 분석
 
 **검색 최적화 제목 예시**:
-- "ChatGPT 마케팅 활용법 ${CURRENT_YEAR} 완벽 가이드 (실전 프롬프트 포함)"
-- "AI 이미지 생성 도구 비교 ${CURRENT_YEAR} - Midjourney vs DALL-E vs Stable Diffusion"
-- "비즈니스 ChatGPT 활용 사례 10가지 (업종별 정리)"
-- "AI로 광고 카피 작성하는 법 - 실전 프롬프트 템플릿"
-- "Canva AI 기능 활용법 ${CURRENT_YEAR} 완벽 정리"
-- "무료 AI 도구 추천 TOP 10 - 마케팅/디자인/글쓰기"`
+- "Claude MCP 서버 추천 ${CURRENT_YEAR} - 생산성 높이는 5가지 필수 도구"
+- "GitHub Copilot vs Cursor 비교 ${CURRENT_YEAR} - AI 코딩 도구 완벽 분석"
+- "Cursor AI 사용법 완벽 가이드 - 설치부터 활용까지"
+- "n8n AI 자동화 워크플로우 만들기 ${CURRENT_YEAR}"
+- "오픈소스 AI 도구 추천 TOP 10 - GitHub Stars 기준"
+- "Claude Desktop MCP 설정 방법 - 파일시스템, GitHub 연동 가이드"`,
+
+    'ai-news': `최신 AI 도구, AI 서비스, AI 모델 출시 관련 뉴스를 전달하는 블로그 주제를 1개 제안하세요.
+
+**[중요]**: 최근 1-2주 내 발표된 AI 관련 뉴스만 다룹니다. 신규 출시, 업데이트, 서비스 변경 등 실제 뉴스성 콘텐츠를 작성합니다.
+
+**[SEO 키워드 전략 - 필수 적용]**:
+- 최신 AI 뉴스 관련 키워드 타겟팅
+- 제목 형식: "[AI 서비스/모델명] + [뉴스 내용] + [날짜/연도]"
+- 검색 의도 반영: 뉴스형("출시", "업데이트", "발표"), 분석형("의미", "영향")
+
+**주제 범위 (아래 중 하나 선택)**:
+1. 새 AI 모델 출시: GPT-5, Claude 4, Gemini 2 등 신규 모델 발표
+2. AI 서비스 업데이트: ChatGPT, Claude, Gemini 등 주요 서비스 기능 추가
+3. AI 기업 동향: OpenAI, Anthropic, Google, Meta 등 AI 기업 뉴스
+4. AI 규제/정책: AI 관련 법률, 규제, 정책 변화
+5. AI 가격 정책: AI 서비스 가격 변경, 무료 플랜 확대 등
+6. AI 파트너십: AI 기업 간 협력, 인수합병 소식
+7. 오픈소스 AI: Llama, Mistral 등 오픈소스 모델 출시/업데이트
+
+**필수 포함 내용**:
+- 뉴스 출처 및 발표일
+- 주요 변경 사항 요약
+- 사용자에게 미치는 영향
+- 공식 발표 링크
+
+**검색 최적화 제목 예시**:
+- "ChatGPT 새 기능 출시 ${CURRENT_YEAR} - [기능명] 완벽 정리"
+- "Claude 3.5 Sonnet 업데이트 - 달라진 점 총정리"
+- "OpenAI GPT-5 출시 예정 - 알려진 정보 정리"
+- "Google Gemini 2.0 발표 - 새로운 기능과 가격"
+- "Meta Llama 4 오픈소스 공개 - 성능 비교 분석"`
   };
 
   const prompt = `${topicPrompts[category]}
+${existingTitlesText}
 
 카테고리: ${categoryLabel}
 
-**중요**: 제목에 연도를 포함할 경우 반드시 ${CURRENT_YEAR}년을 사용하세요. 2024년은 절대 사용하지 마세요.
+**중요**:
+- 제목에 연도를 포함할 경우 반드시 ${CURRENT_YEAR}년을 사용하세요. 2024년, 2025년은 절대 사용하지 마세요.
+- 위에 나열된 기존 글과 주제가 겹치지 않도록 완전히 다른 주제를 선택하세요.
 
 반드시 제목만 한 줄로 응답하세요. 다른 설명 없이 제목만 출력하세요.`;
 
@@ -328,13 +401,20 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 function validateTopic(topic: string, category: CategoryKey): { isValid: boolean; reason?: string } {
   const lowercaseTopic = topic.toLowerCase();
 
-  // 금지 키워드 (마케팅과 무관한 주제)
+  // 금지 키워드 (마케팅과 무관한 주제 + 제외 요청된 주제)
   const forbiddenKeywords = [
+    // 건강/의료
     '건강', '영양', '비타민', '미네랄', '효능', '부작용', '음식', '식품',
     '의학', '치료', '질병', '증상', '약물', '의료', '병원',
     '운동', '다이어트', '체중', '피트니스',
     'phosphorus', 'calcium', 'vitamin', 'health', 'medical', 'disease',
+    // 음식/여행
     '요리', '레시피', '맛집', '여행', '관광',
+    // 틱톡 (Meta 플랫폼만 다룸)
+    '틱톡', 'tiktok', '틱톡광고', '틱톡마케팅',
+    // 개인정보/프라이버시 (제외 요청)
+    '개인정보', '프라이버시', '쿠키리스', 'gdpr', 'ccpa', '제로파티', '퍼스트파티',
+    '서드파티', '쿠키', '데이터보호', '개인정보보호',
   ];
 
   // 필수 키워드 (마케팅 관련)
@@ -343,7 +423,8 @@ function validateTopic(topic: string, category: CategoryKey): { isValid: boolean
     'instagram-reels': ['인스타그램', 'instagram', '릴스', 'reels', '영상', '콘텐츠', '알고리즘'],
     'threads': ['쓰레드', 'threads', '메타', 'meta', '팔로워', '콘텐츠', 'sns'],
     'faq': ['메타', 'meta', '페이스북', 'facebook', '인스타그램', 'instagram', '광고', '계정', '차단', '복구', '오류', '문제', '쓰레드', 'threads'],
-    'ai-tips': ['ai', '인공지능', 'chatgpt', 'claude', 'gemini', '자동화', '생산성', '마케팅'],
+    'ai-tips': ['ai', '인공지능', 'chatgpt', 'claude', 'gemini', 'mcp', 'cursor', '자동화', '생산성', '플러그인'],
+    'ai-news': ['ai', '인공지능', 'chatgpt', 'claude', 'gemini', 'gpt', 'openai', 'anthropic', 'google', '출시', '업데이트', '발표', 'llama', 'mistral'],
   };
 
   // 금지 키워드 체크
@@ -1022,13 +1103,18 @@ export async function GET(request: Request) {
   try {
     console.log(`🚀 자동 글 생성 시작 - 카테고리: ${category}`);
 
+    // 0. 기존 글 제목 조회 (중복 방지용)
+    console.log('📋 기존 글 제목 조회...');
+    const existingTitles = await getExistingTitles(category);
+    console.log(`   최근 30일 내 ${category} 글: ${existingTitles.length}개`);
+
     // 1. AI로 주제 생성 + 유효성 검증 (최대 5번 재시도)
     let title = '';
     let topicAttempts = 0;
     const MAX_TOPIC_ATTEMPTS = 5;
 
     while (topicAttempts < MAX_TOPIC_ATTEMPTS) {
-      title = await generateTopic(category);
+      title = await generateTopic(category, existingTitles);
       console.log(`📝 생성된 주제 (시도 ${topicAttempts + 1}): ${title}`);
 
       // 유효성 검증
@@ -1054,11 +1140,11 @@ export async function GET(request: Request) {
 
       console.log(`⚠️ 중복 발견, 재생성... (${duplicateAttempts + 1}/3)`);
 
-      // 재생성 시에도 유효성 검증
+      // 재생성 시에도 유효성 검증 (기존 제목 목록 전달)
       let validTitle = false;
       let regenAttempts = 0;
       while (!validTitle && regenAttempts < 3) {
-        title = await generateTopic(category);
+        title = await generateTopic(category, existingTitles);
         const validation = validateTopic(title, category);
         if (validation.isValid) {
           validTitle = true;
