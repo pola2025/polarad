@@ -298,7 +298,7 @@ async function generateTopic(category: CategoryKey): Promise<string> {
 
 반드시 제목만 한 줄로 응답하세요. 다른 설명 없이 제목만 출력하세요.`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -310,6 +310,46 @@ async function generateTopic(category: CategoryKey): Promise<string> {
   const result = await res.json();
   const topic = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
   return topic.replace(/^["']|["']$/g, '').replace(/^\d+\.\s*/, '');
+}
+
+// 주제 유효성 검증 (마케팅/광고 관련인지 확인)
+function validateTopic(topic: string, category: CategoryKey): { isValid: boolean; reason?: string } {
+  const lowercaseTopic = topic.toLowerCase();
+
+  // 금지 키워드 (마케팅과 무관한 주제)
+  const forbiddenKeywords = [
+    '건강', '영양', '비타민', '미네랄', '효능', '부작용', '음식', '식품',
+    '의학', '치료', '질병', '증상', '약물', '의료', '병원',
+    '운동', '다이어트', '체중', '피트니스',
+    'phosphorus', 'calcium', 'vitamin', 'health', 'medical', 'disease',
+    '요리', '레시피', '맛집', '여행', '관광',
+  ];
+
+  // 필수 키워드 (마케팅 관련)
+  const requiredKeywords: Record<CategoryKey, string[]> = {
+    'meta-ads': ['메타', 'meta', '페이스북', 'facebook', '인스타그램', 'instagram', '광고', '마케팅', '쓰레드', 'threads'],
+    'instagram-reels': ['인스타그램', 'instagram', '릴스', 'reels', '영상', '콘텐츠', '알고리즘'],
+    'threads': ['쓰레드', 'threads', '메타', 'meta', '팔로워', '콘텐츠', 'sns'],
+    'faq': ['메타', 'meta', '페이스북', 'facebook', '인스타그램', 'instagram', '광고', '계정', '차단', '복구', '오류', '문제', '쓰레드', 'threads'],
+    'ai-tips': ['ai', '인공지능', 'chatgpt', 'claude', 'gemini', '자동화', '생산성', '마케팅'],
+  };
+
+  // 금지 키워드 체크
+  for (const keyword of forbiddenKeywords) {
+    if (lowercaseTopic.includes(keyword)) {
+      return { isValid: false, reason: `금지 키워드 포함: ${keyword}` };
+    }
+  }
+
+  // 필수 키워드 체크
+  const categoryKeywords = requiredKeywords[category];
+  const hasRequiredKeyword = categoryKeywords.some(kw => lowercaseTopic.includes(kw));
+
+  if (!hasRequiredKeyword) {
+    return { isValid: false, reason: `카테고리 관련 키워드 없음. 필요: ${categoryKeywords.join(', ')}` };
+  }
+
+  return { isValid: true };
 }
 
 // 중복 체크
@@ -340,7 +380,7 @@ ${recentTitles.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}
 
 JSON으로만 응답: {"isDuplicate": true/false, "similarTo": "비슷한 기존 글 제목 또는 null", "reason": "이유"}`;
 
-    const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
+    const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -366,7 +406,7 @@ async function generateSEOKeywords(title: string, category: string) {
   const prompt = `SEO 키워드 연구 전문가로서 "${title}" 주제의 키워드를 분석하세요. 카테고리: ${category}.
 JSON 형식으로만 응답: {"primary":"메인키워드","secondary":["보조키워드5개"],"lsi":["LSI키워드5개"],"questions":["FAQ질문3개"],"searchIntent":"정보형또는거래형","seoTitle":"SEO최적화제목60자이내","metaDescription":"메타설명155자이내"}`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -678,7 +718,7 @@ ${kw}
 한국어로 작성하세요.`;
   }
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -970,19 +1010,53 @@ export async function GET(request: Request) {
   try {
     console.log(`🚀 자동 글 생성 시작 - 카테고리: ${category}`);
 
-    // 1. AI로 주제 생성
-    let title = await generateTopic(category);
-    console.log(`📝 생성된 주제: ${title}`);
+    // 1. AI로 주제 생성 + 유효성 검증 (최대 5번 재시도)
+    let title = '';
+    let topicAttempts = 0;
+    const MAX_TOPIC_ATTEMPTS = 5;
+
+    while (topicAttempts < MAX_TOPIC_ATTEMPTS) {
+      title = await generateTopic(category);
+      console.log(`📝 생성된 주제 (시도 ${topicAttempts + 1}): ${title}`);
+
+      // 유효성 검증
+      const validation = validateTopic(title, category);
+      if (validation.isValid) {
+        console.log(`✅ 주제 유효성 검증 통과`);
+        break;
+      }
+
+      console.log(`⚠️ 주제 유효성 검증 실패: ${validation.reason}`);
+      topicAttempts++;
+
+      if (topicAttempts >= MAX_TOPIC_ATTEMPTS) {
+        throw new Error(`주제 생성 실패: ${MAX_TOPIC_ATTEMPTS}회 시도 후에도 유효한 주제를 생성하지 못함. 마지막 실패 사유: ${validation.reason}`);
+      }
+    }
 
     // 2. 중복 체크 (최대 3번 재시도)
-    let attempts = 0;
-    while (attempts < 3) {
+    let duplicateAttempts = 0;
+    while (duplicateAttempts < 3) {
       const duplicateCheck = await checkDuplicateTopic(title, category);
       if (!duplicateCheck.isDuplicate) break;
 
-      console.log(`⚠️ 중복 발견, 재생성... (${attempts + 1}/3)`);
-      title = await generateTopic(category);
-      attempts++;
+      console.log(`⚠️ 중복 발견, 재생성... (${duplicateAttempts + 1}/3)`);
+
+      // 재생성 시에도 유효성 검증
+      let validTitle = false;
+      let regenAttempts = 0;
+      while (!validTitle && regenAttempts < 3) {
+        title = await generateTopic(category);
+        const validation = validateTopic(title, category);
+        if (validation.isValid) {
+          validTitle = true;
+        } else {
+          console.log(`⚠️ 재생성 주제 유효성 실패: ${validation.reason}`);
+          regenAttempts++;
+        }
+      }
+
+      duplicateAttempts++;
     }
 
     const slug = generateSlug(title);

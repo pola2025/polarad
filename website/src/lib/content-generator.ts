@@ -35,7 +35,7 @@ export async function rewriteContent(
   keyword: string,
   sourceArticles: SourceArticle[]
 ): Promise<Omit<GeneratedContent, "thumbnailUrl">> {
-  const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" })
+  const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" })
 
   const sourceSummary = sourceArticles
     .map((a, i) => `[참고 ${i + 1}] ${a.title}\nURL: ${a.url}\n${a.snippet}`)
