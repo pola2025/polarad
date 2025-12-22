@@ -628,7 +628,8 @@ async function generateContent(
 
   console.log(`📝 v2 프롬프트 사용 - 카테고리: ${category}`);
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+  // 콘텐츠 생성은 고품질 모델 사용 (긴 응답이라 thinking 토큰 문제 없음)
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
