@@ -452,12 +452,12 @@ ${feedbackText}
 
 반드시 제목만 한 줄로 응답하세요. 다른 설명 없이 제목만 출력하세요.`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.9, maxOutputTokens: 100 }
+      generationConfig: { temperature: 0.9, maxOutputTokens: 200 }
     })
   });
 
@@ -544,7 +544,7 @@ JSON으로만 응답: {"isDuplicate": true/false, "similarTo": "비슷한 기존
 
     // Gemini 재시도 적용
     const checkResult = await withGeminiRetry(async () => {
-      const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+      const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -580,7 +580,7 @@ JSON 형식으로만 응답: {"primary":"메인키워드","secondary":["보조�
 
   try {
     const result = await withGeminiRetry(async () => {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -628,7 +628,7 @@ async function generateContent(
 
   console.log(`📝 v2 프롬프트 사용 - 카테고리: ${category}`);
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
