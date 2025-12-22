@@ -14,6 +14,28 @@ import {
   checkImageDuplicate,
 } from '@/lib/image-variation';
 import { CATEGORIES as ALL_CATEGORIES, type ArticleCategory } from '@/lib/marketing-news';
+import {
+  parseDuplicateCheck,
+  parseSEOKeywords,
+  withGeminiRetry,
+  withAirtableRetry,
+  withGitHubRetry,
+  FailureTracker,
+  notifyImageGenerationFailed,
+  notifyJSONParseFailed,
+  notifyQualityCheckFailed,
+} from '@/lib/utils/index';
+import {
+  validateContent as validateContentQuality,
+  formatValidationSummary,
+  generateRegenerationFeedback,
+} from '@/lib/content-validator';
+import { checkTitleDuplicate } from '@/lib/content-similarity';
+import {
+  buildContentPromptV2,
+  validateContentV2,
+  type CategoryKey as V2CategoryKey,
+} from '@/lib/prompt-templates/v2-content-builder';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -200,8 +222,12 @@ async function getExistingTitles(category: string): Promise<string[]> {
   }
 }
 
-// AI가 주제 자동 생성
-async function generateTopic(category: CategoryKey, existingTitles: string[] = []): Promise<string> {
+// AI가 주제 자동 생성 (피드백 기반 재시도 지원)
+async function generateTopic(
+  category: CategoryKey,
+  existingTitles: string[] = [],
+  previousFeedback?: string
+): Promise<string> {
   const categoryLabel = ALL_CATEGORIES[category].label;
 
   // 기존 글 제목 목록 (중복 방지용)
@@ -209,9 +235,51 @@ async function generateTopic(category: CategoryKey, existingTitles: string[] = [
     ? `\n\n**[중복 방지 - 아래 제목들과 유사한 주제는 절대 피하세요]**:\n${existingTitles.map((t, i) => `${i + 1}. ${t}`).join('\n')}`
     : '';
 
+  // 이전 시도 실패 피드백
+  const feedbackText = previousFeedback
+    ? `\n\n**[⚠️ 이전 시도 실패 - 반드시 수정하세요]**:\n${previousFeedback}\n위 문제를 해결한 새로운 제목을 생성하세요.`
+    : '';
+
+  // 필수 키워드 명시 (검증과 동기화)
+  const requiredKeywordsInfo: Record<CategoryKey, { keywords: string[]; examples: string[] }> = {
+    'meta-ads': {
+      keywords: ['메타', 'Meta', '페이스북', 'Facebook', '인스타그램', 'Instagram', '광고', '마케팅', '쓰레드', 'Threads'],
+      examples: ['인스타그램 광고 최적화', '메타 광고 예산 설정', '페이스북 마케팅 전략'],
+    },
+    'instagram-reels': {
+      keywords: ['인스타그램', 'Instagram', '릴스', 'Reels', '영상', '콘텐츠', '알고리즘'],
+      examples: ['인스타그램 릴스 만드는 법', '릴스 알고리즘 공략', '인스타 릴스 조회수'],
+    },
+    'threads': {
+      keywords: ['쓰레드', 'Threads', '메타', 'Meta', '팔로워', '콘텐츠', 'SNS'],
+      examples: ['쓰레드 팔로워 늘리기', '메타 쓰레드 활용법', '쓰레드 마케팅'],
+    },
+    'faq': {
+      keywords: ['메타', 'Meta', '페이스북', 'Facebook', '인스타그램', 'Instagram', '광고', '계정', '차단', '복구', '오류', '문제', '쓰레드', 'Threads'],
+      examples: ['인스타그램 계정 정지 해제', '페이스북 광고 거부 해결', '메타 비즈니스 오류'],
+    },
+    'ai-tips': {
+      keywords: ['AI', '인공지능', 'ChatGPT', 'Claude', 'Gemini', 'MCP', 'Cursor', '자동화', '생산성', '플러그인'],
+      examples: ['ChatGPT 활용법', 'Claude MCP 설정', 'AI 자동화 도구'],
+    },
+    'ai-news': {
+      keywords: ['AI', '인공지능', 'ChatGPT', 'Claude', 'Gemini', 'GPT', 'OpenAI', 'Anthropic', 'Google', '출시', '업데이트', '발표', 'Llama', 'Mistral'],
+      examples: ['ChatGPT 새 기능 출시', 'Claude 업데이트 정리', 'OpenAI GPT-5 발표'],
+    },
+  };
+
+  const categoryInfo = requiredKeywordsInfo[category];
+  const mandatoryKeywordNote = `
+**[🚨 필수 조건 - 반드시 준수]**:
+제목에 다음 키워드 중 **최소 1개 이상 반드시 포함**:
+${categoryInfo.keywords.map(k => `"${k}"`).join(', ')}
+
+올바른 제목 예시: ${categoryInfo.examples.join(', ')}
+`;
+
   const topicPrompts: Record<CategoryKey, string> = {
     'meta-ads': `Meta(페이스북/인스타그램) 광고 또는 인스타그램 활용 관련 블로그 주제를 1개 제안하세요.
-
+${mandatoryKeywordNote}
 **[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. Meta 플랫폼(페이스북, 인스타그램, 쓰레드)만 다룹니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
@@ -235,7 +303,7 @@ async function generateTopic(category: CategoryKey, existingTitles: string[] = [
 - "쓰레드 팔로워 늘리는 법 7가지 전략"`,
 
     'instagram-reels': `인스타그램 릴스 관련 블로그 주제를 1개 제안하세요.
-
+${mandatoryKeywordNote}
 **[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. 인스타그램 릴스만 다룹니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
@@ -258,7 +326,7 @@ async function generateTopic(category: CategoryKey, existingTitles: string[] = [
 - "인스타그램 릴스 트렌드 음악 찾는 법"`,
 
     'threads': `Meta 쓰레드(Threads) 관련 블로그 주제를 1개 제안하세요.
-
+${mandatoryKeywordNote}
 **[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. Meta 쓰레드만 다룹니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
@@ -281,11 +349,10 @@ async function generateTopic(category: CategoryKey, existingTitles: string[] = [
 - "쓰레드 마케팅 전략 5가지 - 비즈니스 활용법"`,
 
     'faq': `Meta 플랫폼(페이스북, 인스타그램, 쓰레드) 또는 Meta 광고 사용 중 겪는 문제 해결 관련 블로그 주제를 1개 제안하세요.
-
-**[필수 조건 - 반드시 준수]**:
-1. 제목에 반드시 다음 키워드 중 하나 이상 포함: 페이스북, 인스타그램, 메타, 광고, 계정, 쓰레드
-2. Meta 플랫폼(페이스북, 인스타그램, 쓰레드) 또는 Meta 광고 관련 문제만 다룹니다
-3. 건강, 영양, 음식, 의료, 여행 등 마케팅과 무관한 주제는 절대 금지
+${mandatoryKeywordNote}
+**[추가 조건]**:
+1. Meta 플랫폼(페이스북, 인스타그램, 쓰레드) 또는 Meta 광고 관련 문제만 다룹니다
+2. 건강, 영양, 음식, 의료, 여행 등 마케팅과 무관한 주제는 절대 금지
 
 **[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요.
 
@@ -308,7 +375,7 @@ async function generateTopic(category: CategoryKey, existingTitles: string[] = [
 - "인스타그램 해킹 복구 완벽 가이드"`,
 
     'ai-tips': `GitHub, Reddit 등에서 추천 많이 받거나 유용성 평가가 완료된 AI 도구, MCP 서버, Claude Skills, 플러그인을 소개하는 블로그 주제를 1개 제안하세요.
-
+${mandatoryKeywordNote}
 **[중요]**: 실제로 GitHub stars가 많거나 Reddit에서 호평받은 도구만 다룹니다. 사용방법, 설치방법, 공식 링크를 포함해야 합니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
@@ -341,7 +408,7 @@ async function generateTopic(category: CategoryKey, existingTitles: string[] = [
 - "Claude Desktop MCP 설정 방법 - 파일시스템, GitHub 연동 가이드"`,
 
     'ai-news': `최신 AI 도구, AI 서비스, AI 모델 출시 관련 뉴스를 전달하는 블로그 주제를 1개 제안하세요.
-
+${mandatoryKeywordNote}
 **[중요]**: 최근 1-2주 내 발표된 AI 관련 뉴스만 다룹니다. 신규 출시, 업데이트, 서비스 변경 등 실제 뉴스성 콘텐츠를 작성합니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
@@ -374,12 +441,14 @@ async function generateTopic(category: CategoryKey, existingTitles: string[] = [
 
   const prompt = `${topicPrompts[category]}
 ${existingTitlesText}
+${feedbackText}
 
 카테고리: ${categoryLabel}
 
-**중요**:
-- 제목에 연도를 포함할 경우 반드시 ${CURRENT_YEAR}년을 사용하세요. 2024년, 2025년은 절대 사용하지 마세요.
-- 위에 나열된 기존 글과 주제가 겹치지 않도록 완전히 다른 주제를 선택하세요.
+**🚨 최종 확인 사항**:
+1. 제목에 연도를 포함할 경우 반드시 ${CURRENT_YEAR}년을 사용하세요. 2024년, 2025년은 절대 사용하지 마세요.
+2. 위에 나열된 기존 글과 주제가 겹치지 않도록 완전히 다른 주제를 선택하세요.
+3. 제목에 반드시 필수 키워드(${categoryInfo.keywords.slice(0, 3).join(', ')} 등) 중 1개 이상 포함하세요.
 
 반드시 제목만 한 줄로 응답하세요. 다른 설명 없이 제목만 출력하세요.`;
 
@@ -473,343 +542,91 @@ ${recentTitles.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}
 
 JSON으로만 응답: {"isDuplicate": true/false, "similarTo": "비슷한 기존 글 제목 또는 null", "reason": "이유"}`;
 
-    const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: checkPrompt }] }],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 200 }
-      })
-    });
+    // Gemini 재시도 적용
+    const checkResult = await withGeminiRetry(async () => {
+      const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: checkPrompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 200 }
+        })
+      });
 
-    const checkResult = await checkRes.json();
+      if (!checkRes.ok) {
+        throw new Error(`Gemini API error: ${checkRes.status}`);
+      }
+
+      return checkRes.json();
+    });
     const text = checkResult.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-    try {
-      return JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || '{}');
-    } catch {
-      return { isDuplicate: false };
+
+    // 안전한 JSON 파싱 (Zod 스키마 검증)
+    const parseResult = parseDuplicateCheck(text);
+    if (!parseResult.success) {
+      notifyJSONParseFailed('duplicate_check', parseResult.rawText || text, parseResult.error || 'Unknown error');
+      console.log(`[duplicate_check] JSON 파싱 실패, 기본값 사용: ${parseResult.error}`);
     }
+    return parseResult.data;
   }
 
   return { isDuplicate: false };
 }
 
-// SEO 키워드 생성
+// SEO 키워드 생성 (Gemini 재시도 + 안전한 JSON 파싱)
 async function generateSEOKeywords(title: string, category: string) {
   const prompt = `SEO 키워드 연구 전문가로서 "${title}" 주제의 키워드를 분석하세요. 카테고리: ${category}.
 JSON 형식으로만 응답: {"primary":"메인키워드","secondary":["보조키워드5개"],"lsi":["LSI키워드5개"],"questions":["FAQ질문3개"],"searchIntent":"정보형또는거래형","seoTitle":"SEO최적화제목60자이내","metaDescription":"메타설명155자이내"}`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.3, maxOutputTokens: 1000 }
-    })
-  });
-  const result = await res.json();
-  const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
   try {
-    return JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || '{}');
-  } catch {
-    return {};
+    const result = await withGeminiRetry(async () => {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 1000 }
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error(`Gemini API error: ${res.status}`);
+      }
+
+      return res.json();
+    });
+
+    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+
+    // 안전한 JSON 파싱 (Zod 스키마 검증)
+    const parseResult = parseSEOKeywords(text);
+    if (!parseResult.success) {
+      notifyJSONParseFailed('seo_keywords', parseResult.rawText || text, parseResult.error || 'Unknown error');
+      console.log(`[seo_keywords] JSON 파싱 실패, 기본값 사용: ${parseResult.error}`);
+    }
+    return parseResult.data;
+  } catch (error) {
+    console.error('[seo_keywords] 모든 재시도 실패:', error);
+    return { primary: '', secondary: [], lsi: [], questions: [], searchIntent: '정보형' as const };
   }
 }
 
-// 콘텐츠 생성
-async function generateContent(title: string, category: CategoryKey, seoKeywords: { primary?: string; secondary?: string[] }) {
-  const categoryLabel = ALL_CATEGORIES[category]?.label || category;
-  const kw = seoKeywords.primary
-    ? `**SEO 키워드**: 메인: ${seoKeywords.primary}, 보조: ${seoKeywords.secondary?.join(', ') || ''}`
-    : '';
+// 콘텐츠 생성 (v2 프롬프트 빌더 사용)
+async function generateContent(
+  title: string,
+  category: CategoryKey,
+  seoKeywords: { primary?: string; secondary?: string[]; regenerationFeedback?: string }
+) {
+  // v2 프롬프트 빌더 사용
+  const prompt = buildContentPromptV2(title, category as V2CategoryKey, {
+    seoKeywords: {
+      primary: seoKeywords.primary,
+      secondary: seoKeywords.secondary,
+    },
+    regenerationFeedback: seoKeywords.regenerationFeedback,
+  });
 
-  let prompt: string;
-
-  if (category === 'ai-tips') {
-    prompt = `AI 활용 전문가이자 비즈니스 컨설턴트로서 "${title}" 블로그 글을 작성하세요.
-
-${kw}
-
-**[중요 지침]**:
-- 구글에서 검색 가능한 최신 AI 트렌드와 실제 비즈니스 활용 사례를 바탕으로 작성하세요.
-- 실제 기업/마케터들이 AI를 활용한 성공 사례를 구체적으로 포함하세요.
-- 독자가 바로 따라할 수 있는 실전 가이드와 프롬프트 예시를 제공하세요.
-
-**[네이버 + 구글 동시 SEO 최적화 - 필수]**:
-1. **제목 최적화**: 메인 키워드를 제목 앞쪽에 배치, 40자 이내 권장
-2. **서론 300자 내 키워드 2회 이상**: 네이버 C-Rank 알고리즘 대응
-3. **H2/H3 제목에 키워드 포함**: 구글 크롤링 최적화
-4. **키워드 밀도 1.5-2.5%**: 자연스러운 키워드 배치
-5. **E-E-A-T 신호**: 전문성, 경험, 권위성, 신뢰성 표현 (데이터/사례 인용)
-
-**[콘텐츠 품질 가이드]**:
-- 단순 정보 나열 NO → 실제 활용 사례, 구체적 프롬프트 예시로 작성
-- "직접 테스트한 결과", "실제로 적용해본 후기" 같은 체험형 문체 사용
-- 독자가 바로 따라할 수 있는 구체적인 스텝과 프롬프트 템플릿 제공
-
-**[🎨 시각화 필수 - 가장 중요!]**
-글에서 수치, 비교, 통계, 순위, 요약 데이터가 나오면 **반드시 차트 컴포넌트로 시각화**하세요.
-표(테이블)는 절대 사용 금지! 아래 3가지 컴포넌트 중 선택:
-
-1. **ComparisonChart** - AI 도입 전후 비교, 효율성 비교
-\`\`\`jsx
-<ComparisonChart
-  title="AI 도입 전후 비교"
-  beforeLabel="기존 방식"
-  afterLabel="AI 활용 후"
-  data={[
-    { label: "작업 시간", before: "3시간", after: "30분", change: "-83%" },
-    { label: "비용", before: "50만원", after: "5만원", change: "-90%" }
-  ]}
-/>
-\`\`\`
-
-2. **BarChart** - AI 도구별 비교, 기능별 점수
-\`\`\`jsx
-<BarChart title="AI 도구별 추천 점수" unit="점" color="primary" data={[
-  { label: "ChatGPT", value: 90 },
-  { label: "Claude", value: 85 },
-  { label: "Gemini", value: 80 }
-]} />
-\`\`\`
-
-3. **StatCards** - 핵심 수치, AI 활용 팁 요약
-\`\`\`jsx
-<StatCards stats={[
-  { label: "시간 절약", value: "70%", icon: "⏱️", change: "+70%" },
-  { label: "비용 절감", value: "60%", icon: "💰", change: "+60%" }
-]} />
-\`\`\`
-
-**글 전체에서 최소 2개 이상의 차트를 사용하세요!**
-
-⚠️ **매우 중요**: 위 예시의 \`\`\`jsx와 \`\`\`는 설명용입니다. 실제 MDX 작성 시에는 **코드 블록 없이** 컴포넌트를 직접 작성하세요!
-예: \`<StatCards stats={[...]}/>\` 형태로 바로 작성
-
-**구조**:
-[서론 - AI 도구의 중요성 + 핵심 키워드 2회 이상, 독자 문제 공감]
-
-## 1. [AI 도구/기술]이란? (정의와 핵심 기능)
-### 주요 특징과 장점
-
-## 2. 비즈니스 활용 사례 ← **여기서 ComparisonChart 사용**
-### 2-1. [활용 사례 1] - 구체적인 사용법과 결과
-### 2-2. [활용 사례 2] - 실제 기업/마케터 성공 사례
-
-## 3. 실전 활용 가이드 ← **여기서 StatCards 또는 BarChart 사용**
-### Step 1: [시작하기]
-### Step 2: [핵심 기능 활용]
-### Step 3: [고급 활용법]
-
-> 💡 **프롬프트 예시**: [실제 사용 가능한 프롬프트 템플릿]
-
-## 4. 주의사항 및 한계점
-
-## 5. 체크리스트
-- [ ] 항목1
-- [ ] 항목2
-
-## 핵심 요약
-
----
-## 자주 묻는 질문 (FAQ)
-### Q1. [키워드 포함 질문]?
-### Q2~Q3
-
----
-**[CTA]** AI 활용에 대해 더 궁금한 점이 있다면 폴라애드 전문가와 무료 상담을 받아보세요!
-
-분량: 2500-3500자, FAQ: 3개 이상
-**중요**: 표(테이블)는 사용하지 마세요. 데이터는 글머리 기호로 나열하세요.
-카테고리: ${categoryLabel}
-한국어로 작성하세요.`;
-
-  } else if (category === 'faq') {
-    prompt = `구글 SEO 전문가이자 한국 디지털 마케팅 전문가로서 "${title}" 블로그 글을 작성하세요.
-
-${kw}
-
-**[네이버 + 구글 동시 SEO 최적화 - 필수]**:
-1. **제목 최적화**: 메인 키워드를 제목 앞쪽에 배치
-2. **서론 300자 내 키워드 2회 이상**: 네이버 C-Rank 알고리즘 대응
-3. **H2/H3 제목에 키워드 포함**: 구글 크롤링 최적화
-4. **키워드 밀도 1.5-2.5%**: 자연스러운 키워드 배치
-5. **내부 링크 유도 문구**: "관련 글 더보기", "함께 읽으면 좋은 글"
-6. **FAQ 스키마 대응**: 질문-답변 형식으로 구조화
-
-**[콘텐츠 품질 가이드]**:
-- 단순 정보 나열 NO → 실제 경험담, 구체적 수치로 작성
-- "~해보니", "직접 테스트한 결과" 같은 체험형 문체 사용
-- 독자가 바로 따라할 수 있는 구체적인 스텝 제공
-
-**[🎨 시각화 필수 - 가장 중요!]**
-수치, 비교, 통계 데이터가 나오면 **반드시 차트 컴포넌트로 시각화**!
-표(테이블)는 절대 사용 금지! 아래 컴포넌트 중 선택:
-
-1. **ComparisonChart** - Before/After, 해결 전후 비교
-\`\`\`jsx
-<ComparisonChart title="제목" beforeLabel="해결 전" afterLabel="해결 후"
-  data={[{ label: "항목", before: "문제", after: "해결", change: "개선" }]} />
-\`\`\`
-
-2. **StatCards** - 핵심 수치, 체크포인트 요약
-\`\`\`jsx
-<StatCards stats={[
-  { label: "체크1", value: "확인사항", icon: "✅" },
-  { label: "체크2", value: "확인사항", icon: "⚠️" }
-]} />
-\`\`\`
-
-**글 전체에서 최소 1개 이상의 차트를 사용하세요!**
-
-⚠️ **매우 중요**: 위 예시의 \`\`\`jsx와 \`\`\`는 설명용입니다. 실제 MDX 작성 시에는 **코드 블록 없이** 컴포넌트를 직접 작성하세요!
-예: \`<StatCards stats={[...]}/>\` 형태로 바로 작성
-
-**구조**:
-[서론 - 독자가 겪는 실제 문제 공감 + 핵심 키워드 2회 이상]
-
-## 1. 문제 상황 파악
-### 이런 증상이 나타나나요?
-### 왜 이런 문제가 생기는 걸까요?
-
-## 2. 해결 방법 A: [가장 빠른 해결법]
-### Step 1~3
-
-> 💡 **폴라애드 팁**: [실무 노하우]
-
-## 3. 해결 방법 B: [A가 안 될 때]
-
-## 4. 이것도 확인해보세요 ← **여기서 StatCards로 체크포인트 시각화**
-
-## 5. 예방법
-
----
-## 자주 묻는 질문 (FAQ)
-### Q1. [키워드 포함 질문]?
-### Q2~Q5
-
----
-**[CTA]** 해결이 안 되시나요? 폴라애드 전문가에게 무료 상담 받아보세요!
-
-분량: 2000-3000자, FAQ: 5개 이상
-**중요**: 표(테이블)는 사용하지 마세요. 데이터는 글머리 기호로 나열하세요.
-카테고리: ${categoryLabel}
-한국어로 작성하세요.`;
-
-  } else {
-    prompt = `구글 SEO 전문가이자 한국 디지털 마케팅 전문가로서 "${title}" 블로그 글을 작성하세요.
-
-${kw}
-
-**[네이버 + 구글 동시 SEO 최적화 - 필수]**:
-1. **제목 최적화**: 메인 키워드를 제목 앞쪽에 배치, 40자 이내 권장
-2. **서론 300자 내 키워드 2회 이상**: 네이버 C-Rank 알고리즘 대응
-3. **H2/H3 제목에 키워드 포함**: 구글 크롤링 최적화
-4. **키워드 밀도 1.5-2.5%**: 자연스러운 키워드 배치, 과도한 반복 금지
-5. **E-E-A-T 신호**: 전문성, 경험, 권위성, 신뢰성 표현 (데이터/사례 인용)
-6. **내부 링크 유도 문구**: "관련 글 더보기", "함께 읽으면 좋은 글"
-7. **FAQ 스키마 대응**: 질문-답변 형식으로 구조화
-
-**[콘텐츠 품질 가이드]**:
-- 단순 정보 나열 NO → 실제 경험담, 구체적 수치, Before/After 비교로 작성
-- "~해보니", "직접 테스트한 결과", "실제로 적용해본 후기" 같은 체험형 문체 사용
-- 독자가 바로 따라할 수 있는 구체적인 스텝과 예시 제공
-
-**[🎨 시각화 필수 - 가장 중요!]**
-글에서 수치, 비교, 통계, 순위, 요약 데이터가 나오면 **반드시 차트 컴포넌트로 시각화**하세요.
-표(테이블)는 절대 사용 금지! 아래 3가지 컴포넌트 중 선택:
-
-1. **ComparisonChart** - Before/After, 전후 비교, 도입 효과
-\`\`\`jsx
-<ComparisonChart
-  title="제목"
-  beforeLabel="도입 전"
-  afterLabel="도입 후"
-  data={[
-    { label: "항목", before: "이전값", after: "이후값", change: "+50%" }
-  ]}
-/>
-\`\`\`
-
-2. **BarChart** - 순위, 비율, 업종별/항목별 비교
-\`\`\`jsx
-<BarChart title="제목" unit="%" color="primary" data={[
-  { label: "항목1", value: 80 },
-  { label: "항목2", value: 60 }
-]} />
-\`\`\`
-
-3. **StatCards** - 핵심 지표, 권장 수치, 요약 통계
-\`\`\`jsx
-<StatCards stats={[
-  { label: "라벨", value: "수치", icon: "📈", change: "+50%" }
-]} />
-\`\`\`
-
-**시각화 적용 시점**:
-- 업종별/항목별 데이터 → StatCards 또는 BarChart
-- 성과 개선 사례 → ComparisonChart
-- 권장 수치/예산 → StatCards
-- 비교 분석 → ComparisonChart 또는 BarChart
-- **글 전체에서 최소 2개 이상의 차트를 사용하세요!**
-
-⚠️ **매우 중요**: 위 예시의 \`\`\`jsx와 \`\`\`는 설명용입니다. 실제 MDX 작성 시에는 **코드 블록 없이** 컴포넌트를 직접 작성하세요!
-예: \`<StatCards stats={[...]}/>\` 형태로 바로 작성
-
-**[참고 스타일 - 이 형식을 따라하세요]**:
-\`\`\`
-## 2. 실전 활용법
-### 2-1. 소셜 미디어 콘텐츠 제작
-직접 테스트한 결과, 인스타그램 피드용 이미지 제작에 특히 효과적이었습니다.
-
-<ComparisonChart
-  title="제작 시간 비교"
-  beforeLabel="기존"
-  afterLabel="도입 후"
-  data={[
-    { label: "SNS 피드 이미지", before: "2시간", after: "20분", change: "-83%" },
-    { label: "광고 배너", before: "3시간", after: "30분", change: "-83%" }
-  ]}
-/>
-
-### 2-2. 업종별 권장 예산
-<StatCards stats={[
-  { label: "B2B 서비스", value: "50,000원/일", icon: "💼" },
-  { label: "이커머스", value: "30,000원/일", icon: "🛒" }
-]} />
-\`\`\`
-
-**구조**:
-[서론 - 핵심 키워드 2회 이상, 독자 문제 공감, 구체적 수치로 시작]
-
-## 1. [키워드]란? (정의와 중요성)
-## 2. [키워드] 실전 활용법 ← **여기서 StatCards 또는 BarChart 사용**
-### 2-1. [세부 방법 1]
-### 2-2. [세부 방법 2]
-## 3. 성공 사례 및 데이터 ← **여기서 ComparisonChart 필수**
-## 4. 주의사항 및 팁
-
-> 💡 **폴라애드 팁**: [실무 노하우]
-
-## 5. 체크리스트
-- [ ] 항목1
-- [ ] 항목2
-
-## 핵심 요약
-
----
-## 자주 묻는 질문 (FAQ)
-### Q1. [키워드 포함 질문]?
-### Q2~Q3
-
----
-**[CTA]** 더 자세한 맞춤 전략이 필요하시다면 폴라애드 전문가와 무료 상담을 받아보세요!
-
-분량: 2500-3500자, FAQ: 3개 이상
-**중요**: 표(테이블)는 사용하지 마세요. 데이터는 글머리 기호로 나열하세요.
-카테고리: ${categoryLabel}
-한국어로 작성하세요.`;
-  }
+  console.log(`📝 v2 프롬프트 사용 - 카테고리: ${category}`);
 
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
@@ -875,7 +692,7 @@ async function generateThumbnail(title: string, filename: string): Promise<strin
   return '/images/solution-website.webp';
 }
 
-// Airtable 업로드
+// Airtable 업로드 (재시도 전략 적용)
 async function uploadToAirtable(data: {
   title: string;
   category: string;
@@ -886,41 +703,59 @@ async function uploadToAirtable(data: {
   slug: string;
   description: string;
   thumbnailUrl: string;
-}) {
+}): Promise<string | null> {
   if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
+    console.log('[airtable] 환경변수 미설정 - 업로드 스킵');
     return null;
   }
 
-  const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      records: [{
-        fields: {
-          date: data.publishedAt,
-          title: data.title,
-          category: data.category,
-          content: data.content,
-          tags: data.tags.join(', '),
-          seoKeywords: JSON.stringify(data.seoKeywords),
-          publishedAt: data.publishedAt,
-          status: 'published',
-          slug: data.slug,
-          description: data.description,
-          thumbnailUrl: data.thumbnailUrl
-        }
-      }]
-    })
-  });
+  try {
+    const result = await withAirtableRetry(async () => {
+      const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          records: [{
+            fields: {
+              date: data.publishedAt,
+              title: data.title,
+              category: data.category,
+              content: data.content,
+              tags: data.tags.join(', '),
+              seoKeywords: JSON.stringify(data.seoKeywords),
+              publishedAt: data.publishedAt,
+              status: 'published',
+              slug: data.slug,
+              description: data.description,
+              thumbnailUrl: data.thumbnailUrl
+            }
+          }]
+        })
+      });
 
-  const result = await res.json();
-  return result.records?.[0]?.id || null;
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Airtable API error ${res.status}: ${errorText}`);
+      }
+
+      return res.json();
+    });
+
+    const recordId = result.records?.[0]?.id || null;
+    if (!recordId) {
+      console.error('[airtable] 레코드 ID 없음 - 응답:', result);
+    }
+    return recordId;
+  } catch (error) {
+    console.error('[airtable] 모든 재시도 실패:', error);
+    return null;
+  }
 }
 
-// GitHub에 파일 커밋 (Vercel 환경에서 파일 직접 저장 불가하므로)
+// GitHub에 파일 커밋 (재시도 전략 적용)
 async function commitToGitHub(
   filePath: string,
   content: string,
@@ -930,39 +765,46 @@ async function commitToGitHub(
   const GITHUB_REPO = process.env.GITHUB_REPO; // format: "owner/repo"
 
   if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    console.log('GitHub 설정 없음 - 파일 커밋 스킵');
+    console.log('[github] 환경변수 미설정 - 커밋 스킵');
     return false;
   }
 
   try {
-    // 기존 파일 확인 (SHA 필요)
-    const checkRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
-      { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` } }
-    );
+    return await withGitHubRetry(async () => {
+      // 기존 파일 확인 (SHA 필요)
+      const checkRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
+        { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` } }
+      );
 
-    const existingFile = checkRes.ok ? await checkRes.json() : null;
+      const existingFile = checkRes.ok ? await checkRes.json() : null;
 
-    // 파일 생성/업데이트
-    const res = await fetch(
-      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${GITHUB_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: commitMessage,
-          content: Buffer.from(content).toString('base64'),
-          ...(existingFile?.sha ? { sha: existingFile.sha } : {})
-        })
+      // 파일 생성/업데이트
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${GITHUB_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: commitMessage,
+            content: Buffer.from(content).toString('base64'),
+            ...(existingFile?.sha ? { sha: existingFile.sha } : {})
+          })
+        }
+      );
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`GitHub API error ${res.status}: ${errorText}`);
       }
-    );
 
-    return res.ok;
+      return true;
+    });
   } catch (error) {
-    console.error('GitHub 커밋 실패:', error);
+    console.error('[github] 모든 재시도 실패:', error);
     return false;
   }
 }
@@ -1108,48 +950,110 @@ export async function GET(request: Request) {
     const existingTitles = await getExistingTitles(category);
     console.log(`   최근 30일 내 ${category} 글: ${existingTitles.length}개`);
 
-    // 1. AI로 주제 생성 + 유효성 검증 (최대 5번 재시도)
+    // 1. AI로 주제 생성 + 유효성 검증 (최대 5번 재시도, 피드백 기반)
     let title = '';
     let topicAttempts = 0;
     const MAX_TOPIC_ATTEMPTS = 5;
+    let lastValidation: { isValid: boolean; reason?: string } = { isValid: false };
+    let previousFeedback: string | undefined;
+
+    // 카테고리별 필수 키워드 (fallback용)
+    const fallbackKeywords: Record<CategoryKey, string> = {
+      'meta-ads': '인스타그램 광고',
+      'instagram-reels': '인스타그램 릴스',
+      'threads': '쓰레드',
+      'faq': '인스타그램 계정',
+      'ai-tips': 'AI 활용',
+      'ai-news': 'AI 업데이트',
+    };
 
     while (topicAttempts < MAX_TOPIC_ATTEMPTS) {
-      title = await generateTopic(category, existingTitles);
+      // 피드백 포함하여 주제 생성
+      title = await generateTopic(category, existingTitles, previousFeedback);
       console.log(`📝 생성된 주제 (시도 ${topicAttempts + 1}): ${title}`);
 
       // 유효성 검증
-      const validation = validateTopic(title, category);
-      if (validation.isValid) {
+      lastValidation = validateTopic(title, category);
+      if (lastValidation.isValid) {
         console.log(`✅ 주제 유효성 검증 통과`);
         break;
       }
 
-      console.log(`⚠️ 주제 유효성 검증 실패: ${validation.reason}`);
+      console.log(`⚠️ 주제 유효성 검증 실패: ${lastValidation.reason}`);
       topicAttempts++;
 
+      // 피드백 구성 (다음 시도에 전달)
+      previousFeedback = `생성한 제목 "${title}"이(가) 거부되었습니다. 이유: ${lastValidation.reason}`;
+
+      // 마지막 시도 전: fallback 적용 (키워드 자동 삽입)
+      if (topicAttempts >= MAX_TOPIC_ATTEMPTS - 1) {
+        const keyword = fallbackKeywords[category];
+        if (title && !title.toLowerCase().includes(keyword.toLowerCase())) {
+          const fallbackTitle = `${keyword} ${title.replace(/^.*?(?=[가-힣A-Za-z])/, '')}`.trim();
+          console.log(`🔄 Fallback 적용: "${fallbackTitle}"`);
+
+          const fallbackValidation = validateTopic(fallbackTitle, category);
+          if (fallbackValidation.isValid) {
+            title = fallbackTitle;
+            console.log(`✅ Fallback 주제 유효성 검증 통과`);
+            lastValidation = fallbackValidation;
+            break;
+          }
+        }
+      }
+
       if (topicAttempts >= MAX_TOPIC_ATTEMPTS) {
-        throw new Error(`주제 생성 실패: ${MAX_TOPIC_ATTEMPTS}회 시도 후에도 유효한 주제를 생성하지 못함. 마지막 실패 사유: ${validation.reason}`);
+        throw new Error(`주제 생성 실패: ${MAX_TOPIC_ATTEMPTS}회 시도 후에도 유효한 주제를 생성하지 못함. 마지막 실패 사유: ${lastValidation.reason}`);
       }
     }
 
-    // 2. 중복 체크 (최대 3번 재시도)
+    // 2. 중복 체크 (빠른 Jaccard 유사도 → AI 검증)
     let duplicateAttempts = 0;
     while (duplicateAttempts < 3) {
+      // 2-1. 빠른 사전 필터링 (Jaccard 유사도, API 호출 불필요)
+      const quickCheck = checkTitleDuplicate(title, existingTitles, 0.6);
+      if (quickCheck.isDuplicate) {
+        console.log(`⚡ 빠른 중복 감지: "${quickCheck.matchedTitle}" (유사도 ${(quickCheck.similarity || 0) * 100}%)`);
+        duplicateAttempts++;
+
+        // 피드백 포함 재생성
+        let validTitle = false;
+        let regenAttempts = 0;
+        let regenFeedback = `"${title}"은(는) "${quickCheck.matchedTitle}"과(와) 너무 유사합니다. 완전히 다른 주제를 생성하세요.`;
+
+        while (!validTitle && regenAttempts < 3) {
+          title = await generateTopic(category, existingTitles, regenFeedback);
+          const validation = validateTopic(title, category);
+          if (validation.isValid) {
+            validTitle = true;
+          } else {
+            console.log(`⚠️ 재생성 주제 유효성 실패: ${validation.reason}`);
+            regenFeedback = `생성한 제목 "${title}"이(가) 거부되었습니다. 이유: ${validation.reason}`;
+            regenAttempts++;
+          }
+        }
+        continue;
+      }
+
+      // 2-2. AI 기반 상세 중복 검사 (Jaccard 통과 시에만)
       const duplicateCheck = await checkDuplicateTopic(title, category);
       if (!duplicateCheck.isDuplicate) break;
 
-      console.log(`⚠️ 중복 발견, 재생성... (${duplicateAttempts + 1}/3)`);
+      console.log(`⚠️ AI 중복 발견: "${duplicateCheck.similarTo}", 재생성... (${duplicateAttempts + 1}/3)`);
 
-      // 재생성 시에도 유효성 검증 (기존 제목 목록 전달)
+      // 피드백 포함 재생성
       let validTitle = false;
       let regenAttempts = 0;
+      let regenFeedback = `"${title}"은(는) 기존 글 "${duplicateCheck.similarTo}"과(와) 중복됩니다. 완전히 다른 주제를 생성하세요.`;
+
       while (!validTitle && regenAttempts < 3) {
-        title = await generateTopic(category, existingTitles);
+        title = await generateTopic(category, existingTitles, regenFeedback);
         const validation = validateTopic(title, category);
         if (validation.isValid) {
           validTitle = true;
         } else {
           console.log(`⚠️ 재생성 주제 유효성 실패: ${validation.reason}`);
+          regenFeedback = `생성한 제목 "${title}"이(가) 거부되었습니다. 이유: ${validation.reason}`;
           regenAttempts++;
         }
       }
@@ -1164,9 +1068,43 @@ export async function GET(request: Request) {
     console.log('🔍 SEO 키워드 연구...');
     const seoKeywords = await generateSEOKeywords(title, category);
 
-    // 4. 콘텐츠 생성
+    // 4. 콘텐츠 생성 + 품질 검증
     console.log('✍️ 콘텐츠 생성...');
-    const content = await generateContent(title, category, seoKeywords);
+    let content = await generateContent(title, category, seoKeywords);
+
+    // 4-1. 품질 검증
+    const keywords = [
+      seoKeywords.primary,
+      ...(seoKeywords.secondary || []).slice(0, 2),
+    ].filter(Boolean);
+
+    let validationResult = validateContentQuality(content, { keywords, category });
+    console.log(`📊 품질 점수: ${validationResult.score}/100 (${validationResult.grade})`);
+
+    // 4-2. 품질 미달 시 1회 재생성 시도
+    if (validationResult.score < 70 && validationResult.recommendation === 'regenerate') {
+      console.log('⚠️ 품질 미달, 피드백 포함 재생성 시도...');
+      const feedback = generateRegenerationFeedback(validationResult);
+
+      // 피드백을 포함한 재생성 프롬프트
+      content = await generateContent(
+        title,
+        category,
+        { ...seoKeywords, regenerationFeedback: feedback }
+      );
+
+      // 재검증
+      validationResult = validateContentQuality(content, { keywords, category });
+      console.log(`📊 재생성 품질 점수: ${validationResult.score}/100 (${validationResult.grade})`);
+    }
+
+    // 4-3. 여전히 70점 미만이면 경고 알림 (발행은 계속)
+    if (validationResult.score < 70) {
+      console.log(`⚠️ 품질 점수 미달 상태로 발행: ${validationResult.score}점`);
+      notifyQualityCheckFailed(title, validationResult.score, validationResult.issues.map(i => i.message));
+    }
+
+    console.log(formatValidationSummary(validationResult));
 
     // 5. 썸네일 생성
     console.log('🖼️ 썸네일 생성...');
