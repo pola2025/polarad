@@ -222,6 +222,11 @@ async function getExistingTitles(category: string): Promise<string[]> {
   }
 }
 
+// AI 카테고리 여부 확인
+function isAICategory(category: CategoryKey): boolean {
+  return category === 'ai-news' || category === 'ai-tips';
+}
+
 // AI가 주제 자동 생성 (피드백 기반 재시도 지원)
 async function generateTopic(
   category: CategoryKey,
@@ -376,7 +381,7 @@ ${mandatoryKeywordNote}
 
     'ai-tips': `GitHub, Reddit 등에서 추천 많이 받거나 유용성 평가가 완료된 AI 도구, MCP 서버, Claude Skills, 플러그인을 소개하는 블로그 주제를 1개 제안하세요.
 ${mandatoryKeywordNote}
-**[중요]**: 실제로 GitHub stars가 많거나 Reddit에서 호평받은 도구만 다룹니다. 사용방법, 설치방법, 공식 링크를 포함해야 합니다.
+**[중요]**: Google 검색을 통해 최근 1개월 이내 업데이트되거나 주목받는 AI 도구만 다룹니다. 실제 GitHub stars가 많거나 Reddit에서 호평받은 도구만 다룹니다. 사용방법, 설치방법, 공식 링크를 포함해야 합니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
 - 네이버/구글에서 실제 검색량이 높은 AI 도구/플러그인 관련 키워드 타겟팅
@@ -409,7 +414,7 @@ ${mandatoryKeywordNote}
 
     'ai-news': `최신 AI 도구, AI 서비스, AI 모델 출시 관련 뉴스를 전달하는 블로그 주제를 1개 제안하세요.
 ${mandatoryKeywordNote}
-**[중요]**: 최근 1-2주 내 발표된 AI 관련 뉴스만 다룹니다. 신규 출시, 업데이트, 서비스 변경 등 실제 뉴스성 콘텐츠를 작성합니다.
+**[중요]**: Google 검색을 통해 최근 1개월 이내 발표된 실제 AI 관련 뉴스만 다룹니다. 신규 출시, 업데이트, 서비스 변경 등 검증된 뉴스성 콘텐츠를 작성합니다. 추측이나 루머는 제외합니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
 - 최신 AI 뉴스 관련 키워드 타겟팅
@@ -452,13 +457,28 @@ ${feedbackText}
 
 반드시 제목만 한 줄로 응답하세요. 다른 설명 없이 제목만 출력하세요.`;
 
+  // AI 카테고리는 Google Search grounding 사용 (최신 정보 기반)
+  const useGrounding = isAICategory(category);
+
+  const requestBody: {
+    contents: { parts: { text: string }[] }[];
+    generationConfig: { temperature: number; maxOutputTokens: number };
+    tools?: { google_search: Record<string, never> }[];
+  } = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.9, maxOutputTokens: 200 }
+  };
+
+  if (useGrounding) {
+    requestBody.tools = [{ google_search: {} }];
+    console.log('🔍 AI 카테고리 - Google Search grounding 활성화');
+  }
+
+  // 모든 카테고리 gemini-3-flash-preview 사용
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.9, maxOutputTokens: 200 }
-    })
+    body: JSON.stringify(requestBody)
   });
 
   const result = await res.json();
@@ -611,14 +631,50 @@ JSON 형식으로만 응답: {"primary":"메인키워드","secondary":["보조�
   }
 }
 
+// AI 카테고리용: Google Search로 최신 정보 검색
+async function searchLatestAIInfo(title: string): Promise<string> {
+  const searchPrompt = `"${title}" 주제에 대해 최근 1개월 이내의 최신 정보를 검색하세요.
+
+다음 내용을 정리해주세요:
+1. 공식 발표일/출시일
+2. 주요 기능 및 변경사항
+3. 공식 링크 (GitHub, 공식 사이트 등)
+4. 사용자 반응 및 평가
+
+검색 결과를 요약해서 알려주세요.`;
+
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: searchPrompt }] }],
+      generationConfig: { temperature: 0.3, maxOutputTokens: 2000 },
+      tools: [{ google_search: {} }]
+    })
+  });
+
+  const result = await res.json();
+  return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
 // 콘텐츠 생성 (v2 프롬프트 빌더 사용)
 async function generateContent(
   title: string,
   category: CategoryKey,
   seoKeywords: { primary?: string; secondary?: string[]; regenerationFeedback?: string }
 ) {
+  // AI 카테고리는 먼저 최신 정보 검색
+  const useGrounding = isAICategory(category);
+  let searchContext = '';
+
+  if (useGrounding) {
+    console.log(`🔍 AI 카테고리 - 최신 정보 검색 중...`);
+    searchContext = await searchLatestAIInfo(title);
+    console.log(`✅ 검색 완료 - ${searchContext.length}자 수집`);
+  }
+
   // v2 프롬프트 빌더 사용
-  const prompt = buildContentPromptV2(title, category as V2CategoryKey, {
+  let prompt = buildContentPromptV2(title, category as V2CategoryKey, {
     seoKeywords: {
       primary: seoKeywords.primary,
       secondary: seoKeywords.secondary,
@@ -626,9 +682,23 @@ async function generateContent(
     regenerationFeedback: seoKeywords.regenerationFeedback,
   });
 
-  console.log(`📝 v2 프롬프트 사용 - 카테고리: ${category}`);
+  if (useGrounding && searchContext) {
+    // 검색 결과를 프롬프트에 추가
+    prompt = `[중요] 아래 검색 결과를 바탕으로 최신 정보 기반의 글을 작성하세요.
+오래된 정보나 추측은 포함하지 마세요. 실제 발표일/출시일을 명시하세요.
 
-  // 콘텐츠 생성은 고품질 모델 사용 (긴 응답이라 thinking 토큰 문제 없음)
+## 최신 검색 결과
+${searchContext}
+
+---
+
+${prompt}`;
+    console.log(`📝 v2 프롬프트 사용 - 카테고리: ${category} (검색 결과 포함)`);
+  } else {
+    console.log(`📝 v2 프롬프트 사용 - 카테고리: ${category}`);
+  }
+
+  // 콘텐츠 생성은 항상 gemini-3-pro-preview 사용
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
