@@ -34,12 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 1.0,
     },
-    {
-      url: `${baseUrl}/estimator`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
+    // estimator는 /contact로 리다이렉트되므로 sitemap에서 제외
     {
       url: `${baseUrl}/portfolio`,
       lastModified: currentDate,

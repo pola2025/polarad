@@ -14,13 +14,35 @@ export function WebSiteSchema() {
       "name": "폴라애드",
       "url": "https://polarad.co.kr"
     },
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://polarad.co.kr/search?q={search_term_string}"
-      },
-      "query-input": "required name=search_term_string"
+    // 주요 서비스 페이지 명시 (AI가 사이트 구조를 이해하기 쉽게)
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "서비스 안내",
+          "url": "https://polarad.co.kr/service"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "포트폴리오",
+          "url": "https://polarad.co.kr/portfolio"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "마케팅 소식",
+          "url": "https://polarad.co.kr/marketing-news"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "상담신청",
+          "url": "https://polarad.co.kr/contact"
+        }
+      ]
     }
   }
 

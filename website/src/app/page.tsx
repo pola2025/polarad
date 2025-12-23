@@ -18,13 +18,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: '온라인영업 자동화 | DB수집 & 리드제너레이션 전문',
     description: '평생 남는 영업 자산(Asset) 구축. 24시간 잠재고객 발굴 시스템.',
-    url: 'https://polaad.co.kr',
+    url: 'https://polarad.co.kr',
     type: 'website',
     locale: 'ko_KR',
     siteName: '폴라애드',
   },
   alternates: {
-    canonical: 'https://polaad.co.kr',
+    canonical: 'https://polarad.co.kr',
   },
   robots: {
     index: true,
@@ -60,7 +60,7 @@ export default function HomePage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: '홈', url: 'https://polaad.co.kr' }
+          { name: '홈', url: 'https://polarad.co.kr' }
         ]}
       />
 
