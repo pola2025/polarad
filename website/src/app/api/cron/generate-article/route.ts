@@ -1022,71 +1022,75 @@ export async function GET(request: Request) {
     const existingTitles = await getExistingTitles(category);
     console.log(`   최근 30일 내 ${category} 글: ${existingTitles.length}개`);
 
-    // 1. AI로 주제 생성 + 유효성 검증 (최대 5번 재시도, 피드백 기반)
+    // 1. 주제 선택 (아카이브 우선 → AI fallback)
     let title = '';
-    let topicAttempts = 0;
-    const MAX_TOPIC_ATTEMPTS = 5;
-    let lastValidation: { isValid: boolean; reason?: string } = { isValid: false };
-    let previousFeedback: string | undefined;
+    let topicSource: 'archive' | 'ai' = 'archive';
 
-    // 카테고리별 필수 키워드 (fallback용)
-    const fallbackKeywords: Record<CategoryKey, string> = {
-      'meta-ads': '인스타그램 광고',
-      'instagram-reels': '인스타그램 릴스',
-      'threads': '쓰레드',
-      'faq': '인스타그램 계정',
-      'ai-tips': 'AI 활용',
-      'ai-news': 'AI 업데이트',
-    };
+    // 1-1. 아카이브에서 주제 가져오기 (우선)
+    console.log(`📚 주제 아카이브에서 주제 가져오기 시도...`);
+    const archivedTopic = await getUnusedTopic(category);
 
-    while (topicAttempts < MAX_TOPIC_ATTEMPTS) {
-      // 피드백 포함하여 주제 생성
-      title = await generateTopic(category, existingTitles, previousFeedback);
-      console.log(`📝 생성된 주제 (시도 ${topicAttempts + 1}): ${title}`);
+    if (archivedTopic) {
+      title = archivedTopic;
+      console.log(`✅ 아카이브에서 주제 선택: "${title}"`);
+    } else {
+      // 1-2. 아카이브 비어있음 → AI 생성 fallback
+      console.log(`⚠️ 아카이브 비어있음, AI 주제 생성 fallback...`);
+      topicSource = 'ai';
 
-      // 유효성 검증
-      lastValidation = validateTopic(title, category);
-      if (lastValidation.isValid) {
-        console.log(`✅ 주제 유효성 검증 통과`);
-        break;
-      }
+      let topicAttempts = 0;
+      const MAX_TOPIC_ATTEMPTS = 5;
+      let lastValidation: { isValid: boolean; reason?: string } = { isValid: false };
+      let previousFeedback: string | undefined;
 
-      console.log(`⚠️ 주제 유효성 검증 실패: ${lastValidation.reason}`);
-      topicAttempts++;
+      // 카테고리별 필수 키워드 (fallback용)
+      const fallbackKeywords: Record<CategoryKey, string> = {
+        'meta-ads': '인스타그램 광고',
+        'instagram-reels': '인스타그램 릴스',
+        'threads': '쓰레드',
+        'faq': '인스타그램 계정',
+        'ai-tips': 'AI 활용',
+        'ai-news': 'AI 업데이트',
+      };
 
-      // 피드백 구성 (다음 시도에 전달)
-      previousFeedback = `생성한 제목 "${title}"이(가) 거부되었습니다. 이유: ${lastValidation.reason}`;
+      while (topicAttempts < MAX_TOPIC_ATTEMPTS) {
+        title = await generateTopic(category, existingTitles, previousFeedback);
+        console.log(`📝 AI 생성 주제 (시도 ${topicAttempts + 1}): ${title}`);
 
-      // 마지막 시도 전: fallback 적용 (키워드 자동 삽입)
-      if (topicAttempts >= MAX_TOPIC_ATTEMPTS - 1) {
-        const keyword = fallbackKeywords[category];
-        if (title && !title.toLowerCase().includes(keyword.toLowerCase())) {
-          const fallbackTitle = `${keyword} ${title.replace(/^.*?(?=[가-힣A-Za-z])/, '')}`.trim();
-          console.log(`🔄 Fallback 적용: "${fallbackTitle}"`);
-
-          const fallbackValidation = validateTopic(fallbackTitle, category);
-          if (fallbackValidation.isValid) {
-            title = fallbackTitle;
-            console.log(`✅ Fallback 주제 유효성 검증 통과`);
-            lastValidation = fallbackValidation;
-            break;
-          }
-        }
-      }
-
-      if (topicAttempts >= MAX_TOPIC_ATTEMPTS) {
-        // 🆕 주제 아카이브에서 fallback 시도
-        console.log(`⚠️ AI 주제 생성 ${MAX_TOPIC_ATTEMPTS}회 실패, 아카이브에서 주제 가져오기 시도...`);
-        const archivedTopic = await getUnusedTopic(category);
-        if (archivedTopic) {
-          title = archivedTopic;
-          console.log(`✅ 아카이브에서 주제 가져옴: "${title}"`);
-          lastValidation = { isValid: true };
+        lastValidation = validateTopic(title, category);
+        if (lastValidation.isValid) {
+          console.log(`✅ 주제 유효성 검증 통과`);
           break;
         }
-        throw new Error(`주제 생성 실패: ${MAX_TOPIC_ATTEMPTS}회 시도 후에도 유효한 주제를 생성하지 못함. 아카이브에도 사용 가능한 주제 없음. 마지막 실패 사유: ${lastValidation.reason}`);
+
+        console.log(`⚠️ 주제 유효성 검증 실패: ${lastValidation.reason}`);
+        topicAttempts++;
+        previousFeedback = `생성한 제목 "${title}"이(가) 거부되었습니다. 이유: ${lastValidation.reason}`;
+
+        // 마지막 시도 전: fallback 적용 (키워드 자동 삽입)
+        if (topicAttempts >= MAX_TOPIC_ATTEMPTS - 1) {
+          const keyword = fallbackKeywords[category];
+          if (title && !title.toLowerCase().includes(keyword.toLowerCase())) {
+            const fallbackTitle = `${keyword} ${title.replace(/^.*?(?=[가-힣A-Za-z])/, '')}`.trim();
+            console.log(`🔄 Fallback 적용: "${fallbackTitle}"`);
+
+            const fallbackValidation = validateTopic(fallbackTitle, category);
+            if (fallbackValidation.isValid) {
+              title = fallbackTitle;
+              console.log(`✅ Fallback 주제 유효성 검증 통과`);
+              lastValidation = fallbackValidation;
+              break;
+            }
+          }
+        }
+
+        if (topicAttempts >= MAX_TOPIC_ATTEMPTS) {
+          throw new Error(`주제 생성 실패: 아카이브 비어있고, AI ${MAX_TOPIC_ATTEMPTS}회 시도 후에도 유효한 주제 생성 실패. 마지막 실패 사유: ${lastValidation.reason}`);
+        }
       }
     }
+
+    console.log(`📌 최종 주제: "${title}" (source: ${topicSource})`)
 
     // 2. 중복 체크 (빠른 Jaccard 유사도 → AI 검증)
     let duplicateAttempts = 0;

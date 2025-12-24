@@ -234,6 +234,42 @@ export async function addTopicsToArchive(
 }
 
 /**
+ * 특정 카테고리의 모든 주제 제목 가져오기 (중복 체크용)
+ */
+export async function getAllTopicTitles(category: CategoryKey): Promise<string[]> {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
+    console.warn('[TopicArchive] API credentials not configured');
+    return [];
+  }
+
+  const filterFormula = `{category}='${category}'`;
+  const params = new URLSearchParams({
+    filterByFormula: filterFormula,
+    'fields[]': 'title',
+  });
+
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TOPIC_ARCHIVE_TABLE)}?${params.toString()}`;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      console.error('[TopicArchive] Get all titles API error:', res.status);
+      return [];
+    }
+
+    const data: AirtableListResponse = await res.json();
+    return data.records.map((r) => r.fields.title).filter(Boolean);
+  } catch (error) {
+    console.error('[TopicArchive] Get all titles fetch error:', error);
+    return [];
+  }
+}
+
+/**
  * 특정 카테고리에 이미 존재하는 주제인지 체크
  */
 export async function topicExists(title: string, category: CategoryKey): Promise<boolean> {
