@@ -19,13 +19,15 @@
     "lucide-react": "^0.552.0",
     "next": "^15.5.7",
     "next-mdx-remote": "^5.0.0",
+    "playwright": "^1.57.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-markdown": "^10.1.0",
     "reading-time": "^1.5.0",
     "remark-gfm": "^4.0.1",
     "sharp": "^0.34.5",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "timesnap": "^0.3.3"
   },
   "overrides": {
     "react": "^19.2.1",

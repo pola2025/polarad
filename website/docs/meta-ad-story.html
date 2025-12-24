@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>폴라애드 Meta 광고 - 관공서 버전 (45초)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .story-container {
+            width: 1080px;
+            height: 1920px;
+            background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 50%, #e8f0fe 100%);
+            position: relative;
+            overflow: hidden;
+            transform-origin: top left;
+        }
+
+        /* 4K 녹화 모드 */
+        .story-container.scale-4k {
+            transform: scale(2);
+            width: 1080px;
+            height: 1920px;
+        }
+
+        /* 화면에 맞게 축소 모드 */
+        .story-container.scale-fit {
+            transform-origin: top center;
+        }
+
+        /* 배경 효과 */
+        .bg-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.3;
+        }
+
+        .glow-1 {
+            top: -200px;
+            right: -200px;
+            background: linear-gradient(135deg, #3b82f6, #93c5fd);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .glow-2 {
+            bottom: 200px;
+            left: -200px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            animation: pulse 4s ease-in-out infinite 2s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.1); }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                text-shadow: 0 0 20px rgba(30, 64, 175, 0.5),
+                             0 0 40px rgba(30, 64, 175, 0.3),
+                             0 0 60px rgba(30, 64, 175, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 30px rgba(30, 64, 175, 0.8),
+                             0 0 60px rgba(30, 64, 175, 0.5),
+                             0 0 90px rgba(30, 64, 175, 0.3);
+            }
+        }
+
+        @keyframes glowPulseRed {
+            0%, 100% {
+                text-shadow: 0 0 20px rgba(239, 68, 68, 0.5),
+                             0 0 40px rgba(239, 68, 68, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 30px rgba(239, 68, 68, 0.8),
+                             0 0 60px rgba(239, 68, 68, 0.5);
+            }
+        }
+
+        @keyframes borderGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(30, 64, 175, 0.3),
+                            inset 0 0 20px rgba(30, 64, 175, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(30, 64, 175, 0.5),
+                            inset 0 0 30px rgba(30, 64, 175, 0.2);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Meta 데드존 Safe Area */
+        /* 상단: 300px (프로필/스토리 제목), 하단: 350px (CTA/메시지), 좌우: 80px */
+
+        /* 시퀀스 컨테이너 */
+        .sequence {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 300px 80px 350px 80px; /* 상 좌우 하 데드존 */
+            transition: opacity 0.8s ease-in-out;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        .sequence.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 시퀀스 1: 오프닝 */
+        .seq-1 .logo-text {
+            font-size: 160px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1e40af 0%, #93c5fd 50%, #1e40af 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .seq-1.active .logo-text {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .seq-1 .tagline {
+            font-size: 56px;
+            color: #6b7280;
+            margin-top: 40px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.5s;
+        }
+
+        .seq-1.active .tagline {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* 시퀀스 2: 문제 제기 */
+        .seq-2 .problem-text {
+            font-size: 90px;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+            line-height: 1.4;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .seq-2.active .problem-text {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .seq-2 .highlight-red {
+            color: #ef4444;
+            animation: glowPulseRed 2s ease-in-out infinite;
+        }
+
+        .seq-2 .stat-box {
+            margin-top: 80px;
+            padding: 50px 80px;
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            border-radius: 20px;
+            text-align: center;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.5s;
+        }
+
+        .seq-2.active .stat-box {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .seq-2 .stat-number {
+            font-size: 180px;
+            font-weight: 900;
+            color: #ef4444;
+            line-height: 1;
+            animation: glowPulseRed 2s ease-in-out infinite;
+        }
+
+        .seq-2 .stat-label {
+            font-size: 48px;
+            color: #6b7280;
+            margin-top: 20px;
+        }
+
+        .seq-2 .sub-hook {
+            font-size: 52px;
+            color: #6b7280;
+            margin-top: 60px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.5s;
+        }
+
+        .seq-2.active .sub-hook {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* 시퀀스 3: 해결책 */
+        .seq-3 .solution-intro {
+            font-size: 56px;
+            color: #6b7280;
+            margin-bottom: 40px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .seq-3.active .solution-intro {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .seq-3 .solution-main {
+            font-size: 100px;
+            font-weight: 900;
+            color: #1f2937;
+            text-align: center;
+            line-height: 1.3;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.3s;
+        }
+
+        .seq-3.active .solution-main {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .seq-3 .gold-text {
+            background: linear-gradient(135deg, #1e40af 0%, #93c5fd 50%, #1e40af 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite, glowPulse 2s ease-in-out infinite;
+        }
+
+        .seq-3 .solution-sub {
+            font-size: 52px;
+            color: #6b7280;
+            margin-top: 40px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.5s;
+        }
+
+        .seq-3.active .solution-sub {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* 시퀀스 4: 원스톱 솔루션 개요 */
+        .seq-4 {
+            justify-content: flex-start;
+            padding-top: 320px;
+        }
+
+        .seq-4 .section-title {
+            font-size: 80px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 60px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+
+        .seq-4.active .section-title {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .benefit-card {
+            width: 100%;
+            max-width: 900px;
+            padding: 45px 50px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            transform: translateX(-100px);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+
+        .benefit-card:nth-child(2) { transition-delay: 0.3s; }
+        .benefit-card:nth-child(3) {
+            transition-delay: 0.5s;
+            transform: translateX(100px);
+        }
+        .benefit-card:nth-child(4) { transition-delay: 0.7s; }
+
+        .seq-4.active .benefit-card {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .benefit-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            flex-shrink: 0;
+        }
+
+        .benefit-content h3 {
+            font-size: 50px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .benefit-content p {
+            font-size: 36px;
+            color: #6b7280;
+        }
+
+        /* 시퀀스 5-7: 서비스 상세 */
+        .service-detail {
+            text-align: center;
+        }
+
+        .service-detail .service-icon {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 90px;
+            margin: 0 auto 50px;
+            transform: scale(0.5);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .sequence.active .service-icon {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .service-detail .service-title {
+            font-size: 90px;
+            font-weight: 900;
+            color: #1f2937;
+            margin-bottom: 40px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.2s;
+        }
+
+        .sequence.active .service-title {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .service-detail .service-desc {
+            font-size: 52px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 50px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.4s;
+        }
+
+        .sequence.active .service-desc {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .service-features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.6s;
+        }
+
+        .sequence.active .service-features {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .feature-tag {
+            padding: 20px 40px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 50px;
+            font-size: 40px;
+            color: #1e40af;
+        }
+
+        /* 시퀀스 5: PC + 모바일 디바이스 */
+        .devices-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 60px;
+        }
+
+        /* PC 모니터 */
+        .device-pc {
+            transform: translateX(-50px);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.2s;
+        }
+
+        .seq-5.active .device-pc {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .pc-frame {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pc-screen {
+            width: 550px;
+            height: 380px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 8px solid #2a2a2a;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5),
+                        0 0 30px rgba(212, 175, 55, 0.15);
+            position: relative;
+        }
+
+        .pc-iframe-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pc-iframe {
+            width: 550px;
+            height: 1500px;
+            border: none;
+            pointer-events: none;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        @keyframes scrollPC {
+            0%, 10% { transform: translateY(0) translateZ(0); }
+            90%, 100% { transform: translateY(-1000px) translateZ(0); }
+        }
+
+        .seq-5.active .pc-iframe {
+            animation: scrollPC 4s cubic-bezier(0.25, 0.1, 0.25, 1) 0.3s forwards;
+        }
+
+        .pc-stand {
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+        }
+
+        .pc-base {
+            width: 150px;
+            height: 12px;
+            background: #2a2a2a;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* 모바일 */
+        .device-mobile {
+            transform: translateX(50px);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.4s;
+        }
+
+        .seq-5.active .device-mobile {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .mobile-frame {
+            width: 220px;
+            height: 450px;
+            background: #ffffff;
+            border-radius: 36px;
+            padding: 12px;
+            border: 4px solid #2a2a2a;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5),
+                        0 0 30px rgba(212, 175, 55, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mobile-notch {
+            width: 80px;
+            height: 24px;
+            background: #0a0a0a;
+            border-radius: 0 0 16px 16px;
+            margin-bottom: 8px;
+        }
+
+        .mobile-screen {
+            flex: 1;
+            width: 100%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mobile-iframe-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mobile-iframe {
+            width: 220px;
+            height: 1200px;
+            border: none;
+            pointer-events: none;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        @keyframes scrollMobile {
+            0%, 15% { transform: translateY(0) translateZ(0); }
+            85%, 100% { transform: translateY(-800px) translateZ(0); }
+        }
+
+        .seq-5.active .mobile-iframe {
+            animation: scrollMobile 4s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s forwards;
+        }
+
+        .mobile-home {
+            width: 40px;
+            height: 5px;
+            background: #333;
+            border-radius: 3px;
+            margin-top: 10px;
+        }
+
+        /* 시퀀스 7: 명함 디자인 */
+        .print-showcase {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.8s ease-out 0.2s;
+        }
+
+        .seq-7.active .print-showcase {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .namecard {
+            width: 400px;
+            height: 240px;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4),
+                        0 0 30px rgba(212, 175, 55, 0.2);
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+            overflow: hidden;
+        }
+
+        .namecard-front {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition-delay: 0.3s;
+        }
+
+        .namecard-back {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition-delay: 0.5s;
+        }
+
+        .seq-7.active .namecard {
+            transform: translateY(0) rotate(-2deg);
+            opacity: 1;
+        }
+
+        .seq-7.active .namecard-back {
+            transform: translateY(0) rotate(2deg);
+        }
+
+        .namecard-logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1e40af, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .namecard-divider {
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, #1e40af, transparent);
+            margin-bottom: 12px;
+        }
+
+        .namecard-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 3px;
+        }
+
+        .namecard-title {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .namecard-contact {
+            font-size: 12px;
+            color: #4b5563;
+            line-height: 1.7;
+        }
+
+        .namecard-back-logo {
+            font-size: 38px;
+            font-weight: 900;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .namecard-back-slogan {
+            font-size: 13px;
+            color: rgba(0,0,0,0.6);
+            margin-bottom: 12px;
+        }
+
+        .namecard-back-url {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* 시퀀스 8: 작업 프로세스 */
+        .seq-8 {
+            justify-content: flex-start;
+            padding-top: 320px;
+        }
+
+        .process-title {
+            font-size: 80px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 60px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+
+        .seq-8.active .process-title {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+            transform: translateX(-80px);
+            opacity: 0;
+            transition: all 0.5s ease-out;
+        }
+
+        .process-step:nth-child(1) { transition-delay: 0.2s; }
+        .process-step:nth-child(2) { transition-delay: 0.4s; }
+        .process-step:nth-child(3) { transition-delay: 0.6s; }
+        .process-step:nth-child(4) { transition-delay: 0.8s; }
+
+        .seq-8.active .process-step {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 900;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            font-size: 50px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            font-size: 36px;
+            color: #6b7280;
+        }
+
+        .step-arrow {
+            position: absolute;
+            left: 119px;
+            top: 80px;
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(180deg, #1e40af, transparent);
+        }
+
+        /* 시퀀스 9: CTA */
+        .seq-9 .promo-badge {
+            padding: 28px 70px;
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            border-radius: 50px;
+            font-size: 48px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 50px;
+            animation: pulse 2s ease-in-out infinite;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+
+        .seq-9.active .promo-badge {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .seq-9 .cta-main {
+            font-size: 90px;
+            font-weight: 900;
+            color: #1f2937;
+            text-align: center;
+            line-height: 1.3;
+            margin-bottom: 40px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.3s;
+        }
+
+        .seq-9.active .cta-main {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .seq-9 .cta-highlight {
+            color: #1e40af;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        .seq-9 .cta-main-big {
+            font-size: 90px;
+            font-weight: 900;
+            color: #1f2937;
+            text-align: center;
+            line-height: 1.3;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+
+        .seq-9.active .cta-main-big {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .seq-9 .cta-sub-big {
+            font-size: 70px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-top: 30px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.3s;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        .seq-9.active .cta-sub-big {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .seq-9 .cta-sub {
+            font-size: 52px;
+            color: #6b7280;
+            margin-bottom: 60px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.5s;
+        }
+
+        .seq-9.active .cta-sub {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .seq-9 .cta-button {
+            padding: 45px 130px;
+            background: linear-gradient(135deg, #1e40af 0%, #93c5fd 50%, #1e40af 100%);
+            background-size: 200% 200%;
+            border-radius: 100px;
+            font-size: 56px;
+            font-weight: 700;
+            color: #000;
+            animation: shimmer 2s linear infinite, borderGlow 2s ease-in-out infinite;
+            cursor: pointer;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.7s;
+        }
+
+        .seq-9.active .cta-button {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* 하단 로고 - 데드존 안쪽 (하단 350px 위) */
+        .bottom-logo {
+            position: absolute;
+            bottom: 380px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 44px;
+            font-weight: 700;
+            color: rgba(212, 175, 55, 0.5);
+        }
+
+        /* 프로그레스 바 */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1e40af, #93c5fd);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* 컨트롤 패널 - 기본 숨김 */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            z-index: 1000;
+            display: none;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            margin: 5px;
+            background: #1e40af;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #93c5fd;
+        }
+
+        .control-btn.recording {
+            background: #ef4444;
+            color: white;
+        }
+
+        .seq-indicator {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 15px;
+            max-width: 150px;
+        }
+
+        .seq-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #333;
+            transition: background 0.3s;
+        }
+
+        .seq-dot.active {
+            background: #1e40af;
+        }
+
+        .timer {
+            color: #1e40af;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-black min-h-screen flex items-center justify-center">
+
+    <!-- 컨트롤 패널 -->
+    <div class="control-panel">
+        <h3 class="text-white font-bold mb-3">광고 컨트롤</h3>
+        <button class="control-btn" onclick="playAnimation()">재생</button>
+        <button class="control-btn" onclick="resetAnimation()">리셋</button>
+        <button class="control-btn" onclick="startRecording()" id="recordBtn">녹화 시작</button>
+        <div class="timer" id="timer">00:00 / 00:45</div>
+        <div class="seq-indicator">
+            <div class="seq-dot" data-seq="1"></div>
+            <div class="seq-dot" data-seq="2"></div>
+            <div class="seq-dot" data-seq="3"></div>
+            <div class="seq-dot" data-seq="4"></div>
+            <div class="seq-dot" data-seq="5"></div>
+            <div class="seq-dot" data-seq="6"></div>
+            <div class="seq-dot" data-seq="7"></div>
+            <div class="seq-dot" data-seq="8"></div>
+            <div class="seq-dot" data-seq="9"></div>
+        </div>
+    </div>
+
+    <!-- 광고 컨테이너 -->
+    <div class="story-container" id="adContainer">
+        <!-- 배경 효과 -->
+        <div class="bg-glow glow-1"></div>
+        <div class="bg-glow glow-2"></div>
+
+        <!-- 시퀀스 1: 오프닝 -->
+        <div class="sequence seq-1" data-seq="1">
+            <div class="logo-text">PolaAd</div>
+            <div class="tagline">중소기업 영업 자동화 솔루션</div>
+        </div>
+
+        <!-- 시퀀스 2: 후킹 - 타겟 공감 -->
+        <div class="sequence seq-2" data-seq="2">
+            <div class="problem-text">
+                온라인 영업<br>
+                <span class="highlight-red">고객 DB</span>가<br>
+                필요하신가요?
+            </div>
+            <div class="sub-hook">
+                자체 광고 집행하고 계시죠?
+            </div>
+        </div>
+
+        <!-- 시퀀스 3: 솔루션 소개 -->
+        <div class="sequence seq-3" data-seq="3">
+            <div class="solution-intro">Meta 광고에 최적화된</div>
+            <div class="solution-main">
+                <span class="gold-text">올인원 솔루션</span>
+            </div>
+            <div class="solution-sub">
+                광고 게재부터 리포트까지
+            </div>
+        </div>
+
+        <!-- 시퀀스 4: 원스톱 솔루션 개요 -->
+        <div class="sequence seq-4" data-seq="4">
+            <div class="section-title">원스톱 솔루션</div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🌐</div>
+                <div class="benefit-content">
+                    <h3>기업 홈페이지</h3>
+                    <p>전문 제작 10페이지</p>
+                </div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">📱</div>
+                <div class="benefit-content">
+                    <h3>Meta 광고 자동화</h3>
+                    <p>Facebook · Instagram 타겟팅</p>
+                </div>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">🖨️</div>
+                <div class="benefit-content">
+                    <h3>영업 인쇄물</h3>
+                    <p>명함 · 대봉투 · 계약서</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 시퀀스 5: DB 확인 편의성 강조 -->
+        <div class="sequence seq-5" data-seq="5">
+            <div class="service-detail">
+                <div class="service-icon">📱</div>
+                <div class="service-title">핸드폰에서<br>DB 바로 확인!</div>
+                <div class="service-desc">
+                    Meta 광고 집행하면<br>
+                    <span style="color: #1e40af;">잠재고객 정보</span>가<br>
+                    실시간으로 도착
+                </div>
+                <div class="service-features">
+                    <span class="feature-tag">알림 즉시 수신</span>
+                    <span class="feature-tag">고객정보 확인</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 시퀀스 6: 누구나 고객모집 시작 -->
+        <div class="sequence seq-6" data-seq="6">
+            <div class="service-detail">
+                <div class="service-icon">🚀</div>
+                <div class="service-title">누구나<br>고객모집 시작!</div>
+                <div class="service-desc">
+                    복잡한 Meta 광고 관리?<br>
+                    <span style="color: #1e40af;">저희가 다 해드립니다</span>
+                </div>
+                <div class="service-features">
+                    <span class="feature-tag">광고 셋팅 대행</span>
+                    <span class="feature-tag">DB 자동 전달</span>
+                    <span class="feature-tag">영업만 집중</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 시퀀스 7: 서비스 상세 - 인쇄물 (HTML 디자인) -->
+        <div class="sequence seq-7" data-seq="7">
+            <div class="service-title" style="margin-bottom: 40px;">인쇄물 패키지</div>
+            <div class="print-showcase">
+                <!-- 명함 앞면 -->
+                <div class="namecard namecard-front">
+                    <div class="namecard-logo">PolaAd</div>
+                    <div class="namecard-divider"></div>
+                    <div class="namecard-name">홍길동</div>
+                    <div class="namecard-title">대표이사</div>
+                    <div class="namecard-contact">
+                        <div>T. 02-1234-5678</div>
+                        <div>M. 010-1234-5678</div>
+                        <div>E. hong@polarad.co.kr</div>
+                    </div>
+                </div>
+                <!-- 명함 뒷면 -->
+                <div class="namecard namecard-back">
+                    <div class="namecard-back-logo">PolaAd</div>
+                    <div class="namecard-back-slogan">중소기업 영업 자동화 솔루션</div>
+                    <div class="namecard-back-url">www.polarad.co.kr</div>
+                </div>
+            </div>
+            <div class="service-features" style="margin-top: 50px;">
+                <span class="feature-tag">명함</span>
+                <span class="feature-tag">대봉투</span>
+                <span class="feature-tag">계약서</span>
+                <span class="feature-tag">명찰</span>
+            </div>
+        </div>
+
+        <!-- 시퀀스 8: 작업 프로세스 -->
+        <div class="sequence seq-8" data-seq="8">
+            <div class="process-title">간단한 진행 과정</div>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>무료 상담</h4>
+                        <p>현재 영업 상황 분석</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>맞춤 설계</h4>
+                        <p>업종별 최적 솔루션 제안</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>제작 & 셋업</h4>
+                        <p>홈페이지 + 광고 + 인쇄물 동시 진행</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>런칭 & 운영</h4>
+                        <p>리드 자동 수집 시작</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 시퀀스 9: CTA -->
+        <div class="sequence seq-9" data-seq="9">
+            <div class="cta-main-big">
+                모든 것이<br>
+                <span class="cta-highlight">준비되어 있습니다</span>
+            </div>
+            <div class="cta-sub-big">
+                영업만 하시면 됩니다!
+            </div>
+            <div class="promo-badge" style="margin-top: 50px;">선착순 20개 기업</div>
+            <div class="promo-sub" style="font-size: 42px; color: #4b5563; margin-bottom: 40px;">할인 + 자동화 서비스 기본제공</div>
+            <div class="cta-button">지금 상담받기</div>
+        </div>
+
+        <!-- 하단 로고 -->
+        <div class="bottom-logo">polarad.co.kr</div>
+
+        <!-- 프로그레스 바 -->
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let mediaRecorder;
+        let recordedChunks = [];
+        let currentSeq = 0;
+        let animationTimer = null;
+        let progressTimer = null;
+
+        // 시퀀스 타이밍 (밀리초) - 총 45초
+        // DB 확인 후킹 먼저, 오프닝(로고)은 마지막에
+        const sequenceTiming = [
+            { seq: 5, duration: 6000 },   // DB 바로 확인 (후킹): 6초
+            { seq: 2, duration: 5000 },   // 문제 제기: 5초
+            { seq: 3, duration: 5000 },   // 해결책: 5초
+            { seq: 4, duration: 5000 },   // 원스톱 개요: 5초
+            { seq: 6, duration: 5000 },   // 누구나 고객모집: 5초
+            { seq: 7, duration: 5000 },   // 인쇄물 상세: 5초
+            { seq: 8, duration: 5000 },   // 프로세스: 5초
+            { seq: 9, duration: 5000 },   // CTA: 5초
+            { seq: 1, duration: 4000 },   // 오프닝(로고): 4초 - 마지막
+        ];
+
+        const totalDuration = sequenceTiming.reduce((acc, s) => acc + s.duration, 0);
+
+        function formatTime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function showSequence(seqNum) {
+            document.querySelectorAll('.sequence').forEach(seq => {
+                seq.classList.remove('active');
+            });
+            document.querySelectorAll('.seq-dot').forEach(dot => {
+                dot.classList.remove('active');
+            });
+
+            const targetSeq = document.querySelector(`.seq-${seqNum}`);
+            if (targetSeq) {
+                targetSeq.classList.add('active');
+            }
+
+            const targetDot = document.querySelector(`.seq-dot[data-seq="${seqNum}"]`);
+            if (targetDot) {
+                targetDot.classList.add('active');
+            }
+        }
+
+        function playAnimation() {
+            if (isPlaying) return;
+            isPlaying = true;
+            currentSeq = 0;
+
+            const progressBar = document.getElementById('progressBar');
+            const timerEl = document.getElementById('timer');
+            let elapsed = 0;
+
+            function nextSequence() {
+                if (currentSeq >= sequenceTiming.length) {
+                    isPlaying = false;
+                    return;
+                }
+
+                const current = sequenceTiming[currentSeq];
+                showSequence(current.seq);
+
+                animationTimer = setTimeout(() => {
+                    currentSeq++;
+                    nextSequence();
+                }, current.duration);
+            }
+
+            progressTimer = setInterval(() => {
+                elapsed += 100;
+                const progress = (elapsed / totalDuration) * 100;
+                progressBar.style.width = `${Math.min(progress, 100)}%`;
+                timerEl.textContent = `${formatTime(elapsed)} / ${formatTime(totalDuration)}`;
+
+                if (elapsed >= totalDuration) {
+                    clearInterval(progressTimer);
+                }
+            }, 100);
+
+            nextSequence();
+        }
+
+        function resetAnimation() {
+            isPlaying = false;
+            currentSeq = 0;
+
+            if (animationTimer) clearTimeout(animationTimer);
+            if (progressTimer) clearInterval(progressTimer);
+
+            document.querySelectorAll('.sequence').forEach(seq => {
+                seq.classList.remove('active');
+            });
+            document.querySelectorAll('.seq-dot').forEach(dot => {
+                dot.classList.remove('active');
+            });
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('timer').textContent = `00:00 / ${formatTime(totalDuration)}`;
+        }
+
+        async function startRecording() {
+            const btn = document.getElementById('recordBtn');
+            const container = document.getElementById('adContainer');
+
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                btn.textContent = '녹화 시작';
+                btn.classList.remove('recording');
+                return;
+            }
+
+            try {
+                const stream = container.captureStream(30);
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'video/webm;codecs=vp9',
+                    videoBitsPerSecond: 8000000
+                });
+
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'polarad-meta-ad-45s.webm';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+
+                mediaRecorder.start();
+                btn.textContent = '녹화 중지';
+                btn.classList.add('recording');
+
+                resetAnimation();
+                setTimeout(playAnimation, 500);
+
+                setTimeout(() => {
+                    if (mediaRecorder && mediaRecorder.state === 'recording') {
+                        mediaRecorder.stop();
+                        btn.textContent = '녹화 시작';
+                        btn.classList.remove('recording');
+                    }
+                }, totalDuration + 2000);
+
+            } catch (err) {
+                alert('녹화 기능을 사용할 수 없습니다.\n\n대안: OBS Studio나 화면 녹화 프로그램을 사용하세요.');
+                console.error(err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // URL 파라미터 체크 - ?record=true 면 녹화 모드
+            const urlParams = new URLSearchParams(window.location.search);
+            const isRecordMode = urlParams.get('record') === 'true';
+
+            // fit 모드 - 화면에 맞게 축소
+            const isFitMode = urlParams.get('fit') === 'true';
+            if (isFitMode) {
+                const container = document.getElementById('adContainer');
+                const scale = Math.min(window.innerHeight / 1920, window.innerWidth / 1080);
+                container.style.transform = `scale(${scale})`;
+                container.style.transformOrigin = 'top center';
+                container.classList.add('scale-fit');
+                document.body.style.display = 'flex';
+                document.body.style.justifyContent = 'center';
+                document.body.style.background = '#000';
+                document.body.style.margin = '0';
+                document.body.style.overflow = 'hidden';
+            }
+
+            // 에디트 모드 - ?edit=true 일때만 컨트롤 패널 표시
+            const isEditMode = urlParams.get('edit') === 'true';
+            if (isEditMode) {
+                document.querySelector('.control-panel').style.display = 'block';
+                resetAnimation();
+            } else {
+                // 기본: 자동 재생 (OBS, 녹화용)
+                // 4K 모드면 스케일 적용
+                const is4K = urlParams.get('4k') === 'true';
+                if (is4K) {
+                    document.getElementById('adContainer').classList.add('scale-4k');
+                }
+                // 1초 후 자동 재생
+                setTimeout(() => {
+                    playAnimation();
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

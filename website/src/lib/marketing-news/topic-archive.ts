@@ -5,7 +5,7 @@
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
-const TOPIC_ARCHIVE_TABLE = '주제아카이브';
+const TOPIC_ARCHIVE_TABLE = 'title_achaive';
 
 type CategoryKey = 'meta-ads' | 'instagram-reels' | 'threads' | 'faq' | 'ai-tips' | 'ai-news';
 

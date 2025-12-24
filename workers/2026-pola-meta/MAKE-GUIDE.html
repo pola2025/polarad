@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make + Airtable + Worker 연동 가이드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+  <div class="max-w-3xl mx-auto px-4">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Make + Airtable + Worker 연동 가이드</h1>
+    <p class="text-gray-600 mb-8">Airtable에 새 레코드가 추가되면 자동으로 알림 발송</p>
+
+    <!-- 체크리스트 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-4">진행 체크리스트</h2>
+      <div class="space-y-2">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" class="w-5 h-5 rounded">
+          <span>1. Make 계정 로그인</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" class="w-5 h-5 rounded">
+          <span>2. 새 시나리오 생성</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" class="w-5 h-5 rounded">
+          <span>3. Airtable 트리거 설정</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" class="w-5 h-5 rounded">
+          <span>4. HTTP 모듈 추가</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" class="w-5 h-5 rounded">
+          <span>5. 테스트 및 활성화</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span>
+        <h2 class="text-lg font-semibold">Make 시나리오 생성</h2>
+      </div>
+      <ol class="list-decimal list-inside space-y-2 text-gray-700">
+        <li><a href="https://www.make.com" target="_blank" class="text-blue-600 underline">make.com</a> 접속 → 로그인</li>
+        <li><strong>Create a new scenario</strong> 클릭</li>
+        <li>빈 시나리오 생성</li>
+      </ol>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">2</span>
+        <h2 class="text-lg font-semibold">Airtable 트리거 추가</h2>
+      </div>
+      <ol class="list-decimal list-inside space-y-2 text-gray-700">
+        <li><strong>+</strong> 버튼 클릭 → <strong>Airtable</strong> 검색</li>
+        <li><strong>Watch Records</strong> 선택</li>
+        <li>Connection 설정:
+          <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+            <li>Create a connection 클릭</li>
+            <li>Airtable 계정 연결</li>
+          </ul>
+        </li>
+        <li>설정값 입력:</li>
+      </ol>
+
+      <div class="mt-4 bg-gray-100 rounded p-4 space-y-3">
+        <div>
+          <label class="text-sm text-gray-600">Base</label>
+          <div class="flex items-center gap-2">
+            <input type="text" value="appyUK6euzEJ5yrGX" readonly class="flex-1 px-3 py-2 border rounded bg-white font-mono text-sm">
+            <button onclick="navigator.clipboard.writeText('appyUK6euzEJ5yrGX')" class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">복사</button>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Table</label>
+          <div class="flex items-center gap-2">
+            <input type="text" value="고객정보" readonly class="flex-1 px-3 py-2 border rounded bg-white">
+            <button onclick="navigator.clipboard.writeText('고객정보')" class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">복사</button>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Trigger Field (생성일 기준 감지)</label>
+          <div class="flex items-center gap-2">
+            <input type="text" value="created_at" readonly class="flex-1 px-3 py-2 border rounded bg-white font-mono text-sm">
+            <button onclick="navigator.clipboard.writeText('created_at')" class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">복사</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">3</span>
+        <h2 class="text-lg font-semibold">HTTP 모듈 추가 (Worker 호출)</h2>
+      </div>
+      <ol class="list-decimal list-inside space-y-2 text-gray-700">
+        <li>Airtable 모듈 옆 <strong>+</strong> 클릭</li>
+        <li><strong>HTTP</strong> 검색 → <strong>Make a request</strong> 선택</li>
+        <li>설정값 입력:</li>
+      </ol>
+
+      <div class="mt-4 bg-gray-100 rounded p-4 space-y-3">
+        <div>
+          <label class="text-sm text-gray-600">URL</label>
+          <div class="flex items-center gap-2">
+            <input type="text" value="https://2026-pola-meta.mkt9834.workers.dev" readonly class="flex-1 px-3 py-2 border rounded bg-white font-mono text-sm">
+            <button onclick="navigator.clipboard.writeText('https://2026-pola-meta.mkt9834.workers.dev')" class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">복사</button>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Method</label>
+          <input type="text" value="POST" readonly class="w-full px-3 py-2 border rounded bg-white">
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Headers</label>
+          <div class="bg-white rounded border p-2 font-mono text-sm">
+            Content-Type: application/json
+          </div>
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Body type</label>
+          <input type="text" value="Raw" readonly class="w-full px-3 py-2 border rounded bg-white">
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Content type</label>
+          <input type="text" value="JSON (application/json)" readonly class="w-full px-3 py-2 border rounded bg-white">
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Request content (Body)</label>
+          <div class="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm mb-2">
+            ⚠️ 아래 값에서 <code class="bg-gray-200 px-1 rounded">{{1.fields.Name}}</code> 등은 Airtable 모듈에서 가져온 값입니다.<br>
+            Make에서 직접 매핑하세요.
+          </div>
+          <pre class="bg-gray-800 text-green-400 p-4 rounded text-sm overflow-x-auto">{
+  "name": "{{1.fields.Name}}",
+  "phone": "{{1.fields.phone}}",
+  "company": "{{1.fields.company}}",
+  "industry": "{{1.fields.industry}}"
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">4</span>
+        <h2 class="text-lg font-semibold">필드 매핑 방법</h2>
+      </div>
+      <div class="space-y-4">
+        <p class="text-gray-700">HTTP 모듈의 Body에서 각 값을 Airtable 필드와 연결:</p>
+        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+          <li>Body 입력창에서 <code class="bg-gray-200 px-1 rounded">"name":</code> 뒤에 커서 위치</li>
+          <li>왼쪽 패널에서 <strong>Airtable - Watch Records</strong> 클릭</li>
+          <li><strong>fields</strong> → <strong>Name</strong> 선택</li>
+          <li>나머지 필드도 동일하게 매핑:
+            <ul class="list-disc list-inside ml-4 mt-2">
+              <li><code>phone</code> → fields.phone</li>
+              <li><code>company</code> → fields.company</li>
+              <li><code>industry</code> → fields.industry</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">5</span>
+        <h2 class="text-lg font-semibold">테스트 및 활성화</h2>
+      </div>
+      <ol class="list-decimal list-inside space-y-2 text-gray-700">
+        <li><strong>Run once</strong> 버튼 클릭</li>
+        <li>Airtable에 테스트 레코드 추가</li>
+        <li>Make에서 실행 결과 확인 (초록색 체크)</li>
+        <li>텔레그램/SMS/이메일 수신 확인</li>
+        <li>성공 시 <strong>Scheduling</strong> 켜기 (ON)</li>
+        <li>실행 간격 설정 (권장: 5분)</li>
+      </ol>
+    </div>
+
+    <!-- 알림 채널 정보 -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold text-blue-800 mb-3">알림 채널 정보</h2>
+      <table class="w-full text-sm">
+        <tr class="border-b border-blue-200">
+          <td class="py-2 font-medium">텔레그램</td>
+          <td class="py-2">관리자 채널 (-1003280236380)</td>
+        </tr>
+        <tr class="border-b border-blue-200">
+          <td class="py-2 font-medium">SMS</td>
+          <td class="py-2">고객 본인 (입력된 연락처)</td>
+        </tr>
+        <tr>
+          <td class="py-2 font-medium">이메일</td>
+          <td class="py-2">mkt@polarad.co.kr</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Worker URL -->
+    <div class="bg-gray-800 text-white rounded-lg p-6">
+      <h2 class="text-lg font-semibold mb-3">Worker URL</h2>
+      <div class="flex items-center gap-2">
+        <code class="flex-1 bg-gray-900 px-4 py-2 rounded font-mono text-green-400">https://2026-pola-meta.mkt9834.workers.dev</code>
+        <button onclick="navigator.clipboard.writeText('https://2026-pola-meta.mkt9834.workers.dev')" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">복사</button>
+      </div>
+    </div>
+
+    <p class="text-center text-gray-500 mt-8 text-sm">생성일: 2024-12-22</p>
+  </div>
+</body>
+</html>
