@@ -4,6 +4,7 @@ import { OrganizationSchema } from '@/components/seo/OrganizationSchema'
 import { WebSiteSchema } from '@/components/seo/WebSiteSchema'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { PromotionPopup } from '@/components/ui/PromotionPopup'
 import './globals.css'
 
 const GA_MEASUREMENT_ID = 'G-0SK5T8Q0F0'
@@ -136,6 +137,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <PromotionPopup />
       </body>
     </html>
   )
