@@ -927,10 +927,13 @@ async function uploadImageToGitHub(
   }
 }
 
-// 썸네일 생성 (GitHub 버전) - 중복 방지 로직 포함
-async function generateThumbnailForGitHub(title: string, slug: string): Promise<{ path: string; buffer?: Buffer }> {
+// 썸네일 생성 (GitHub 버전) - 중복 방지 + 캐시 무효화 로직 포함
+async function generateThumbnailForGitHub(title: string, slug: string): Promise<{ path: string; buffer?: Buffer; filename?: string }> {
   const MAX_RETRIES = 3;
   const imagesDir = path.join(process.cwd(), 'public', 'images', 'marketing-news');
+
+  // Vercel 캐시 무효화를 위한 타임스탬프 (재배포 시 새 이미지로 인식)
+  const timestamp = Date.now();
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
@@ -975,11 +978,21 @@ async function generateThumbnailForGitHub(title: string, slug: string): Promise<
         // 사용된 조합 저장
         await saveUsedCombo(variation);
 
+        // 캐시 무효화를 위한 고유 파일명 (slug-timestamp.webp)
+        const filename = `${slug}-${timestamp}.webp`;
+
+        // 로컬에 즉시 저장 (GitHub 업로드 실패해도 이미지 보존)
+        const localImagePath = path.join(imagesDir, filename);
+        await fs.mkdir(imagesDir, { recursive: true });
+        await fs.writeFile(localImagePath, webpBuffer);
+        console.log(`💾 로컬 저장 완료: ${localImagePath}`);
+
         console.log(`✅ 유니크한 이미지 생성 완료`);
 
         return {
-          path: `/images/marketing-news/${slug}.webp`,
-          buffer: webpBuffer
+          path: `/images/marketing-news/${filename}`,
+          buffer: webpBuffer,
+          filename
         };
       }
     } catch (error) {
@@ -1254,8 +1267,8 @@ ${content}
     );
 
     // 이미지도 GitHub에 업로드 (website/ 폴더 내에 저장)
-    if (thumbnail.buffer) {
-      const imagePath = `website/public/images/marketing-news/${slug}.webp`;
+    if (thumbnail.buffer && thumbnail.filename) {
+      const imagePath = `website/public/images/marketing-news/${thumbnail.filename}`;
       await uploadImageToGitHub(thumbnail.buffer, imagePath);
     }
 
