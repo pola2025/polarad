@@ -6,10 +6,13 @@
 
 import { NextResponse } from "next/server"
 import { getKeywordByIndex, TOTAL_KEYWORDS } from "@/lib/sns-cs-keywords"
+import { rewriteContent, generateThumbnail } from "@/lib/content-generator"
+import type { SourceArticle } from "@/lib/content-generator"
 
 // Airtable 설정
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || "appbqw2GAixv7vSBV"
+const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "뉴스레터"
 const AIRTABLE_SETTINGS_TABLE = "Settings"
 const CRON_SECRET = process.env.CRON_SECRET
 
@@ -99,6 +102,108 @@ async function saveCurrentIndex(index: number, recordId?: string): Promise<void>
 }
 
 /**
+ * 참고 자료 생성 (키워드별 맞춤)
+ */
+function generateSourceArticles(keyword: string): SourceArticle[] {
+  // 메타 공식 도움말 URL 매핑
+  const officialUrls: Record<string, string> = {
+    "계정 정지": "https://www.facebook.com/help/103873106370583",
+    "비활성화": "https://www.facebook.com/help/103873106370583",
+    "광고 계정": "https://www.facebook.com/business/help/2032679396983564",
+    "비즈니스 관리자": "https://www.facebook.com/business/help/1710077379203657",
+    "광고관리자": "https://www.facebook.com/business/help/1710077379203657",
+    "정책 위반": "https://www.facebook.com/policies/ads/",
+    "커뮤니티 보호": "https://help.instagram.com/366993040048856",
+    "고객센터": "https://www.facebook.com/help/contact/260749603972907",
+    "이의 신청": "https://www.facebook.com/help/2090856331203011",
+  }
+
+  // 키워드에 맞는 공식 URL 찾기
+  let matchedUrl = "https://www.facebook.com/help"
+  for (const [key, url] of Object.entries(officialUrls)) {
+    if (keyword.includes(key)) {
+      matchedUrl = url
+      break
+    }
+  }
+
+  return [
+    {
+      title: `[메타 공식] ${keyword} 가이드`,
+      url: matchedUrl,
+      snippet: `${keyword}에 대한 메타 공식 가이드입니다. 문제 발생 시 공식 채널을 통한 해결이 가장 효과적입니다. 이의 제기 양식 제출 후 24-48시간 내 검토가 진행됩니다.`,
+    },
+    {
+      title: `2026 ${keyword} 최신 해결 가이드`,
+      url: "https://business.facebook.com/",
+      snippet: `최근 메타 정책 변경으로 ${keyword} 관련 케이스가 증가하고 있습니다. 비즈니스 관리자를 통한 체계적인 관리와 정책 준수가 예방의 핵심입니다. 문제 발생 시 당황하지 말고 단계별로 대응하세요.`,
+    },
+    {
+      title: `폴라애드 전문가의 ${keyword} 해결 노하우`,
+      url: "https://www.polarad.co.kr/",
+      snippet: `메타 공식 파트너로서 수많은 ${keyword} 케이스를 해결한 경험을 바탕으로, 가장 효과적인 해결 방법을 안내합니다. 복잡한 케이스는 전문가 상담을 권장드립니다.`,
+    },
+  ]
+}
+
+/**
+ * Airtable에 콘텐츠 저장
+ */
+async function saveToAirtable(content: {
+  title: string
+  description: string
+  content: string
+  category: string
+  tags: string
+  seoKeywords: string
+  slug: string
+  thumbnailUrl: string
+  officialLinks?: string[]
+}): Promise<string> {
+  if (!AIRTABLE_API_KEY) {
+    throw new Error("AIRTABLE_API_KEY not configured")
+  }
+
+  const response = await fetch(
+    `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        records: [
+          {
+            fields: {
+              date: new Date().toISOString().split("T")[0],
+              title: content.title,
+              description: content.description,
+              category: content.category,
+              content: content.content,
+              tags: content.tags,
+              seoKeywords: content.seoKeywords,
+              status: "draft",
+              slug: content.slug,
+              thumbnailUrl: content.thumbnailUrl,
+              views: 0,
+            },
+          },
+        ],
+      }),
+    }
+  )
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Airtable error: ${error}`)
+  }
+
+  const data = await response.json()
+  return data.records[0].id
+}
+
+/**
  * 텔레그램 알림 전송
  */
 async function sendTelegramNotification(
@@ -165,25 +270,39 @@ export async function GET(request: Request) {
 
     console.log(`[Cron] Current index: ${currentIndex}, Keyword: ${keyword}`)
 
-    // 2. 콘텐츠 생성 API 호출 (save=true로 Airtable 저장)
-    const baseUrl = new URL(request.url).origin
-    const contentResponse = await fetch(
-      `${baseUrl}/api/content-generator?keyword=${encodeURIComponent(keyword)}&save=true`
-    )
+    // 2. 참고 자료 생성
+    const sourceArticles = generateSourceArticles(keyword)
+    console.log(`[Cron] Generated ${sourceArticles.length} source articles`)
 
-    const contentResult = await contentResponse.json()
+    // 3. 콘텐츠 리라이팅 (직접 함수 호출)
+    const rewrittenContent = await rewriteContent(keyword, sourceArticles)
+    console.log(`[Cron] Content generated: ${rewrittenContent.title}`)
 
-    if (!contentResult.success) {
-      throw new Error(contentResult.error || "Content generation failed")
+    // 4. 썸네일 생성
+    let thumbnailUrl = ""
+    try {
+      thumbnailUrl = await generateThumbnail(rewrittenContent.title, keyword)
+      console.log(`[Cron] Thumbnail generated: ${thumbnailUrl}`)
+    } catch (thumbError) {
+      console.error(`[Cron] Thumbnail generation failed:`, thumbError)
     }
 
-    // 3. 인덱스 업데이트
+    const content = {
+      ...rewrittenContent,
+      thumbnailUrl,
+    }
+
+    // 5. Airtable 저장
+    const airtableRecordId = await saveToAirtable(content)
+    console.log(`[Cron] Saved to Airtable: ${airtableRecordId}`)
+
+    // 6. 인덱스 업데이트
     await saveCurrentIndex(nextIndex, recordId)
 
-    // 4. 텔레그램 알림
+    // 7. 텔레그램 알림
     await sendTelegramNotification("success", {
       keyword,
-      title: contentResult.content?.title,
+      title: content.title,
       nextIndex,
     })
 
@@ -192,11 +311,11 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       keyword,
-      title: contentResult.content?.title,
+      title: content.title,
       currentIndex,
       nextIndex,
       totalKeywords: TOTAL_KEYWORDS,
-      airtableRecordId: contentResult.airtableRecordId,
+      airtableRecordId,
     })
   } catch (error) {
     console.error("[Cron] Error:", error)
