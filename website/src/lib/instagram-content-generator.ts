@@ -1,6 +1,16 @@
 /**
  * Instagram 컨텐츠 생성기
- * Gemini 2.5 Pro로 polarad.co.kr 기반 컨텐츠 생성
+ * polarad.co.kr 기반 컨텐츠 생성
+ *
+ * ⚠️ GEMINI 모델 절대규칙 (변경 금지) ⚠️
+ * ─────────────────────────────────────────
+ * | 용도           | 모델                          |
+ * |----------------|-------------------------------|
+ * | 템플릿 데이터  | gemini-3-flash-preview        |
+ * | 캡션 생성      | gemini-3-pro-preview          |
+ * ─────────────────────────────────────────
+ * ❌ Gemini 2.x 버전 사용 절대 금지
+ * ❌ 모델명 임의 변경 금지
  */
 
 import { TemplateData, TemplateType, TEMPLATE_TYPES } from './instagram-templates';
