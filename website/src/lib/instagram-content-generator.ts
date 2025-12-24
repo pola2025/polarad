@@ -163,7 +163,7 @@ async function generateContentWithGemini(templateType: TemplateType): Promise<Te
 
   try {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -478,13 +478,41 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
 }
 
 /**
- * Gemini로 캡션 생성
+ * Gemini로 캡션 생성 (재시도 로직 포함)
  */
 async function generateCaptionWithGemini(templateType: TemplateType, templateData: TemplateData): Promise<string> {
   if (!GEMINI_API_KEY) {
+    console.warn('⚠️ GEMINI_API_KEY 미설정 - 기본 캡션 사용');
     return getDefaultCaption(templateType, templateData);
   }
 
+  // 최대 3번 재시도
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const caption = await callGeminiForCaption(templateType, templateData);
+      if (caption && caption.length >= 500) {
+        console.log(`✅ 캡션 생성 성공 (시도 ${attempt}): ${caption.length}자`);
+        return caption;
+      }
+      console.warn(`⚠️ 캡션 길이 부족 (시도 ${attempt}): ${caption?.length || 0}자`);
+    } catch (error) {
+      console.error(`❌ 캡션 생성 실패 (시도 ${attempt}):`, error);
+    }
+
+    // 재시도 전 대기
+    if (attempt < 3) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  console.warn('⚠️ 모든 캡션 생성 시도 실패 - 기본 캡션 사용');
+  return getDefaultCaption(templateType, templateData);
+}
+
+/**
+ * Gemini API 호출 (캡션)
+ */
+async function callGeminiForCaption(templateType: TemplateType, templateData: TemplateData): Promise<string | null> {
   const prompt = `당신은 PolarAD(폴라애드) 마케팅 회사의 Instagram 캡션 전문 작성자입니다.
 B2B 영업 대표님들을 위한 "올인원 영업 자동화 솔루션"을 제공합니다.
 
@@ -585,47 +613,79 @@ B2B 영업 대표님들을 위한 "올인원 영업 자동화 솔루션"을 제�
 ⚠️ 반드시 1000자 이상으로 작성하세요! 짧으면 다시 작성해야 합니다.
 캡션만 출력하세요. 다른 설명 없이 캡션 텍스트만 작성하세요.`;
 
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.75, maxOutputTokens: 2500 },
-        }),
-      }
-    );
-
-    const result = await res.json();
-    const caption = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-    if (caption) {
-      return caption;
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.75, maxOutputTokens: 2500 },
+      }),
     }
-  } catch (error) {
-    console.error('Gemini 캡션 생성 실패:', error);
+  );
+
+  if (!res.ok) {
+    throw new Error(`Gemini API error: ${res.status}`);
   }
 
-  return getDefaultCaption(templateType, templateData);
+  const result = await res.json();
+  const caption = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+  return caption || null;
 }
 
 /**
- * 기본 캡션 생성
+ * 기본 캡션 생성 (Gemini 실패 시 사용)
  */
 function getDefaultCaption(templateType: TemplateType, data: TemplateData): string {
-  const headline = data.headline?.replace(/\n/g, ' ') || '';
+  const headline = data.headline?.replace(/\n/g, ' ') || '체계적인 자동화 접수 시스템';
 
   return `${headline} 📊
 
+아직도 남들이 버린 DB에
+전화를 돌리고 계십니까?
+
 ━━━━━━━━━━━━━━━━━
 
-${data.subHeadline || '체계적인 자동화 접수 시스템으로\n영업에만 집중하세요'}
+공유 DB로 경쟁만 치열하고,
+미팅 성사율은 5%도 안 되고,
+매월 수백만 원 DB 비용만 나가고...
+
+영업 대표님들의 고민,
+폴라애드가 해결해드립니다.
 
 ━━━━━━━━━━━━━━━━━
 
-💬 무료 상담 → 프로필 링크`;
+✅ 폴라애드 올인원 패키지
+
+📌 PC/모바일 반응형 웹사이트
+   → SEO 최적화로 검색 상위 노출
+   → DB 수집 폼 연동
+
+📌 명함, 대봉투, 계약서 인쇄물
+   → 미팅 현장 신뢰도 UP
+
+📌 Meta 광고 자동화 설정
+   → 실시간 성과 대시보드
+
+━━━━━━━━━━━━━━━━━
+
+🎁 2025년 1월 31일까지
+   선착순 10개 기업 얼리버드!
+
+   Meta 자동화 2년 무료
+   (220만원 상당)
+
+대표님은 고객 미팅과
+계약 성사에만 집중하세요.
+
+나머지는 저희가 다 해드립니다.
+
+━━━━━━━━━━━━━━━━━
+
+💬 무료 상담 신청
+   → 프로필 링크 클릭`;
 }
 
 /**
