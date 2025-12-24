@@ -838,6 +838,40 @@ async function uploadToAirtable(data: {
   }
 }
 
+// Airtable 썸네일 URL 업데이트
+async function updateAirtableThumbnail(recordId: string, thumbnailUrl: string): Promise<boolean> {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
+    return false;
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}/${recordId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: { thumbnailUrl }
+        })
+      }
+    );
+
+    if (!res.ok) {
+      console.error('[airtable] 썸네일 업데이트 실패:', res.status);
+      return false;
+    }
+
+    console.log('✅ Airtable 썸네일 URL 업데이트 완료');
+    return true;
+  } catch (error) {
+    console.error('[airtable] 썸네일 업데이트 오류:', error);
+    return false;
+  }
+}
+
 // GitHub에 파일 커밋 (재시도 전략 적용)
 async function commitToGitHub(
   filePath: string,
@@ -1215,11 +1249,7 @@ export async function GET(request: Request) {
 
     console.log(formatValidationSummary(validationResult));
 
-    // 5. 썸네일 생성
-    console.log('🖼️ 썸네일 생성...');
-    const thumbnail = await generateThumbnailForGitHub(title, slug);
-
-    // 6. MDX 파일 구성
+    // 5. MDX 파일 구성 (이미지 없이 먼저 준비)
     const description = seoKeywords.metaDescription || `${title}에 대해 알아봅니다.`;
     const seoTitle = seoKeywords.seoTitle || title;
     const tags = [
@@ -1233,6 +1263,38 @@ export async function GET(request: Request) {
       ...(seoKeywords.lsi || [])
     ].filter(Boolean).slice(0, 15);
 
+    // 6. Airtable 먼저 저장 (이미지 없이) - 이후 업데이트
+    console.log('📊 Airtable 우선 저장 (콘텐츠만)...');
+    const tempThumbnailUrl = '/images/solution-website.webp'; // 임시 기본 이미지
+    let airtableId = await uploadToAirtable({
+      title: seoTitle,
+      category,
+      content,
+      tags,
+      seoKeywords: allKeywords,
+      publishedAt: today,
+      slug,
+      description,
+      thumbnailUrl: `https://polarad.co.kr${tempThumbnailUrl}`
+    });
+
+    if (airtableId) {
+      console.log(`✅ Airtable 저장 완료: ${airtableId}`);
+    } else {
+      console.log('⚠️ Airtable 저장 실패, 계속 진행...');
+    }
+
+    // 7. 썸네일 생성
+    console.log('🖼️ 썸네일 생성...');
+    const thumbnail = await generateThumbnailForGitHub(title, slug);
+
+    // 7-1. 이미지 생성 성공 시 Airtable 업데이트
+    if (airtableId && thumbnail.path !== '/images/solution-website.webp') {
+      console.log('📊 Airtable 이미지 URL 업데이트...');
+      await updateAirtableThumbnail(airtableId, `https://polarad.co.kr${thumbnail.path}`);
+    }
+
+    // 8. MDX 파일 구성 (이미지 포함)
     const mdxContent = `---
 title: "${seoTitle}"
 description: "${description}"
@@ -1255,7 +1317,7 @@ seo:
 ${content}
 `;
 
-    // 7. GitHub에 커밋 (website/ 폴더 내에 저장)
+    // 9. GitHub에 커밋 (website/ 폴더 내에 저장)
     const categoryFolder = ALL_CATEGORIES[category].folder;
     const mdxPath = `website/content/marketing-news/${categoryFolder}/${slug}.mdx`;
 
@@ -1271,20 +1333,6 @@ ${content}
       const imagePath = `website/public/images/marketing-news/${thumbnail.filename}`;
       await uploadImageToGitHub(thumbnail.buffer, imagePath);
     }
-
-    // 8. Airtable 업로드
-    console.log('📊 Airtable 업로드...');
-    const airtableId = await uploadToAirtable({
-      title: seoTitle,
-      category,
-      content,
-      tags,
-      seoKeywords: allKeywords,
-      publishedAt: today,
-      slug,
-      description,
-      thumbnailUrl: `https://polarad.co.kr${thumbnail.path}`
-    });
 
     const result = {
       success: true,
