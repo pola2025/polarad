@@ -36,6 +36,7 @@ import {
   validateContentV2,
   type CategoryKey as V2CategoryKey,
 } from '@/lib/prompt-templates/v2-content-builder';
+import { getUnusedTopic } from '@/lib/marketing-news/topic-archive';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -1074,7 +1075,16 @@ export async function GET(request: Request) {
       }
 
       if (topicAttempts >= MAX_TOPIC_ATTEMPTS) {
-        throw new Error(`주제 생성 실패: ${MAX_TOPIC_ATTEMPTS}회 시도 후에도 유효한 주제를 생성하지 못함. 마지막 실패 사유: ${lastValidation.reason}`);
+        // 🆕 주제 아카이브에서 fallback 시도
+        console.log(`⚠️ AI 주제 생성 ${MAX_TOPIC_ATTEMPTS}회 실패, 아카이브에서 주제 가져오기 시도...`);
+        const archivedTopic = await getUnusedTopic(category);
+        if (archivedTopic) {
+          title = archivedTopic;
+          console.log(`✅ 아카이브에서 주제 가져옴: "${title}"`);
+          lastValidation = { isValid: true };
+          break;
+        }
+        throw new Error(`주제 생성 실패: ${MAX_TOPIC_ATTEMPTS}회 시도 후에도 유효한 주제를 생성하지 못함. 아카이브에도 사용 가능한 주제 없음. 마지막 실패 사유: ${lastValidation.reason}`);
       }
     }
 
