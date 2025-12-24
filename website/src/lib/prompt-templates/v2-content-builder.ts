@@ -116,7 +116,7 @@ const CATEGORY_PROMPTS: Record<CategoryKey, string> = {
 5. 장단점 분석
 6. 공식 링크 (GitHub, 다운로드 등)`,
 
-  'ai-news': `당신은 AI 뉴스 전문 기자입니다.
+  'ai-news': `당신은 AI 트렌드 분석가입니다.
 폴라애드(POLARAD)는 AI 기술 동향을 주시하며 마케팅에 적용합니다.
 
 **글의 목적**: 최신 AI 뉴스를 정확하고 이해하기 쉽게 전달
