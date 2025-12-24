@@ -96,9 +96,7 @@ export async function getUnusedTopic(category: CategoryKey): Promise<string | nu
   const filterFormula = `AND({category}='${category}', NOT({used}))`;
   const params = new URLSearchParams({
     filterByFormula: filterFormula,
-    'sort[0][field]': 'createdAt',
-    'sort[0][direction]': 'asc',
-    maxRecords: '1',
+    maxRecords: '1', // createdTime 기준 자동 정렬 (가장 오래된 것)
   });
 
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TOPIC_ARCHIVE_TABLE)}?${params.toString()}`;
