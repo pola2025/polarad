@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 import { generateTemplateHtml, TemplateData, TemplateType } from '@/lib/instagram-templates';
 import { uploadToCloudinary } from '@/lib/cloudinary';
+import { generateInstagramContent } from '@/lib/instagram-content-generator';
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -216,17 +217,34 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // 필수 필드 확인
-    const { templateType, templateData, caption, hashtags } = body as {
-      templateType: TemplateType;
-      templateData: TemplateData;
-      caption: string;
-      hashtags: string[];
+    let { templateType, templateData, caption, hashtags } = body as {
+      templateType?: TemplateType;
+      templateData?: TemplateData;
+      caption?: string;
+      hashtags?: string[];
     };
 
-    if (!templateType || !templateData || !caption) {
-      return NextResponse.json({
-        error: 'Missing required fields: templateType, templateData, caption'
-      }, { status: 400 });
+    // templateType이 없으면 기본값 'promo' 사용
+    if (!templateType) {
+      templateType = 'promo';
+    }
+
+    // templateData가 없으면 기본값 사용
+    if (!templateData) {
+      templateData = {
+        badge: '🎁 특별 프로모션',
+        headline: 'B2B 영업자동화\n지금 안 하면 손해',
+        subHeadline: '선착순 10팀 [얼리버드] 특별혜택',
+        cta: 'Meta 자동화 2년 무료',
+      };
+    }
+
+    // caption이 없으면 Gemini로 새로 생성
+    if (!caption || !hashtags) {
+      console.log('🤖 Gemini로 캡션/해시태그 생성 중...');
+      const generatedContent = await generateInstagramContent();
+      if (!caption) caption = generatedContent.caption;
+      if (!hashtags) hashtags = generatedContent.hashtags;
     }
 
     console.log('📸 이미지 재생성 시작...');
