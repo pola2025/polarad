@@ -815,7 +815,7 @@ ${prompt}`;
 
 // 썸네일 생성 (로컬 저장용) - 중복 방지 로직 포함
 async function generateThumbnail(title: string, filename: string): Promise<string> {
-  const MAX_RETRIES = 3;
+  const MAX_RETRIES = 5; // 이미지 생성 재시도 횟수 (fallback 방지)
   const imagesDir = path.join(process.cwd(), 'public', 'images', 'marketing-news');
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -1054,7 +1054,7 @@ async function uploadImageToGitHub(
 
 // 썸네일 생성 (GitHub 버전) - 중복 방지 + 캐시 무효화 로직 포함
 async function generateThumbnailForGitHub(title: string, slug: string): Promise<{ path: string; buffer?: Buffer; filename?: string }> {
-  const MAX_RETRIES = 3;
+  const MAX_RETRIES = 5; // 이미지 생성 재시도 횟수 (fallback 방지)
   const imagesDir = path.join(process.cwd(), 'public', 'images', 'marketing-news');
 
   // Vercel 캐시 무효화를 위한 타임스탬프 (재배포 시 새 이미지로 인식)
