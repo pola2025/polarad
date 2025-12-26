@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로모션 팝업 미리보기 - 폴라애드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Noto Sans KR', sans-serif; }
+    .gradient-bg {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    }
+    .accent-gradient {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    }
+    .glow {
+      box-shadow: 0 0 40px rgba(249, 115, 22, 0.3);
+    }
+    .badge-glow {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(249, 115, 22, 0.6); }
+    }
+    .discount-text {
+      background: linear-gradient(135deg, #f97316 0%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
+
+  <div class="text-center mb-8 absolute top-4 left-4">
+    <span class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+      📌 팝업 미리보기 - 실제 사이트에서는 가운데 모달로 표시됩니다
+    </span>
+  </div>
+
+  <!-- 팝업 컨테이너 -->
+  <div class="relative max-w-md w-full">
+
+    <!-- 팝업 본체 -->
+    <div class="gradient-bg rounded-3xl overflow-hidden glow relative">
+
+      <!-- 닫기 버튼 -->
+      <button class="absolute top-4 right-4 w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors z-10">
+        <svg class="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <!-- 상단 배지 -->
+      <div class="pt-6 px-6 text-center">
+        <span class="inline-block accent-gradient text-white text-sm font-bold px-4 py-1.5 rounded-full badge-glow">
+          🎉 2026년 1월 한정 · 선착순 20개 기업
+        </span>
+      </div>
+
+      <!-- 메인 콘텐츠 -->
+      <div class="px-6 py-6 text-center">
+
+        <!-- 타이틀 -->
+        <h2 class="text-white text-xl font-bold mb-1">
+          신년 특별 프로모션
+        </h2>
+        <p class="text-gray-400 text-sm mb-5">
+          지금 신청하시면 파격 혜택!
+        </p>
+
+        <!-- 혜택 박스들 -->
+        <div class="space-y-3 mb-5">
+
+          <!-- 1등급: 선착순 10개 기업 -->
+          <div class="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 backdrop-blur rounded-2xl p-4 border border-orange-500/30 relative overflow-hidden">
+            <div class="absolute top-0 right-0 gold-gradient text-gray-900 text-xs font-bold px-3 py-1 rounded-bl-xl">
+              🏆 1등급
+            </div>
+            <div class="text-left">
+              <div class="text-orange-400 text-sm font-semibold mb-2">선착순 10개 기업</div>
+              <div class="flex items-center gap-3">
+                <div class="text-center">
+                  <div class="text-4xl font-black discount-text">30%</div>
+                  <div class="text-white text-xs">할인</div>
+                </div>
+                <div class="text-orange-400 text-2xl">+</div>
+                <div class="text-center flex-1">
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="text-gray-500 line-through text-sm">1년</span>
+                    <span class="text-orange-400">→</span>
+                    <span class="text-orange-400 font-bold text-2xl">2년</span>
+                  </div>
+                  <div class="text-white text-xs">자동화 제공</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2등급: 이후 10개 기업 -->
+          <div class="bg-white/5 backdrop-blur rounded-2xl p-4 border border-white/10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-gray-600 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
+              2등급
+            </div>
+            <div class="text-left">
+              <div class="text-gray-400 text-sm font-semibold mb-2">이후 10개 기업</div>
+              <div class="flex items-center gap-3">
+                <div class="text-center flex-1">
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="text-gray-500 line-through text-sm">1년</span>
+                    <span class="text-blue-400">→</span>
+                    <span class="text-blue-400 font-bold text-2xl">2년</span>
+                  </div>
+                  <div class="text-white text-xs">자동화 제공 (+1년 추가)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 기간 표시 -->
+        <div class="flex items-center justify-center gap-2 text-gray-400 text-sm mb-5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>2026년 1월 31일까지</span>
+        </div>
+
+        <!-- CTA 버튼 -->
+        <button class="w-full accent-gradient text-white font-bold py-4 px-6 rounded-xl hover:opacity-90 transition-opacity text-lg shadow-lg shadow-orange-500/30">
+          지금 상담 신청하기
+        </button>
+
+      </div>
+
+      <!-- 하단 체크박스 -->
+      <div class="px-6 pb-5">
+        <label class="flex items-center justify-center gap-2 text-gray-500 text-xs cursor-pointer hover:text-gray-400 transition-colors">
+          <input type="checkbox" class="w-4 h-4 rounded border-gray-600 bg-transparent">
+          <span>오늘 하루 보지 않기</span>
+        </label>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 디자인 옵션 안내 -->
+  <div class="fixed bottom-4 left-4 right-4 bg-gray-800 rounded-xl p-4 max-w-2xl mx-auto">
+    <h3 class="text-white font-bold mb-2">💡 현재 설정</h3>
+    <ul class="text-gray-400 text-sm space-y-1">
+      <li>• <span class="text-orange-400">1등급 (선착순 10개)</span>: 30% 할인 + 자동화 2년</li>
+      <li>• <span class="text-blue-400">2등급 (이후 10개)</span>: 자동화 2년 (+1년 추가)</li>
+      <li>• 기간: 2026년 1월 31일까지</li>
+    </ul>
+  </div>
+
+</body>
+</html>

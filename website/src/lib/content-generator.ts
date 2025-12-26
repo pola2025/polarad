@@ -42,7 +42,7 @@ export async function rewriteContent(
     .join("\n\n")
 
   const prompt = `당신은 SNS 마케팅 및 광고 계정 문제 해결 전문가입니다.
-폴라애드(POLARAD)는 메타 공식 파트너 광고대행사입니다.
+폴라애드(POLARAD)는 Meta 광고 전문 광고대행사입니다.
 
 ## 타겟 독자
 - 1인 사업자, 소규모 대표

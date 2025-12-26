@@ -126,7 +126,7 @@ function generateSourceArticles(keyword: string): SourceArticle[] {
     {
       title: `폴라애드 전문가의 ${keyword} 해결 노하우`,
       url: "https://www.polarad.co.kr/",
-      snippet: `메타 공식 파트너로서 수많은 ${keyword} 케이스를 해결한 경험을 바탕으로, 가장 효과적인 해결 방법을 안내합니다. 복잡한 케이스는 전문가 상담을 권장드립니다.`,
+      snippet: `Meta 광고 전문 폴라애드는 수많은 ${keyword} 케이스를 해결한 경험을 바탕으로, 가장 효과적인 해결 방법을 안내합니다. 복잡한 케이스는 전문가 상담을 권장드립니다.`,
     },
   ]
 }

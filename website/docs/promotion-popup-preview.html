@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로모션 팝업 미리보기 - 폴라애드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* 회전 각도 정의 (CSS Houdini) */
+    @property --gradient-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    @property --gradient-angle-blue {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    * { font-family: 'Noto Sans KR', sans-serif; }
+    .poppins { font-family: 'Poppins', sans-serif; }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #0a0a1a 0%, #0f1629 50%, #0a1628 100%);
+    }
+    .accent-gradient {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    }
+
+    /* 강화된 네온 글로우 효과 */
+    .neon-glow {
+      box-shadow:
+        0 0 20px rgba(249, 115, 22, 0.4),
+        0 0 40px rgba(249, 115, 22, 0.3),
+        0 0 60px rgba(249, 115, 22, 0.2),
+        0 0 80px rgba(249, 115, 22, 0.1);
+    }
+
+    .neon-text {
+      text-shadow:
+        0 0 10px rgba(249, 115, 22, 0.8),
+        0 0 20px rgba(249, 115, 22, 0.6),
+        0 0 30px rgba(249, 115, 22, 0.4),
+        0 0 40px rgba(249, 115, 22, 0.2);
+    }
+
+    .badge-glow {
+      animation: neon-pulse 2s infinite;
+    }
+
+    @keyframes neon-pulse {
+      0%, 100% {
+        box-shadow: 0 0 10px rgba(249, 115, 22, 0.6), 0 0 20px rgba(249, 115, 22, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 15px rgba(249, 115, 22, 0.8), 0 0 30px rgba(249, 115, 22, 0.6), 0 0 45px rgba(249, 115, 22, 0.4);
+      }
+    }
+
+    .discount-text {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcc00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.6));
+    }
+
+    /* ===== 회전 테두리 박스 - 골드 ===== */
+    .rotate-border-gold {
+      position: relative;
+      /* background 삭제: 부모는 투명하게 */
+      border-radius: 1rem;
+      padding: 1.5rem;
+      isolation: isolate;
+    }
+
+    /* 1. 가장 뒤에서 도는 회전판 (Spinner) */
+    .rotate-border-gold::before {
+      content: "";
+      position: absolute;
+      inset: -3px;       /* 테두리 두께만큼 밖으로 */
+      z-index: -2;       /* ★ 제일 뒤로 */
+      background: conic-gradient(
+        from var(--gradient-angle),
+        #f3d060,
+        #ff6b35,
+        #A5282c,
+        #f3d060
+      );
+      border-radius: inherit;
+      animation: rotate-gold 2.5s linear infinite;
+    }
+
+    /* 2. 회전판 위를 덮는 고정된 배경 (Cover Mask) */
+    .rotate-border-gold::after {
+      content: "";
+      position: absolute;
+      inset: 0;          /* 박스 크기에 딱 맞춤 */
+      z-index: -1;       /* 회전판보다 위, 글자보다 아래 */
+      background: #0f1629; /* ★ 배경색을 여기로 */
+      border-radius: inherit;
+    }
+
+    @keyframes rotate-gold {
+      0% { --gradient-angle: 0deg; }
+      100% { --gradient-angle: 360deg; }
+    }
+
+    /* ===== 회전 테두리 박스 - 블루 ===== */
+    .rotate-border-blue {
+      position: relative;
+      /* background 삭제: 부모는 투명하게 */
+      border-radius: 1rem;
+      padding: 1.25rem;
+      isolation: isolate;
+    }
+
+    /* 1. 가장 뒤에서 도는 회전판 (Spinner) */
+    .rotate-border-blue::before {
+      content: "";
+      position: absolute;
+      inset: -3px;       /* 테두리 두께 통일 */
+      z-index: -2;       /* ★ 제일 뒤로 */
+      background: conic-gradient(
+        from var(--gradient-angle-blue),
+        #60a5fa,
+        #3b82f6,
+        #1d4ed8,
+        #60a5fa
+      );
+      border-radius: inherit;
+      animation: rotate-blue 3s linear infinite;
+    }
+
+    /* 2. 회전판 위를 덮는 고정된 배경 (Cover Mask) */
+    .rotate-border-blue::after {
+      content: "";
+      position: absolute;
+      inset: 0;          /* 박스 크기에 딱 맞춤 */
+      z-index: -1;       /* 중간 레이어 */
+      background: #0f1629; /* 배경색 */
+      border-radius: inherit;
+    }
+
+    @keyframes rotate-blue {
+      0% { --gradient-angle-blue: 0deg; }
+      100% { --gradient-angle-blue: 360deg; }
+    }
+
+    /* 스포트라이트 CTA 버튼 */
+    .cta-spotlight {
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 0 15px rgba(249, 115, 22, 0.5),
+        0 0 30px rgba(249, 115, 22, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .cta-spotlight::before {
+      content: '';
+      position: absolute;
+      top: var(--mouse-y, 50%);
+      left: var(--mouse-x, 50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 40%, transparent 70%);
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .cta-spotlight:hover::before {
+      opacity: 1;
+    }
+
+    .cta-spotlight:hover {
+      box-shadow:
+        0 0 25px rgba(249, 115, 22, 0.7),
+        0 0 50px rgba(249, 115, 22, 0.5),
+        0 0 75px rgba(249, 115, 22, 0.3);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="bg-gray-950 min-h-screen flex items-center justify-center p-4">
+
+  <div class="text-center mb-8 absolute top-4 left-4">
+    <span class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+      📌 팝업 미리보기 - 실제 사이트에서는 가운데 모달로 표시됩니다
+    </span>
+  </div>
+
+  <!-- 팝업 컨테이너 -->
+  <div class="relative max-w-lg w-full">
+
+    <!-- 팝업 본체 -->
+    <div class="gradient-bg rounded-3xl neon-glow relative border border-orange-500/20">
+
+      <!-- 닫기 버튼 -->
+      <button class="absolute top-5 right-5 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors z-10">
+        <svg class="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <!-- 상단 배지 -->
+      <div class="pt-8 px-8 text-center">
+        <span class="inline-block accent-gradient text-white text-base font-bold px-6 py-2 rounded-full badge-glow">
+          🎉 2026년 1월 한정 · 선착순 20개 기업
+        </span>
+      </div>
+
+      <!-- 메인 콘텐츠 -->
+      <div class="px-8 py-8 text-center">
+
+        <!-- 타이틀 -->
+        <h2 class="text-white text-3xl font-black mb-2 neon-text">
+          신년 특별 프로모션
+        </h2>
+        <p class="text-gray-400 text-base mb-8">
+          지금 신청하시면 파격 혜택!
+        </p>
+
+        <!-- 혜택 박스들 -->
+        <div class="space-y-5 mb-8">
+
+          <!-- 1등급: 선착순 10개 기업 - 회전 테두리 -->
+          <div class="rotate-border-gold">
+            <div class="absolute -top-1 -right-1 gold-gradient text-gray-900 text-sm font-bold px-4 py-1.5 rounded-bl-xl rounded-tr-lg z-10">
+              🏆 1등급
+            </div>
+            <div class="text-left">
+              <div class="text-orange-400 text-base font-bold mb-3">선착순 10개 기업</div>
+              <div class="flex flex-wrap items-center gap-4 sm:flex-nowrap">
+                <div class="text-center">
+                  <div class="text-6xl font-black discount-text poppins">30%</div>
+                  <div class="text-white text-sm font-medium mt-1">할인</div>
+                </div>
+                <div class="text-orange-400 text-3xl neon-text">+</div>
+                <div class="text-center flex-1">
+                  <div class="flex items-center justify-center gap-3">
+                    <span class="text-gray-500 line-through text-lg">1년</span>
+                    <span class="text-orange-400 text-2xl">→</span>
+                    <span class="text-orange-400 font-black text-4xl neon-text poppins">2년</span>
+                  </div>
+                  <div class="text-white text-sm font-medium mt-1">자동화 제공</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2등급: 이후 10개 기업 - 회전 테두리 -->
+          <div class="rotate-border-blue">
+            <div class="absolute -top-1 -right-1 bg-blue-600 text-white text-sm font-bold px-4 py-1.5 rounded-bl-xl rounded-tr-lg z-10">
+              2등급
+            </div>
+            <div class="text-left">
+              <div class="text-blue-400 text-base font-semibold mb-3">이후 10개 기업</div>
+              <div class="flex items-center gap-4">
+                <div class="text-center flex-1">
+                  <div class="flex items-center justify-center gap-3">
+                    <span class="text-gray-500 line-through text-lg">1년</span>
+                    <span class="text-blue-400 text-xl">→</span>
+                    <span class="text-blue-400 font-bold text-3xl poppins">2년</span>
+                  </div>
+                  <div class="text-white text-sm mt-1">자동화 제공 (+1년 추가)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 기간 표시 -->
+        <div class="flex items-center justify-center gap-2 text-gray-400 text-base mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>2026년 1월 31일까지</span>
+        </div>
+
+        <!-- CTA 버튼 -->
+        <button id="ctaButton" class="w-full accent-gradient text-white font-bold py-5 px-8 rounded-2xl text-xl cta-spotlight">
+          <span class="relative z-10">지금 상담 신청하기</span>
+        </button>
+
+      </div>
+
+      <!-- 하단 체크박스 -->
+      <div class="px-8 pb-6">
+        <label class="flex items-center justify-center gap-2 text-gray-500 text-sm cursor-pointer hover:text-gray-400 transition-colors">
+          <input type="checkbox" class="w-4 h-4 rounded border-gray-600 bg-transparent">
+          <span>오늘 하루 보지 않기</span>
+        </label>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 디자인 옵션 안내 -->
+  <div class="fixed bottom-4 left-4 right-4 bg-gray-800 rounded-xl p-4 max-w-2xl mx-auto">
+    <h3 class="text-white font-bold mb-2">💡 현재 설정</h3>
+    <ul class="text-gray-400 text-sm space-y-1">
+      <li>• <span class="text-orange-400">1등급</span>: 30% 할인 + 자동화 2년 - 🔥 conic-gradient 회전 테두리</li>
+      <li>• <span class="text-blue-400">2등급</span>: 자동화 2년 - 💙 conic-gradient 회전 테두리</li>
+      <li>• @property (CSS Houdini) 방식 적용</li>
+    </ul>
+  </div>
+
+  <script>
+    const ctaButton = document.getElementById('ctaButton');
+    ctaButton.addEventListener('mousemove', (e) => {
+      const rect = ctaButton.getBoundingClientRect();
+      ctaButton.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+      ctaButton.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+    });
+    ctaButton.addEventListener('mouseleave', () => {
+      ctaButton.style.setProperty('--mouse-x', '50%');
+      ctaButton.style.setProperty('--mouse-y', '50%');
+    });
+  </script>
+
+</body>
+</html>

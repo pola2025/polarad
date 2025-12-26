@@ -240,6 +240,61 @@ function generateSlug(title: string): string {
   return slug;
 }
 
+// Airtable에서 슬러그 존재 여부 확인
+async function checkSlugExists(slug: string): Promise<boolean> {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
+    return false;
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME!)}?filterByFormula={slug}='${slug}'&maxRecords=1`,
+      { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
+    );
+
+    const result = await res.json();
+    return (result.records?.length || 0) > 0;
+  } catch (error) {
+    console.error('슬러그 중복 체크 실패:', error);
+    return false; // 에러 시 중복 아닌 것으로 처리 (진행 허용)
+  }
+}
+
+// 유니크한 슬러그 보장 (중복 시 suffix 추가)
+async function ensureUniqueSlug(baseSlug: string): Promise<string> {
+  let slug = baseSlug;
+  let suffix = 2;
+  const MAX_ATTEMPTS = 10;
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const exists = await checkSlugExists(slug);
+
+    if (!exists) {
+      if (attempt > 0) {
+        console.log(`✅ 유니크 슬러그 확보: ${slug} (${attempt}회 시도)`);
+      }
+      return slug;
+    }
+
+    console.log(`⚠️ 슬러그 중복 발견: ${slug}`);
+
+    // suffix 추가 (-2, -3, ... 또는 타임스탬프)
+    if (suffix <= 5) {
+      slug = `${baseSlug}-${suffix}`;
+      suffix++;
+    } else {
+      // 5회 이상 중복 시 타임스탬프 사용
+      const timestamp = Date.now().toString(36);
+      slug = `${baseSlug}-${timestamp}`;
+    }
+  }
+
+  // 최종 fallback: 타임스탬프 추가
+  const finalTimestamp = Date.now().toString(36);
+  console.log(`⚠️ 슬러그 중복 ${MAX_ATTEMPTS}회 초과, 타임스탬프 사용: ${baseSlug}-${finalTimestamp}`);
+  return `${baseSlug}-${finalTimestamp}`;
+}
+
 // 기존 글 제목 가져오기 (중복 방지용)
 async function getExistingTitles(category: string): Promise<string[]> {
   if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
@@ -1240,7 +1295,10 @@ export async function GET(request: Request) {
       duplicateAttempts++;
     }
 
-    const slug = generateSlug(title);
+    // 슬러그 생성 + 중복 체크
+    const baseSlug = generateSlug(title);
+    console.log(`🔗 슬러그 생성: ${baseSlug}`);
+    const slug = await ensureUniqueSlug(baseSlug);
     const today = kstDate.toISOString().split('T')[0];
 
     // 3. SEO 키워드 연구
