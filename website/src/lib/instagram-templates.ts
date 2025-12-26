@@ -1009,10 +1009,11 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string, theme: Th
       font-weight: 700;
     }
     .main-text {
-      font-size: 72px;
+      font-size: 52px;
       font-weight: 800;
       color: #fff;
-      line-height: 1.2;
+      line-height: 1.25;
+      word-break: keep-all;
     }
     .main-text .gold {
       background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
@@ -1025,9 +1026,10 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string, theme: Th
       -webkit-text-fill-color: transparent;
     }
     .sub-text {
-      font-size: 32px;
+      font-size: 28px;
       color: #94a3b8;
       line-height: 1.5;
+      word-break: keep-all;
     }
     .benefit-box {
       padding: 40px 60px;
