@@ -912,6 +912,14 @@ async function uploadToAirtable(data: {
 
       if (!res.ok) {
         const errorText = await res.text();
+        console.error(`[Airtable] API error ${res.status}:`, errorText);
+        console.error(`[Airtable] 전송 데이터:`, {
+          title: data.title?.slice(0, 50),
+          category: data.category,
+          contentLength: data.content?.length,
+          descriptionLength: data.description?.length,
+          slug: data.slug,
+        });
         throw new Error(`Airtable API error ${res.status}: ${errorText}`);
       }
 
@@ -1080,7 +1088,20 @@ async function generateThumbnailForGitHub(title: string, slug: string): Promise<
         })
       });
 
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error(`[이미지] Gemini API 에러 ${res.status}:`, errorText);
+        continue; // 다음 시도
+      }
+
       const result = await res.json();
+
+      // 이미지 생성 거부 체크 (안전 필터 등)
+      if (result.candidates?.[0]?.finishReason === 'SAFETY') {
+        console.error(`[이미지] 안전 필터에 의해 거부됨`);
+        continue;
+      }
+
       const imageData = result.candidates?.[0]?.content?.parts?.find((p: { inlineData?: { mimeType?: string; data?: string } }) =>
         p.inlineData?.mimeType?.startsWith('image/')
       );
@@ -1125,8 +1146,9 @@ async function generateThumbnailForGitHub(title: string, slug: string): Promise<
     }
   }
 
-  // 모든 시도 실패 시 에러 (기본 이미지 폴백 제거)
-  console.error('❌ 이미지 생성 최종 실패');
+  // 모든 시도 실패 시 알림 후 fallback
+  console.error('❌ 이미지 생성 최종 실패 - 기본 이미지로 대체');
+  notifyImageGenerationFailed(title, MAX_RETRIES, '5회 시도 후에도 이미지 생성 실패');
   return { path: '/images/solution-website.webp' };
 }
 
@@ -1216,20 +1238,30 @@ export async function GET(request: Request) {
         topicAttempts++;
         previousFeedback = `생성한 제목 "${title}"이(가) 거부되었습니다. 이유: ${lastValidation.reason}`;
 
-        // 마지막 시도 전: fallback 적용 (키워드 자동 삽입)
-        if (topicAttempts >= MAX_TOPIC_ATTEMPTS - 1) {
+        // 2회 시도 후부터 fallback 적용 (키워드 자동 삽입)
+        if (topicAttempts >= 2) {
           const keyword = fallbackKeywords[category];
           if (title && !title.toLowerCase().includes(keyword.toLowerCase())) {
-            const fallbackTitle = `${keyword} ${title.replace(/^.*?(?=[가-힣A-Za-z])/, '')}`.trim();
-            console.log(`🔄 Fallback 적용: "${fallbackTitle}"`);
+            // 여러 fallback 패턴 시도
+            const fallbackPatterns = [
+              `${keyword} ${title.replace(/^.*?(?=[가-힣A-Za-z])/, '')}`.trim(),
+              `${keyword} 완벽 가이드 ${CURRENT_YEAR}`,
+              `${keyword} 활용법 총정리`,
+              `${keyword} 시작하기 - 초보자 가이드`,
+            ];
 
-            const fallbackValidation = validateTopic(fallbackTitle, category);
-            if (fallbackValidation.isValid) {
-              title = fallbackTitle;
-              console.log(`✅ Fallback 주제 유효성 검증 통과`);
-              lastValidation = fallbackValidation;
-              break;
+            for (const fallbackTitle of fallbackPatterns) {
+              console.log(`🔄 Fallback 시도: "${fallbackTitle}"`);
+              const fallbackValidation = validateTopic(fallbackTitle, category);
+              if (fallbackValidation.isValid) {
+                title = fallbackTitle;
+                console.log(`✅ Fallback 주제 유효성 검증 통과`);
+                lastValidation = fallbackValidation;
+                break;
+              }
             }
+
+            if (lastValidation.isValid) break;
           }
         }
 
