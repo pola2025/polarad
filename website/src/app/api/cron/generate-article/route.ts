@@ -1359,7 +1359,11 @@ export async function GET(request: Request) {
     // 7-1. 이미지 생성 성공 시 Airtable 업데이트
     if (airtableId && thumbnail.path !== '/images/solution-website.webp') {
       console.log('📊 Airtable 이미지 URL 업데이트...');
-      await updateAirtableThumbnail(airtableId, `https://polarad.co.kr${thumbnail.path}`);
+      // R2 URL은 이미 완전한 URL이므로 그대로 사용
+      const thumbnailUrl = thumbnail.path.startsWith('http')
+        ? thumbnail.path
+        : `https://polarad.co.kr${thumbnail.path}`;
+      await updateAirtableThumbnail(airtableId, thumbnailUrl);
     }
 
     // 8. MDX 파일 구성 (이미지 포함)
