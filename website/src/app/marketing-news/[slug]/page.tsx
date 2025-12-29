@@ -261,7 +261,7 @@ export default async function ArticlePage({ params }: PageProps) {
               description: article.description,
               image: {
                 '@type': 'ImageObject',
-                url: `https://polarad.co.kr${article.thumbnail}`,
+                url: article.thumbnail.startsWith('http') ? article.thumbnail : `https://polarad.co.kr${article.thumbnail}`,
                 width: 1200,
                 height: 675,
               },
