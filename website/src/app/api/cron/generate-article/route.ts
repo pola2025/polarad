@@ -15,15 +15,13 @@
  */
 
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import sharp from 'sharp';
 import {
   generateUniqueVariation,
   buildImagePrompt,
   saveUsedCombo,
-  checkImageDuplicate,
 } from '@/lib/image-variation';
+import { uploadImageToR2, isR2Configured } from '@/lib/r2-storage';
 import { CATEGORIES as ALL_CATEGORIES, type ArticleCategory } from '@/lib/marketing-news';
 import {
   parseDuplicateCheck,
@@ -813,58 +811,6 @@ ${prompt}`;
   return (await res.json()).candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-// 썸네일 생성 (로컬 저장용) - 중복 방지 로직 포함
-async function generateThumbnail(title: string, filename: string): Promise<string> {
-  const MAX_RETRIES = 5; // 이미지 생성 재시도 횟수 (fallback 방지)
-  const imagesDir = path.join(process.cwd(), 'public', 'images', 'marketing-news');
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    try {
-      // 유니크한 베리에이션 생성
-      const variation = await generateUniqueVariation();
-      const prompt = buildImagePrompt(title, variation);
-
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseModalities: ['image', 'text'] }
-        })
-      });
-
-      const result = await res.json();
-      const imageData = result.candidates?.[0]?.content?.parts?.find((p: { inlineData?: { mimeType?: string; data?: string } }) =>
-        p.inlineData?.mimeType?.startsWith('image/')
-      );
-
-      if (imageData?.inlineData?.data) {
-        const webpFilename = filename.replace(/\.png$/, '.webp');
-        const imagePath = path.join(imagesDir, webpFilename);
-        await fs.mkdir(path.dirname(imagePath), { recursive: true });
-
-        const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
-        const webpBuffer = await sharp(imageBuffer).resize(1200, 630, { fit: 'cover' }).webp({ quality: 80 }).toBuffer();
-
-        // 중복 검사
-        const duplicateCheck = await checkImageDuplicate(webpBuffer, imagesDir);
-        if (duplicateCheck.isDuplicate) {
-          console.log(`⚠️ 중복 이미지 감지, 재시도...`);
-          continue;
-        }
-
-        await fs.writeFile(imagePath, webpBuffer);
-        await saveUsedCombo(variation);
-
-        return `/images/marketing-news/${webpFilename}`;
-      }
-    } catch (error) {
-      console.error(`썸네일 생성 실패 (시도 ${attempt + 1}):`, error);
-    }
-  }
-
-  return '/images/solution-website.webp';
-}
 
 // Airtable 업로드 (재시도 전략 적용)
 async function uploadToAirtable(data: {
@@ -1060,12 +1006,17 @@ async function uploadImageToGitHub(
   }
 }
 
-// 썸네일 생성 (GitHub 버전) - 중복 방지 + 캐시 무효화 로직 포함
+// 썸네일 생성 (R2 업로드 버전) - Vercel 서버리스 환경에서 안정적으로 동작
 async function generateThumbnailForGitHub(title: string, slug: string): Promise<{ path: string; buffer?: Buffer; filename?: string }> {
-  const MAX_RETRIES = 5; // 이미지 생성 재시도 횟수 (fallback 방지)
-  const imagesDir = path.join(process.cwd(), 'public', 'images', 'marketing-news');
+  const MAX_RETRIES = 5; // 이미지 생성 재시도 횟수
 
-  // Vercel 캐시 무효화를 위한 타임스탬프 (재배포 시 새 이미지로 인식)
+  // R2 설정 확인
+  if (!isR2Configured()) {
+    console.error('❌ R2 설정 없음 - 기본 이미지 사용');
+    return { path: '/images/solution-website.webp' };
+  }
+
+  // 캐시 무효화를 위한 타임스탬프
   const timestamp = Date.now();
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -1113,33 +1064,24 @@ async function generateThumbnailForGitHub(title: string, slug: string): Promise<
           .webp({ quality: 80 })
           .toBuffer();
 
-        // 중복 검사
-        const duplicateCheck = await checkImageDuplicate(webpBuffer, imagesDir);
-
-        if (duplicateCheck.isDuplicate) {
-          console.log(`⚠️ 중복 이미지 감지! 기존 파일: ${duplicateCheck.matchedFile}, 재시도...`);
-          continue; // 다음 시도
-        }
-
         // 사용된 조합 저장
         await saveUsedCombo(variation);
 
-        // 캐시 무효화를 위한 고유 파일명 (slug-timestamp.webp)
+        // 고유 파일명 생성
         const filename = `${slug}-${timestamp}.webp`;
 
-        // 로컬에 즉시 저장 (GitHub 업로드 실패해도 이미지 보존)
-        const localImagePath = path.join(imagesDir, filename);
-        await fs.mkdir(imagesDir, { recursive: true });
-        await fs.writeFile(localImagePath, webpBuffer);
-        console.log(`💾 로컬 저장 완료: ${localImagePath}`);
-
-        console.log(`✅ 유니크한 이미지 생성 완료`);
+        // R2에 업로드
+        console.log(`☁️ R2 업로드 중: ${filename}`);
+        const r2Url = await uploadImageToR2(webpBuffer, filename, 'marketing-news');
+        console.log(`✅ R2 업로드 완료: ${r2Url}`);
 
         return {
-          path: `/images/marketing-news/${filename}`,
+          path: r2Url,
           buffer: webpBuffer,
           filename
         };
+      } else {
+        console.error(`[이미지] 이미지 데이터 없음 (시도 ${attempt + 1})`);
       }
     } catch (error) {
       console.error(`썸네일 생성 실패 (시도 ${attempt + 1}):`, error);
