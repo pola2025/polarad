@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "src/app/api/cron/generate-article/route.ts": {
+      "maxDuration": 300
+    }
+  },
   "crons": [
     {
       "path": "/api/cron/generate-article",
@@ -11,10 +16,6 @@
     {
       "path": "/api/cron/instagram-polamkt",
       "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/content-generator/cron",
-      "schedule": "0 0 * * *"
     }
   ]
 }
