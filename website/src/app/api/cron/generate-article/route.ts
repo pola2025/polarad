@@ -16,11 +16,6 @@
 
 import { NextResponse } from 'next/server';
 import sharp from 'sharp';
-import {
-  generateUniqueVariation,
-  buildImagePrompt,
-  saveUsedCombo,
-} from '@/lib/image-variation';
 import { uploadImageToR2, isR2Configured } from '@/lib/r2-storage';
 import { CATEGORIES as ALL_CATEGORIES, type ArticleCategory } from '@/lib/marketing-news';
 import {
@@ -28,7 +23,6 @@ import {
   parseSEOKeywords,
   withGeminiRetry,
   withAirtableRetry,
-  withGitHubRetry,
   FailureTracker,
   notifyImageGenerationFailed,
   notifyJSONParseFailed,
@@ -58,15 +52,15 @@ const TELEGRAM_CHAT_ID = '-1003280236380'; // 마케팅 소식 알림 채널
 // 자동 생성에서 사용하는 카테고리 (types.ts의 CATEGORIES 하위 집합)
 type CategoryKey = 'meta-ads' | 'instagram-reels' | 'threads' | 'faq' | 'ai-tips' | 'ai-news';
 
-// 콘텐츠에서 사용할 연도 (항상 다음 연도 사용 - 최신 정보 강조)
+// 콘텐츠에서 사용할 연도 (현재 연도 사용)
 function getContentYear(): string {
   const now = new Date();
   const kstOffset = 9 * 60 * 60 * 1000;
   const kstDate = new Date(now.getTime() + kstOffset);
-  // 다음 연도 사용 (2025년이면 2026년 사용)
-  return String(kstDate.getUTCFullYear() + 1);
+  // 현재 연도 사용
+  return String(kstDate.getUTCFullYear());
 }
-const CURRENT_YEAR = getContentYear(); // 현재 2026
+const CURRENT_YEAR = getContentYear(); // 2026
 
 // 요일별 카테고리 매핑 (0=일, 1=월, 2=화, ...)
 const DAY_CATEGORY_MAP: Record<number, CategoryKey> = {
@@ -255,6 +249,32 @@ async function checkSlugExists(slug: string): Promise<boolean> {
   } catch (error) {
     console.error('슬러그 중복 체크 실패:', error);
     return false; // 에러 시 중복 아닌 것으로 처리 (진행 허용)
+  }
+}
+
+// 오늘 이미 해당 카테고리 글이 생성되었는지 확인 (중복 실행 방지)
+async function checkTodayArticleExists(category: string, today: string): Promise<{ exists: boolean; title?: string }> {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID || !AIRTABLE_TABLE_NAME) {
+    return { exists: false };
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME!)}?filterByFormula=AND({date}='${today}',{category}='${category}')&maxRecords=1&fields[]=title`,
+      { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
+    );
+
+    const result = await res.json();
+    if (result.records?.length > 0) {
+      return {
+        exists: true,
+        title: result.records[0].fields?.title
+      };
+    }
+    return { exists: false };
+  } catch (error) {
+    console.error('오늘 글 존재 여부 확인 실패:', error);
+    return { exists: false }; // 에러 시 진행 허용
   }
 }
 
@@ -917,98 +937,42 @@ async function updateAirtableThumbnail(recordId: string, thumbnailUrl: string): 
   }
 }
 
-// GitHub에 파일 커밋 (재시도 전략 적용)
-async function commitToGitHub(
-  filePath: string,
-  content: string,
-  commitMessage: string
-): Promise<boolean> {
-  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  const GITHUB_REPO = process.env.GITHUB_REPO; // format: "owner/repo"
+// 이미지 프롬프트 정의 (3단계 폴백)
+const IMAGE_PROMPTS = [
+  // 1차: 한국인, 한국 배경의 사무실 이미지
+  `Create a professional photograph of a modern Korean office environment.
+Scene: Open-plan office in Seoul with large windows showing city view.
+People: 2-3 Korean business professionals (mixed gender) working at desks with laptops.
+Style: Natural lighting, warm and professional atmosphere.
+Details: Modern furniture, plants, coffee cups, professional attire.
+Camera: Wide angle shot, eye level perspective.
+Quality: High resolution, photorealistic, no text or watermarks.
+Format: 1200x630 pixels, landscape orientation.`,
 
-  if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    console.log('[github] 환경변수 미설정 - 커밋 스킵');
-    return false;
-  }
+  // 2차: 한국인 업무 보는 모습 이미지
+  `Create a professional photograph of Korean professionals at work.
+Scene: Close-up of Korean business person analyzing data on laptop screen.
+People: 1-2 Korean professionals in smart casual attire, focused expression.
+Style: Soft natural lighting, shallow depth of field.
+Details: Modern laptop, notebook, pen, coffee mug on desk.
+Camera: Medium shot, slightly elevated angle.
+Quality: High resolution, photorealistic, no text or watermarks.
+Format: 1200x630 pixels, landscape orientation.`,
 
-  try {
-    return await withGitHubRetry(async () => {
-      // 기존 파일 확인 (SHA 필요)
-      const checkRes = await fetch(
-        `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
-        { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` } }
-      );
+  // 3차: 한국 도심의 빌딩 많은 지역 풍경
+  `Create a stunning cityscape photograph of Seoul's business district.
+Scene: Panoramic view of Gangnam, Yeouido, or Jongno area with modern skyscrapers.
+Time: Golden hour or blue hour lighting.
+Style: Professional architectural photography, vibrant but natural colors.
+Details: Glass and steel buildings, busy streets below, clear sky.
+Camera: Wide angle, elevated perspective showing city depth.
+Quality: High resolution, photorealistic, no text or watermarks.
+Format: 1200x630 pixels, landscape orientation.`
+];
 
-      const existingFile = checkRes.ok ? await checkRes.json() : null;
-
-      // 파일 생성/업데이트
-      const res = await fetch(
-        `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${GITHUB_TOKEN}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: commitMessage,
-            content: Buffer.from(content).toString('base64'),
-            ...(existingFile?.sha ? { sha: existingFile.sha } : {})
-          })
-        }
-      );
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`GitHub API error ${res.status}: ${errorText}`);
-      }
-
-      return true;
-    });
-  } catch (error) {
-    console.error('[github] 모든 재시도 실패:', error);
-    return false;
-  }
-}
-
-// 이미지를 GitHub에 업로드
-async function uploadImageToGitHub(
-  imageBuffer: Buffer,
-  filePath: string
-): Promise<boolean> {
-  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  const GITHUB_REPO = process.env.GITHUB_REPO;
-
-  if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    return false;
-  }
-
-  try {
-    const res = await fetch(
-      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${GITHUB_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `Add thumbnail: ${filePath}`,
-          content: imageBuffer.toString('base64')
-        })
-      }
-    );
-
-    return res.ok;
-  } catch (error) {
-    console.error('이미지 업로드 실패:', error);
-    return false;
-  }
-}
-
-// 썸네일 생성 (R2 업로드 버전) - Vercel 서버리스 환경에서 안정적으로 동작
-async function generateThumbnailForGitHub(title: string, slug: string): Promise<{ path: string; buffer?: Buffer; filename?: string }> {
-  const MAX_RETRIES = 5; // 이미지 생성 재시도 횟수
+// 썸네일 생성 (단순화된 3단계 폴백)
+async function generateThumbnail(title: string, slug: string): Promise<{ path: string }> {
+  const API_TIMEOUT = 40000;
 
   // R2 설정 확인
   if (!isR2Configured()) {
@@ -1016,81 +980,103 @@ async function generateThumbnailForGitHub(title: string, slug: string): Promise<
     return { path: '/images/solution-website.webp' };
   }
 
-  // 캐시 무효화를 위한 타임스탬프
   const timestamp = Date.now();
+  let lastError = '';
 
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    try {
-      // 유니크한 베리에이션 생성
-      const variation = await generateUniqueVariation();
-      const prompt = buildImagePrompt(title, variation);
+  // 3단계 폴백 시도
+  for (let step = 0; step < IMAGE_PROMPTS.length; step++) {
+    const prompt = IMAGE_PROMPTS[step];
+    const stepNames = ['한국 사무실', '한국인 업무', '서울 도심'];
 
-      console.log(`🖼️ 이미지 생성 시도 ${attempt + 1}/${MAX_RETRIES}`);
-      console.log(`   인원: ${variation.people}`);
-      console.log(`   장소: ${variation.location}`);
-      console.log(`   활동: ${variation.activity}`);
+    console.log(`🖼️ 이미지 생성 시도 ${step + 1}/3 (${stepNames[step]})`);
 
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseModalities: ['image', 'text'] }
-        })
-      });
+    // 각 단계에서 2회씩 시도
+    for (let retry = 0; retry < 2; retry++) {
+      try {
+        // 재시도 시 2초 대기
+        if (retry > 0) {
+          console.log(`⏳ 2초 대기 후 재시도...`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error(`[이미지] Gemini API 에러 ${res.status}:`, errorText);
-        continue; // 다음 시도
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { responseModalities: ['image', 'text'] }
+            }),
+            signal: controller.signal
+          }
+        );
+
+        clearTimeout(timeoutId);
+
+        // Rate Limit
+        if (res.status === 429) {
+          console.error(`[이미지] Rate Limit - 5초 대기`);
+          lastError = 'RATE_LIMIT';
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          continue;
+        }
+
+        if (!res.ok) {
+          console.error(`[이미지] API 에러 ${res.status}`);
+          lastError = `API_ERROR_${res.status}`;
+          continue;
+        }
+
+        const result = await res.json();
+
+        // 안전 필터 체크
+        if (result.candidates?.[0]?.finishReason === 'SAFETY') {
+          console.error(`[이미지] 안전 필터 거부 - 다음 단계로`);
+          lastError = 'SAFETY_FILTER';
+          break; // 다음 단계로 이동
+        }
+
+        const imageData = result.candidates?.[0]?.content?.parts?.find(
+          (p: { inlineData?: { mimeType?: string; data?: string } }) =>
+            p.inlineData?.mimeType?.startsWith('image/')
+        );
+
+        if (imageData?.inlineData?.data) {
+          const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
+          const webpBuffer = await sharp(imageBuffer)
+            .resize(1200, 630, { fit: 'cover' })
+            .webp({ quality: 80 })
+            .toBuffer();
+
+          const filename = `${slug}-${timestamp}.webp`;
+          console.log(`☁️ R2 업로드 중: ${filename}`);
+          const r2Url = await uploadImageToR2(webpBuffer, filename, 'marketing-news');
+          console.log(`✅ 이미지 생성 성공 (${stepNames[step]})`);
+
+          return { path: r2Url };
+        } else {
+          console.error(`[이미지] 이미지 데이터 없음`);
+          lastError = 'NO_IMAGE_DATA';
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.error(`[이미지] 타임아웃`);
+          lastError = 'TIMEOUT';
+        } else {
+          console.error(`[이미지] 에러:`, error);
+          lastError = error instanceof Error ? error.message : 'UNKNOWN';
+        }
       }
-
-      const result = await res.json();
-
-      // 이미지 생성 거부 체크 (안전 필터 등)
-      if (result.candidates?.[0]?.finishReason === 'SAFETY') {
-        console.error(`[이미지] 안전 필터에 의해 거부됨`);
-        continue;
-      }
-
-      const imageData = result.candidates?.[0]?.content?.parts?.find((p: { inlineData?: { mimeType?: string; data?: string } }) =>
-        p.inlineData?.mimeType?.startsWith('image/')
-      );
-
-      if (imageData?.inlineData?.data) {
-        const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
-        const webpBuffer = await sharp(imageBuffer)
-          .resize(1200, 630, { fit: 'cover' })
-          .webp({ quality: 80 })
-          .toBuffer();
-
-        // 사용된 조합 저장
-        await saveUsedCombo(variation);
-
-        // 고유 파일명 생성
-        const filename = `${slug}-${timestamp}.webp`;
-
-        // R2에 업로드
-        console.log(`☁️ R2 업로드 중: ${filename}`);
-        const r2Url = await uploadImageToR2(webpBuffer, filename, 'marketing-news');
-        console.log(`✅ R2 업로드 완료: ${r2Url}`);
-
-        return {
-          path: r2Url,
-          buffer: webpBuffer,
-          filename
-        };
-      } else {
-        console.error(`[이미지] 이미지 데이터 없음 (시도 ${attempt + 1})`);
-      }
-    } catch (error) {
-      console.error(`썸네일 생성 실패 (시도 ${attempt + 1}):`, error);
     }
   }
 
-  // 모든 시도 실패 시 알림 후 fallback
-  console.error('❌ 이미지 생성 최종 실패 - 기본 이미지로 대체');
-  notifyImageGenerationFailed(title, MAX_RETRIES, '5회 시도 후에도 이미지 생성 실패');
+  // 모든 시도 실패
+  console.error(`❌ 이미지 생성 최종 실패: ${lastError}`);
+  notifyImageGenerationFailed(title, 6, `3단계 폴백 모두 실패. 마지막: ${lastError}`);
   return { path: '/images/solution-website.webp' };
 }
 
@@ -1127,10 +1113,27 @@ export async function GET(request: Request) {
     category = 'meta-ads';
   }
 
+  // 오늘 날짜 (KST 기준) - try 블록 밖에서 계산
+  const today = kstDate.toISOString().split('T')[0];
+
   try {
     console.log(`🚀 자동 글 생성 시작 - 카테고리: ${category}`);
 
-    // 0. 기존 글 제목 조회 (중복 방지용)
+    // 0. 중복 실행 방지: 오늘 이미 해당 카테고리 글이 생성되었는지 확인
+    console.log(`🔍 중복 실행 확인 중... (${today}, ${category})`);
+    const todayCheck = await checkTodayArticleExists(category, today);
+    if (todayCheck.exists && !forceRun) {
+      console.log(`⚠️ 오늘 이미 ${category} 카테고리 글이 존재합니다: "${todayCheck.title}"`);
+      return NextResponse.json({
+        message: `오늘(${today}) 이미 ${category} 카테고리 글이 생성되었습니다.`,
+        existingTitle: todayCheck.title,
+        skipped: true,
+        reason: 'duplicate_prevented'
+      });
+    }
+    console.log(`✅ 중복 확인 완료 - 새 글 생성 진행`);
+
+    // 0-2. 기존 글 제목 조회 (주제 중복 방지용)
     console.log('📋 기존 글 제목 조회...');
     const existingTitles = await getExistingTitles(category);
     console.log(`   최근 30일 내 ${category} 글: ${existingTitles.length}개`);
@@ -1273,7 +1276,6 @@ export async function GET(request: Request) {
     const baseSlug = generateSlug(title);
     console.log(`🔗 슬러그 생성: ${baseSlug}`);
     const slug = await ensureUniqueSlug(baseSlug);
-    const today = kstDate.toISOString().split('T')[0];
 
     // 3. SEO 키워드 연구
     console.log('🔍 SEO 키워드 연구...');
@@ -1352,58 +1354,17 @@ export async function GET(request: Request) {
       console.log('⚠️ Airtable 저장 실패, 계속 진행...');
     }
 
-    // 7. 썸네일 생성
+    // 7. 썸네일 생성 (R2 업로드)
     console.log('🖼️ 썸네일 생성...');
-    const thumbnail = await generateThumbnailForGitHub(title, slug);
+    const thumbnail = await generateThumbnail(title, slug);
 
     // 7-1. 이미지 생성 성공 시 Airtable 업데이트
     if (airtableId && thumbnail.path !== '/images/solution-website.webp') {
       console.log('📊 Airtable 이미지 URL 업데이트...');
-      // R2 URL은 이미 완전한 URL이므로 그대로 사용
       const thumbnailUrl = thumbnail.path.startsWith('http')
         ? thumbnail.path
         : `https://polarad.co.kr${thumbnail.path}`;
       await updateAirtableThumbnail(airtableId, thumbnailUrl);
-    }
-
-    // 8. MDX 파일 구성 (이미지 포함)
-    const mdxContent = `---
-title: "${seoTitle}"
-description: "${description}"
-category: "${category}"
-tags: ${JSON.stringify(tags)}
-author: "폴라애드"
-publishedAt: "${today}"
-updatedAt: "${today}"
-thumbnail: "${thumbnail.path}"
-featured: false
-status: "published"
-seo:
-  keywords: ${JSON.stringify(allKeywords)}
-  ogImage: "${thumbnail.path}"
-  primaryKeyword: "${seoKeywords.primary || ''}"
-  searchIntent: "${seoKeywords.searchIntent || '정보형'}"
-  faqQuestions: ${JSON.stringify(seoKeywords.questions || [])}
----
-
-${content}
-`;
-
-    // 9. GitHub에 커밋 (website/ 폴더 내에 저장)
-    const categoryFolder = ALL_CATEGORIES[category].folder;
-    const mdxPath = `website/content/marketing-news/${categoryFolder}/${slug}.mdx`;
-
-    console.log('📤 GitHub 커밋...');
-    const mdxCommitted = await commitToGitHub(
-      mdxPath,
-      mdxContent,
-      `📝 자동 생성: ${seoTitle}`
-    );
-
-    // 이미지도 GitHub에 업로드 (website/ 폴더 내에 저장)
-    if (thumbnail.buffer && thumbnail.filename) {
-      const imagePath = `website/public/images/marketing-news/${thumbnail.filename}`;
-      await uploadImageToGitHub(thumbnail.buffer, imagePath);
     }
 
     const result = {
@@ -1411,10 +1372,8 @@ ${content}
       title: seoTitle,
       category,
       slug,
-      mdxPath,
       thumbnail: thumbnail.path,
       airtableId,
-      githubCommitted: mdxCommitted,
       generatedAt: new Date().toISOString()
     };
 
