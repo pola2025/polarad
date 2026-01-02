@@ -603,16 +603,26 @@ ${feedbackText}
     console.log('🔍 AI 카테고리 - Google Search grounding 활성화');
   }
 
-  // 모든 카테고리 gemini-3-flash-preview 사용
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody)
-  });
+  try {
+    // 모든 카테고리 gemini-3-flash-preview 사용
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
 
-  const result = await res.json();
-  const topic = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-  return topic.replace(/^["']|["']$/g, '').replace(/^\d+\.\s*/, '');
+    if (!res.ok) {
+      console.error(`[generateTopic] API 실패: ${res.status}, 빈 주제 반환`);
+      return '';
+    }
+
+    const result = await res.json();
+    const topic = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    return topic.replace(/^["']|["']$/g, '').replace(/^\d+\.\s*/, '');
+  } catch (error) {
+    console.error('[generateTopic] 에러 발생, 빈 주제 반환:', error);
+    return '';
+  }
 }
 
 // 주제 유효성 검증 (마케팅/광고 관련인지 확인)
@@ -669,20 +679,26 @@ async function checkDuplicateTopic(title: string, category: string): Promise<{ i
     return { isDuplicate: false };
   }
 
-  const twoWeeksAgo = new Date();
-  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-  const filterDate = twoWeeksAgo.toISOString().split('T')[0];
+  try {
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const filterDate = twoWeeksAgo.toISOString().split('T')[0];
 
-  const res = await fetch(
-    `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?filterByFormula=AND(IS_AFTER({date},'${filterDate}'),{category}='${category}')`,
-    { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
-  );
+    const res = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?filterByFormula=AND(IS_AFTER({date},'${filterDate}'),{category}='${category}')`,
+      { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
+    );
 
-  const result = await res.json();
-  const recentTitles = result.records?.map((r: { fields: { title: string } }) => r.fields.title) || [];
+    if (!res.ok) {
+      console.error(`[duplicate_check] Airtable API 실패: ${res.status}, 중복 체크 스킵`);
+      return { isDuplicate: false };
+    }
 
-  if (recentTitles.length > 0) {
-    const checkPrompt = `다음 새 글 제목이 기존 글들과 너무 비슷한지 판단해주세요.
+    const result = await res.json();
+    const recentTitles = result.records?.map((r: { fields: { title: string } }) => r.fields.title) || [];
+
+    if (recentTitles.length > 0) {
+      const checkPrompt = `다음 새 글 제목이 기존 글들과 너무 비슷한지 판단해주세요.
 
 새 글 제목: "${title}"
 
@@ -691,35 +707,39 @@ ${recentTitles.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}
 
 JSON으로만 응답: {"isDuplicate": true/false, "similarTo": "비슷한 기존 글 제목 또는 null", "reason": "이유"}`;
 
-    // Gemini 재시도 적용
-    const checkResult = await withGeminiRetry(async () => {
-      const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: checkPrompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 200 }
-        })
+      // Gemini 재시도 적용
+      const checkResult = await withGeminiRetry(async () => {
+        const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: checkPrompt }] }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 200 }
+          })
+        });
+
+        if (!checkRes.ok) {
+          throw new Error(`Gemini API error: ${checkRes.status}`);
+        }
+
+        return checkRes.json();
       });
+      const text = checkResult.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
 
-      if (!checkRes.ok) {
-        throw new Error(`Gemini API error: ${checkRes.status}`);
+      // 안전한 JSON 파싱 (Zod 스키마 검증)
+      const parseResult = parseDuplicateCheck(text);
+      if (!parseResult.success) {
+        notifyJSONParseFailed('duplicate_check', parseResult.rawText || text, parseResult.error || 'Unknown error');
+        console.log(`[duplicate_check] JSON 파싱 실패, 기본값 사용: ${parseResult.error}`);
       }
-
-      return checkRes.json();
-    });
-    const text = checkResult.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-
-    // 안전한 JSON 파싱 (Zod 스키마 검증)
-    const parseResult = parseDuplicateCheck(text);
-    if (!parseResult.success) {
-      notifyJSONParseFailed('duplicate_check', parseResult.rawText || text, parseResult.error || 'Unknown error');
-      console.log(`[duplicate_check] JSON 파싱 실패, 기본값 사용: ${parseResult.error}`);
+      return parseResult.data;
     }
-    return parseResult.data;
-  }
 
-  return { isDuplicate: false };
+    return { isDuplicate: false };
+  } catch (error) {
+    console.error('[duplicate_check] 에러 발생, 중복 체크 스킵:', error);
+    return { isDuplicate: false };
+  }
 }
 
 // SEO 키워드 생성 (Gemini 재시도 + 안전한 JSON 파싱)
