@@ -1103,7 +1103,7 @@ export async function GET(request: Request) {
   // 요일 체크 (force가 아닐 때만)
   if (!forceRun && !category) {
     return NextResponse.json({
-      message: `오늘(${dayOfWeek})은 실행 요일이 아닙니다. 실행 요일: 월(1), 수(3), 금(5), 일(0)`,
+      message: `오늘(${dayOfWeek})은 실행 요일이 아닙니다. 실행 요일: 일(0), 월(1), 화(2), 수(3), 금(5), 토(6)`,
       skipped: true
     });
   }
