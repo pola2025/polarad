@@ -110,15 +110,32 @@ function parseProps(propsString: string): Record<string, unknown> {
   while ((jsonMatch = jsonPropPattern.exec(propsString)) !== null) {
     try {
       // JSX 스타일 객체를 JSON으로 변환
-      let jsonStr = jsonMatch[2]
-        .replace(/(\w+):/g, '"$1":')  // key: → "key":
-        .replace(/'/g, '"')           // ' → "
-        .replace(/,\s*}/g, '}')       // trailing comma 제거
-        .replace(/,\s*]/g, ']');      // trailing comma 제거
+      // 1. 먼저 문자열 값을 임시 토큰으로 대체 (문자열 안의 콜론 보호)
+      const stringValues: string[] = [];
+      let tempStr = jsonMatch[2].replace(/"([^"]*)"/g, (_, content) => {
+        stringValues.push(content);
+        return `"__STRING_${stringValues.length - 1}__"`;
+      });
+
+      // 2. key: → "key": 변환 (문자열 값 외부에서만)
+      tempStr = tempStr.replace(/(\w+):/g, '"$1":');
+
+      // 3. 문자열 값 복원
+      let jsonStr = tempStr.replace(/"__STRING_(\d+)__"/g, (_, idx) => {
+        return `"${stringValues[parseInt(idx)]}"`;
+      });
+
+      // 4. 작은따옴표 → 큰따옴표 (문자열 값은 이미 처리됨)
+      jsonStr = jsonStr
+        .replace(/'/g, '"')
+        .replace(/,\s*}/g, '}')
+        .replace(/,\s*]/g, ']');
 
       props[jsonMatch[1]] = JSON.parse(jsonStr);
     } catch (e) {
-      console.error('Failed to parse JSON prop:', jsonMatch[1], e);
+      // 파싱 실패 시 빈 배열 반환 (경고만 출력)
+      console.warn('Failed to parse JSON prop:', jsonMatch[1], 'using empty array');
+      props[jsonMatch[1]] = [];
     }
   }
 

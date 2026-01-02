@@ -112,6 +112,7 @@ async function sendTelegramNotification(
     slug?: string;
     category?: string;
     errorMessage?: string;
+    step?: string;  // 실패 단계 (예: '주제 생성', '콘텐츠 생성', '이미지 생성')
   }
 ): Promise<void> {
   if (!TELEGRAM_BOT_TOKEN) {
@@ -144,15 +145,22 @@ async function sendTelegramNotification(
 
 ${scheduleInfo}`;
   } else {
-    message = `❌ *마케팅 소식 자동 작성 실패*
+    const stepInfo = data.step ? `\n📍 *실패 단계:* ${data.step}` : '';
+    const categoryInfo = data.category ? `\n📁 *카테고리:* ${data.category}` : '';
 
-⚠️ *오류:* ${data.errorMessage}
+    message = `❌ *마케팅 소식 자동 작성 실패*
+${categoryInfo}${stepInfo}
+
+⚠️ *오류:*
+\`\`\`
+${data.errorMessage?.slice(0, 500) || 'Unknown error'}
+\`\`\`
 
 📅 *다음 작성:* ${nextSchedule.date} (${nextSchedule.dayName}) - ${nextSchedule.category}
 
 ${scheduleInfo}
 
-🔧 로그를 확인해주세요.`;
+🔧 Vercel 로그를 확인해주세요.`;
   }
 
   try {
@@ -1116,10 +1124,14 @@ export async function GET(request: Request) {
   // 오늘 날짜 (KST 기준) - try 블록 밖에서 계산
   const today = kstDate.toISOString().split('T')[0];
 
+  // 현재 실행 단계 추적 (에러 발생 시 알림에 사용)
+  let currentStep = '초기화';
+
   try {
     console.log(`🚀 자동 글 생성 시작 - 카테고리: ${category}`);
 
     // 0. 중복 실행 방지: 오늘 이미 해당 카테고리 글이 생성되었는지 확인
+    currentStep = '중복 확인';
     console.log(`🔍 중복 실행 확인 중... (${today}, ${category})`);
     const todayCheck = await checkTodayArticleExists(category, today);
     if (todayCheck.exists && !forceRun) {
@@ -1139,6 +1151,7 @@ export async function GET(request: Request) {
     console.log(`   최근 30일 내 ${category} 글: ${existingTitles.length}개`);
 
     // 1. 주제 선택 (아카이브 우선 → AI fallback)
+    currentStep = '주제 선택';
     let title = '';
     let topicSource: 'archive' | 'ai' = 'archive';
 
@@ -1278,10 +1291,12 @@ export async function GET(request: Request) {
     const slug = await ensureUniqueSlug(baseSlug);
 
     // 3. SEO 키워드 연구
+    currentStep = 'SEO 키워드 연구';
     console.log('🔍 SEO 키워드 연구...');
     const seoKeywords = await generateSEOKeywords(title, category);
 
     // 4. 콘텐츠 생성 + 품질 검증
+    currentStep = '콘텐츠 생성';
     console.log('✍️ 콘텐츠 생성...');
     let content = await generateContent(title, category, seoKeywords);
 
@@ -1334,6 +1349,7 @@ export async function GET(request: Request) {
     ].filter(Boolean).slice(0, 15);
 
     // 6. Airtable 먼저 저장 (이미지 없이) - 이후 업데이트
+    currentStep = 'Airtable 저장';
     console.log('📊 Airtable 우선 저장 (콘텐츠만)...');
     const tempThumbnailUrl = '/images/solution-website.webp'; // 임시 기본 이미지
     let airtableId = await uploadToAirtable({
@@ -1355,6 +1371,7 @@ export async function GET(request: Request) {
     }
 
     // 7. 썸네일 생성 (R2 업로드)
+    currentStep = '이미지 생성';
     console.log('🖼️ 썸네일 생성...');
     const thumbnail = await generateThumbnail(title, slug);
 
@@ -1390,11 +1407,15 @@ export async function GET(request: Request) {
 
   } catch (error) {
     console.error('❌ 에러:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error
+      ? `${error.message}\n\nStack: ${error.stack?.split('\n').slice(0, 5).join('\n')}`
+      : 'Unknown error';
 
-    // 텔레그램 알림 (실패)
+    // 텔레그램 알림 (실패) - 카테고리와 단계 정보 포함
     await sendTelegramNotification('error', {
-      errorMessage
+      errorMessage,
+      category: category ? ALL_CATEGORIES[category]?.label : undefined,
+      step: currentStep
     });
 
     return NextResponse.json({

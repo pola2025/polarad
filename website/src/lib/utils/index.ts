@@ -15,6 +15,227 @@ interface RetryOptions {
   maxDelay?: number;
 }
 
+// 이미지 생성 에러 유형
+export type ImageGenerationErrorType =
+  | 'SAFETY_FILTER'      // 안전 필터에 의한 거부
+  | 'RATE_LIMIT'         // API 호출 제한
+  | 'TIMEOUT'            // 타임아웃
+  | 'NO_IMAGE_DATA'      // 이미지 데이터 없음
+  | 'API_ERROR'          // API 에러
+  | 'UNKNOWN';           // 알 수 없는 에러
+
+interface ImageGenerationError {
+  type: ImageGenerationErrorType;
+  message: string;
+  shouldRetry: boolean;
+  retryDelay?: number;  // ms
+}
+
+/**
+ * Gemini 이미지 생성 에러 분석
+ */
+export function analyzeImageError(result: unknown, response?: Response): ImageGenerationError {
+  // API 응답 에러 체크
+  if (response && !response.ok) {
+    if (response.status === 429) {
+      return {
+        type: 'RATE_LIMIT',
+        message: 'API rate limit exceeded',
+        shouldRetry: true,
+        retryDelay: 30000,  // 30초 대기
+      };
+    }
+    if (response.status >= 500) {
+      return {
+        type: 'API_ERROR',
+        message: `Server error: ${response.status}`,
+        shouldRetry: true,
+        retryDelay: 5000,
+      };
+    }
+    return {
+      type: 'API_ERROR',
+      message: `API error: ${response.status}`,
+      shouldRetry: false,
+    };
+  }
+
+  // 응답 결과 분석
+  const resultObj = result as {
+    candidates?: Array<{
+      finishReason?: string;
+      content?: { parts?: Array<{ inlineData?: { mimeType?: string; data?: string } }> };
+    }>;
+    error?: { message?: string; code?: number };
+  };
+
+  // 안전 필터 체크
+  if (resultObj?.candidates?.[0]?.finishReason === 'SAFETY') {
+    return {
+      type: 'SAFETY_FILTER',
+      message: 'Content blocked by safety filter',
+      shouldRetry: true,  // 다른 프롬프트로 재시도
+      retryDelay: 1000,
+    };
+  }
+
+  // 이미지 데이터 없음
+  const imageData = resultObj?.candidates?.[0]?.content?.parts?.find(
+    (p) => p.inlineData?.mimeType?.startsWith('image/')
+  );
+  if (!imageData?.inlineData?.data) {
+    return {
+      type: 'NO_IMAGE_DATA',
+      message: 'No image data in response',
+      shouldRetry: true,
+      retryDelay: 2000,
+    };
+  }
+
+  // API 에러
+  if (resultObj?.error) {
+    return {
+      type: 'API_ERROR',
+      message: resultObj.error.message || 'Unknown API error',
+      shouldRetry: resultObj.error.code === 503 || resultObj.error.code === 429,
+      retryDelay: 5000,
+    };
+  }
+
+  return {
+    type: 'UNKNOWN',
+    message: 'Unknown error',
+    shouldRetry: true,
+    retryDelay: 2000,
+  };
+}
+
+/**
+ * 이미지 생성 API 호출 (타임아웃 포함)
+ */
+export async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeoutMs: number = 60000
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+interface ImageRetryOptions {
+  maxRetries?: number;
+  baseDelay?: number;
+  maxDelay?: number;
+  timeout?: number;
+  onRetry?: (attempt: number, error: ImageGenerationError) => void;
+  getAlternativePrompt?: (attempt: number) => string | null;
+}
+
+/**
+ * 이미지 생성 전용 재시도 래퍼
+ * - 지수 백오프 적용
+ * - 에러 유형별 처리
+ * - 프롬프트 단순화 전략 지원
+ * - 타임아웃 설정
+ */
+export async function withImageGenerationRetry<T>(
+  fn: (attempt: number) => Promise<{ response: Response; result: T }>,
+  options: ImageRetryOptions = {}
+): Promise<T> {
+  const {
+    maxRetries = 5,
+    baseDelay = 2000,
+    maxDelay = 30000,
+    onRetry,
+  } = options;
+
+  let lastError: ImageGenerationError | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const { response, result } = await fn(attempt);
+
+      // 응답 분석
+      const error = analyzeImageError(result, response);
+
+      // 이미지 데이터가 있으면 성공
+      const resultObj = result as {
+        candidates?: Array<{
+          content?: { parts?: Array<{ inlineData?: { mimeType?: string; data?: string } }> };
+        }>;
+      };
+      const imageData = resultObj?.candidates?.[0]?.content?.parts?.find(
+        (p) => p.inlineData?.mimeType?.startsWith('image/')
+      );
+
+      if (imageData?.inlineData?.data) {
+        return result;
+      }
+
+      // 에러 처리
+      lastError = error;
+
+      if (!error.shouldRetry) {
+        console.log(`[ImageGen] 재시도 불가 에러: ${error.type} - ${error.message}`);
+        throw new Error(`Image generation failed: ${error.message}`);
+      }
+
+      if (attempt < maxRetries - 1) {
+        const delay = Math.min(
+          error.retryDelay || baseDelay * Math.pow(2, attempt),
+          maxDelay
+        );
+        console.log(`[ImageGen] 재시도 ${attempt + 1}/${maxRetries}: ${error.type} - ${delay}ms 후 재시도`);
+
+        if (onRetry) {
+          onRetry(attempt, error);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    } catch (error) {
+      // AbortError (타임아웃)
+      if (error instanceof Error && error.name === 'AbortError') {
+        lastError = {
+          type: 'TIMEOUT',
+          message: 'Request timed out',
+          shouldRetry: true,
+          retryDelay: 5000,
+        };
+        console.log(`[ImageGen] 타임아웃 발생, 재시도 ${attempt + 1}/${maxRetries}`);
+      } else {
+        lastError = {
+          type: 'UNKNOWN',
+          message: error instanceof Error ? error.message : String(error),
+          shouldRetry: true,
+          retryDelay: 2000,
+        };
+        console.log(`[ImageGen] 에러 발생: ${lastError.message}, 재시도 ${attempt + 1}/${maxRetries}`);
+      }
+
+      if (attempt < maxRetries - 1) {
+        const delay = Math.min(
+          lastError.retryDelay || baseDelay * Math.pow(2, attempt),
+          maxDelay
+        );
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  throw new Error(`Image generation failed after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`);
+}
+
 /**
  * Gemini API 호출 재시도 래퍼
  */
@@ -321,6 +542,206 @@ export function notifyImageGenerationFailed(
   console.log('[Alert] 이미지 생성 실패:', title);
   sendTelegramAlert(message);
 }
+
+// ============================================
+// 이미지 생성 통계 시스템
+// ============================================
+
+interface ImageGenerationStats {
+  date: string;  // YYYY-MM-DD
+  totalAttempts: number;
+  successCount: number;
+  failureCount: number;
+  fallbackUsed: number;
+  errorsByType: Record<ImageGenerationErrorType, number>;
+  avgRetries: number;
+  totalRetries: number;
+  successfulGenerations: number;
+  rateLimitHits: number;
+  safetyFilterHits: number;
+}
+
+interface GenerationRecord {
+  timestamp: Date;
+  title: string;
+  success: boolean;
+  retries: number;
+  finalSafetyLevel: 'normal' | 'safe' | 'minimal' | 'fallback';
+  errorType?: ImageGenerationErrorType;
+  durationMs: number;
+}
+
+// Vercel 서버리스에서는 메모리 내 통계 (요청 간 유지 안됨)
+// 대신 Airtable이나 KV에 저장하는 것이 이상적이지만,
+// 우선 요청 내 통계 + 텔레그램 알림으로 구현
+const sessionStats: GenerationRecord[] = [];
+
+/**
+ * 이미지 생성 결과 기록
+ */
+export function recordImageGeneration(record: GenerationRecord): void {
+  sessionStats.push(record);
+  console.log(`[Stats] 이미지 생성 기록: ${record.success ? '✅ 성공' : '❌ 실패'} (${record.retries}회 재시도, ${record.durationMs}ms)`);
+}
+
+/**
+ * 일별 통계 요약 생성
+ */
+export function generateDailyStats(records: GenerationRecord[]): ImageGenerationStats {
+  const today = new Date().toISOString().split('T')[0];
+
+  const errorsByType: Record<ImageGenerationErrorType, number> = {
+    SAFETY_FILTER: 0,
+    RATE_LIMIT: 0,
+    TIMEOUT: 0,
+    NO_IMAGE_DATA: 0,
+    API_ERROR: 0,
+    UNKNOWN: 0,
+  };
+
+  let totalRetries = 0;
+  let successfulGenerations = 0;
+  let fallbackUsed = 0;
+
+  for (const record of records) {
+    totalRetries += record.retries;
+
+    if (record.success) {
+      successfulGenerations++;
+    }
+
+    if (record.finalSafetyLevel === 'fallback') {
+      fallbackUsed++;
+    }
+
+    if (record.errorType) {
+      errorsByType[record.errorType]++;
+    }
+  }
+
+  return {
+    date: today,
+    totalAttempts: records.length,
+    successCount: records.filter(r => r.success).length,
+    failureCount: records.filter(r => !r.success).length,
+    fallbackUsed,
+    errorsByType,
+    avgRetries: records.length > 0 ? totalRetries / records.length : 0,
+    totalRetries,
+    successfulGenerations,
+    rateLimitHits: errorsByType.RATE_LIMIT,
+    safetyFilterHits: errorsByType.SAFETY_FILTER,
+  };
+}
+
+/**
+ * 이미지 생성 완료 시 통계 알림 (성공/실패 무관)
+ */
+export function notifyImageGenerationComplete(
+  title: string,
+  success: boolean,
+  retries: number,
+  safetyLevel: 'normal' | 'safe' | 'minimal' | 'fallback',
+  durationMs: number,
+  errorStats?: Record<ImageGenerationErrorType, number>
+): void {
+  const statusEmoji = success ? '✅' : '⚠️';
+  const levelLabel = {
+    normal: '일반',
+    safe: '안전',
+    minimal: '최소',
+    fallback: '기본이미지',
+  }[safetyLevel];
+
+  // 에러 통계 문자열
+  let errorSummary = '';
+  if (errorStats) {
+    const errors = Object.entries(errorStats)
+      .filter(([, count]) => count > 0)
+      .map(([type, count]) => `${type}: ${count}`)
+      .join(', ');
+    if (errors) {
+      errorSummary = `\n🔍 에러: ${errors}`;
+    }
+  }
+
+  const message = `${statusEmoji} *이미지 생성 완료*
+
+📝 제목: ${title.slice(0, 30)}...
+🎯 결과: ${success ? '성공' : '실패 (기본이미지 사용)'}
+🔄 재시도: ${retries}회
+📊 안전레벨: ${levelLabel}
+⏱ 소요시간: ${(durationMs / 1000).toFixed(1)}초${errorSummary}`;
+
+  console.log(`[Stats] ${statusEmoji} ${title.slice(0, 30)}... - ${retries}회 재시도, ${safetyLevel}`);
+
+  // 실패하거나 3회 이상 재시도한 경우에만 알림
+  if (!success || retries >= 3) {
+    sendTelegramAlert(message);
+  }
+}
+
+/**
+ * Rate Limit 연속 발생 추적기
+ */
+export class RateLimitTracker {
+  private consecutiveHits: number = 0;
+  private lastHitTime: Date | null = null;
+  private readonly resetWindowMs: number = 60000; // 1분 내 연속 발생 추적
+
+  /**
+   * Rate Limit 발생 기록
+   * @returns 연속 발생 횟수
+   */
+  recordHit(): number {
+    const now = new Date();
+
+    // 1분 이상 지났으면 리셋
+    if (this.lastHitTime && (now.getTime() - this.lastHitTime.getTime()) > this.resetWindowMs) {
+      this.consecutiveHits = 0;
+    }
+
+    this.consecutiveHits++;
+    this.lastHitTime = now;
+
+    console.log(`[RateLimit] 연속 ${this.consecutiveHits}회 발생`);
+    return this.consecutiveHits;
+  }
+
+  /**
+   * 성공 시 리셋
+   */
+  reset(): void {
+    this.consecutiveHits = 0;
+    this.lastHitTime = null;
+  }
+
+  /**
+   * 연속 발생 횟수 조회
+   */
+  getConsecutiveHits(): number {
+    return this.consecutiveHits;
+  }
+
+  /**
+   * 권장 대기 시간 계산 (연속 발생 횟수에 따라)
+   * - 1회: 30초
+   * - 2회: 60초
+   * - 3회 이상: 5분
+   */
+  getRecommendedDelay(): number {
+    if (this.consecutiveHits >= 3) {
+      return 5 * 60 * 1000; // 5분
+    }
+    if (this.consecutiveHits >= 2) {
+      return 60 * 1000; // 1분
+    }
+    return 30 * 1000; // 30초
+  }
+}
+
+// 싱글톤 인스턴스
+export const rateLimitTracker = new RateLimitTracker();
 
 /**
  * JSON 파싱 실패 알림
