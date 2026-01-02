@@ -8,67 +8,67 @@ import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 
-// 베리에이션 요소 풀
+// 베리에이션 요소 풀 (영어 프롬프트 - Gemini 이미지 생성 호환)
 export const VARIATION_POOL = {
   // 인원 구성
   people: [
-    '30대 한국인 여성 마케터 1명',
-    '30대 한국인 남성 마케터 1명',
-    '20대 한국인 여성과 30대 남성 2명',
-    '30대 한국인 남녀 혼성 3명 팀',
-    '20~30대 한국인 4명 팀 회의',
-    '40대 한국인 남성 팀장과 20대 여성 직원',
-    '20대 한국인 여성 2명',
+    'one female marketing professional in her 30s',
+    'one male marketing professional in his 30s',
+    'two professionals, a woman in her 20s and a man in his 30s',
+    'a mixed team of 3 professionals in their 30s',
+    'a team of 4 professionals in their 20s-30s in a meeting',
+    'a male team leader in his 40s with a female staff member in her 20s',
+    'two female professionals in their 20s',
   ],
 
   // 장소
   location: [
-    '밝은 자연광이 들어오는 모던한 오피스',
-    '통유리창이 있는 회의실',
-    '아늑한 카페 창가 자리',
-    '미니멀한 공유 오피스 공간',
-    '세련된 스타트업 사무실',
-    '화이트 인테리어의 깔끔한 사무실',
-    '도시 전경이 보이는 고층 오피스',
+    'a modern office with bright natural lighting',
+    'a conference room with floor-to-ceiling glass windows',
+    'a cozy cafe window seat',
+    'a minimalist co-working space',
+    'a stylish startup office',
+    'a clean office with white interior design',
+    'a high-rise office with city skyline view',
   ],
 
   // 활동/상황
   activity: [
-    '노트북으로 데이터 분석하는 모습',
-    '태블릿으로 SNS 피드 확인하는 모습',
-    '대형 모니터 앞에서 광고 성과 분석하는 모습',
-    '화이트보드에 마케팅 전략 논의하는 모습',
-    '스마트폰으로 인스타그램 확인하는 모습',
-    '노트북과 커피와 함께 집중하는 모습',
-    '팀원들과 화면을 보며 토론하는 모습',
+    'analyzing data on a laptop',
+    'checking social media feed on a tablet',
+    'reviewing ad performance metrics on a large monitor',
+    'discussing marketing strategy on a whiteboard',
+    'checking Instagram on a smartphone',
+    'focusing on work with a laptop and coffee',
+    'having a discussion while looking at screens together',
   ],
 
   // 앵글/구도
   angle: [
-    '정면에서 촬영',
-    '약간 측면(45도)에서 촬영',
-    '어깨 너머로 화면이 보이게 촬영',
-    '위에서 약간 내려다보는 앵글',
-    '테이블 위 기기들과 함께 촬영',
+    'shot from the front',
+    'shot from a slight side angle (45 degrees)',
+    'over-the-shoulder shot showing the screen',
+    'slightly elevated angle looking down',
+    'shot including devices on the table',
   ],
 
   // 분위기
   mood: [
-    '밝고 활기찬 분위기',
-    '집중하는 진지한 분위기',
-    '편안하고 캐주얼한 분위기',
-    '전문적이고 비즈니스적인 분위기',
-    '협업하는 에너지 넘치는 분위기',
+    'bright and energetic atmosphere',
+    'focused and serious atmosphere',
+    'relaxed and casual atmosphere',
+    'professional business atmosphere',
+    'collaborative and dynamic atmosphere',
   ],
 
   // 소품/디테일
   props: [
-    '맥북과 아이패드',
-    '커피잔과 노트',
-    '큰 모니터 2대',
-    '포스트잇과 화이트보드',
-    '스마트폰과 노트북',
-    '회의 테이블 위 노트북들',
+    'MacBook and iPad',
+    'coffee cup and notebook',
+    'two large monitors',
+    'post-it notes and whiteboard',
+    'smartphone and laptop',
+    'laptops on a meeting table',
   ],
 } as const;
 
@@ -159,31 +159,29 @@ export async function generateUniqueVariation(): Promise<VariationCombo> {
   };
 }
 
-// 하이브리드 이미지 프롬프트 생성 (한국인 + 맥락)
+// 하이브리드 이미지 프롬프트 생성 (영어 프롬프트)
 export function buildImagePrompt(title: string, variation: VariationCombo): string {
-  return `Create a photorealistic 1024x1024 stock photo for a Korean digital marketing blog.
+  return `Create a photorealistic 1200x630 professional stock photo.
 
-**Subject**: ${variation.people}
-**Setting**: ${variation.location}
-**Action**: ${variation.activity}
-**Camera angle**: ${variation.angle}
-**Atmosphere**: ${variation.mood}
-**Props visible**: ${variation.props}
+Subject: ${variation.people}
+Setting: ${variation.location}
+Action: ${variation.activity}
+Camera: ${variation.angle}
+Mood: ${variation.mood}
+Props: ${variation.props}
 
-**Article context**: "${title}"
-
-**STRICT REQUIREMENTS**:
-- Real Korean people (NOT Western, NOT anime/illustration)
+Style requirements:
 - Professional business/marketing context
 - Modern, clean, bright environment
 - Natural lighting, high quality photography
-- ABSOLUTELY NO TEXT, letters, numbers, watermarks, logos, UI elements
-- NO abstract shapes, NO geometric patterns
-- Photorealistic stock photo style like Shutterstock/Getty Images`;
+- NO text, letters, numbers, watermarks, logos
+- NO abstract shapes or geometric patterns
+- Photorealistic stock photo style
+- Landscape orientation (1200x630)`;
 }
 
 // 특정 슬러그용 시드 기반 프롬프트 (재생성 시 일관성)
-export function buildSeededImagePrompt(title: string, slug: string): string {
+export function buildSeededImagePrompt(slug: string): string {
   // slug를 시드로 사용해 동일 글은 항상 같은 베리에이션 선택
   const hash = crypto.createHash('md5').update(slug).digest('hex');
 
@@ -201,7 +199,7 @@ export function buildSeededImagePrompt(title: string, slug: string): string {
     props: VARIATION_POOL.props[getIndex(10, VARIATION_POOL.props.length)],
   };
 
-  return buildImagePrompt(title, variation);
+  return buildImagePrompt('', variation);
 }
 
 // 기존 이미지 해시 계산 (간단한 perceptual hash 대용)
