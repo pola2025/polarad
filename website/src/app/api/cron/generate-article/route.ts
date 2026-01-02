@@ -755,9 +755,43 @@ JSON 형식으로만 응답: {"primary":"메인키워드","secondary":["보조�
     }
     return parseResult.data;
   } catch (error) {
-    console.error('[seo_keywords] 모든 재시도 실패:', error);
-    return { primary: '', secondary: [], lsi: [], questions: [], searchIntent: '정보형' as const };
+    console.error('[seo_keywords] 모든 재시도 실패, fallback 사용:', error);
+    return getDefaultSEOKeywords(title, category);
   }
+}
+
+// SEO 키워드 Fallback 생성
+function getDefaultSEOKeywords(title: string, category: string) {
+  // 카테고리별 기본 키워드
+  const categoryKeywords: Record<string, string[]> = {
+    'meta-ads': ['메타 광고', '페이스북 광고', '인스타그램 광고', 'Meta Ads', '광고 최적화'],
+    'instagram-reels': ['인스타그램 릴스', '릴스 마케팅', '숏폼 콘텐츠', 'Reels', '릴스 알고리즘'],
+    'threads': ['쓰레드', 'Threads', '메타 쓰레드', '텍스트 SNS', '쓰레드 마케팅'],
+    'faq': ['마케팅 FAQ', '광고 문제 해결', '트러블슈팅', '광고 오류', '해결 방법'],
+    'ai-tips': ['AI 활용', '인공지능 팁', 'AI 도구', '업무 자동화', 'AI 생산성'],
+    'ai-news': ['AI 뉴스', '인공지능 최신', 'AI 트렌드', 'AI 업데이트', '기술 동향'],
+  };
+
+  const baseKeywords = categoryKeywords[category] || ['디지털 마케팅', '온라인 광고'];
+
+  // 제목에서 주요 단어 추출 (한글 2글자 이상)
+  const titleWords = title.match(/[가-힣]{2,}/g) || [];
+  const primaryKeyword = titleWords[0] || baseKeywords[0];
+
+  return {
+    primary: primaryKeyword,
+    secondary: [...new Set([...baseKeywords.slice(0, 3), ...titleWords.slice(1, 4)])].slice(0, 5),
+    lsi: [`${primaryKeyword} 가이드`, `${primaryKeyword} ${CURRENT_YEAR}`, `${primaryKeyword} 방법`, `${primaryKeyword} 팁`, `${primaryKeyword} 전략`],
+    questions: [
+      `${primaryKeyword}란 무엇인가요?`,
+      `${primaryKeyword} 어떻게 시작하나요?`,
+      `${primaryKeyword} 성공 비결은?`,
+    ],
+    searchIntent: '정보형' as const,
+    seoTitle: title.slice(0, 60),
+    metaDescription: `${title}에 대해 알아봅니다. ${CURRENT_YEAR}년 최신 정보와 실전 가이드를 제공합니다.`.slice(0, 155),
+    isFallback: true, // fallback 여부 표시
+  };
 }
 
 // AI 카테고리용: Google Search로 최신 정보 검색
@@ -786,7 +820,7 @@ async function searchLatestAIInfo(title: string): Promise<string> {
   return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-// 콘텐츠 생성 (v2 프롬프트 빌더 사용)
+// 콘텐츠 생성 (v2 프롬프트 빌더 사용 + 재시도 + fallback)
 async function generateContent(
   title: string,
   category: CategoryKey,
@@ -798,8 +832,12 @@ async function generateContent(
 
   if (useGrounding) {
     console.log(`🔍 AI 카테고리 - 최신 정보 검색 중...`);
-    searchContext = await searchLatestAIInfo(title);
-    console.log(`✅ 검색 완료 - ${searchContext.length}자 수집`);
+    try {
+      searchContext = await searchLatestAIInfo(title);
+      console.log(`✅ 검색 완료 - ${searchContext.length}자 수집`);
+    } catch (error) {
+      console.error(`⚠️ 검색 실패, 검색 없이 진행:`, error);
+    }
   }
 
   // v2 프롬프트 빌더 사용
@@ -827,16 +865,87 @@ ${prompt}`;
     console.log(`📝 v2 프롬프트 사용 - 카테고리: ${category}`);
   }
 
-  // 콘텐츠 생성은 항상 gemini-3-pro-preview 사용
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
-    })
-  });
-  return (await res.json()).candidates?.[0]?.content?.parts?.[0]?.text || '';
+  try {
+    // 콘텐츠 생성 (withGeminiRetry로 3회 재시도)
+    const result = await withGeminiRetry(async () => {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error(`Gemini API error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+      if (!content || content.length < 100) {
+        throw new Error('Empty or too short content received');
+      }
+
+      return content;
+    });
+
+    return result;
+  } catch (error) {
+    console.error('[content] 모든 재시도 실패, fallback 콘텐츠 생성:', error);
+    return generateFallbackContent(title, category, seoKeywords.primary);
+  }
+}
+
+// 콘텐츠 생성 Fallback (API 완전 실패 시)
+function generateFallbackContent(title: string, category: string, primaryKeyword?: string): string {
+  const categoryLabels: Record<string, string> = {
+    'meta-ads': 'Meta 광고',
+    'instagram-reels': '인스타그램 릴스',
+    'threads': '쓰레드',
+    'faq': 'FAQ',
+    'ai-tips': 'AI 활용 팁',
+    'ai-news': 'AI 뉴스',
+  };
+
+  const categoryLabel = categoryLabels[category] || '마케팅';
+  const keyword = primaryKeyword || title.match(/[가-힣]{2,}/)?.[0] || '마케팅';
+
+  return `# ${title}
+
+안녕하세요, Meta 광고 전문 대행사 **폴라애드(POLARAD)**입니다.
+
+오늘은 **${keyword}**에 대해 알아보겠습니다.
+
+---
+
+## ${keyword}란?
+
+${keyword}는 ${CURRENT_YEAR}년 디지털 마케팅에서 중요한 요소입니다. 효과적인 마케팅 전략을 위해 반드시 이해해야 할 개념입니다.
+
+---
+
+## 핵심 포인트
+
+1. **기본 이해**: ${keyword}의 기본 개념을 먼저 파악하세요.
+2. **실전 적용**: 실제 마케팅 캠페인에 적용하는 방법을 알아보세요.
+3. **성과 측정**: 효과를 측정하고 최적화하는 방법을 익히세요.
+
+---
+
+## 폴라애드와 함께하세요
+
+${categoryLabel} 관련 더 자세한 정보가 필요하시다면, 폴라애드에 문의해 주세요.
+
+Meta 광고 전문가가 맞춤 컨설팅을 제공해 드립니다.
+
+👉 **[폴라애드 무료 컨설팅 신청하기](https://polarad.co.kr)**
+
+---
+
+*이 글은 AI 생성 실패로 인한 기본 템플릿입니다. 관리자 수동 보완이 필요합니다.*
+`;
 }
 
 
