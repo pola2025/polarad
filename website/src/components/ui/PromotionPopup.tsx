@@ -220,35 +220,37 @@ export function PromotionPopup({ onClose }: PromotionPopupProps) {
                     선착순 10개
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
-                    <Gift size={24} className="text-white" />
+                
+                {/* 헤더: 아이콘 + 패키지명 */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
+                    <Gift size={20} className="text-white" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-amber-400 font-bold text-lg">Premium 패키지</span>
-                    </div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-gray-500 line-through text-sm">220만원</span>
-                      <span className="text-2xl font-bold text-amber-300">165만원</span>
-                      <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded">55만원 할인</span>
-                    </div>
-                    <ul className="space-y-1.5">
-                      <li className="flex items-center gap-2 text-gray-300 text-sm">
-                        <span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
-                        홈페이지 10P + Meta 광고 세팅 + 도메인
-                      </li>
-                      <li className="flex items-center gap-2 text-white">
-                        <span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
-                        <span className="font-semibold text-amber-300">1년 마케팅 자동화 무료</span>
-                      </li>
-                      <li className="flex items-center gap-2 text-gray-300 text-sm">
-                        <span className="w-1.5 h-1.5 bg-amber-400/60 rounded-full" />
-                        텔레그램 알림 + SMS 발송 포함
-                      </li>
-                    </ul>
-                  </div>
+                  <span className="text-amber-400 font-bold text-lg">Premium 패키지</span>
                 </div>
+
+                {/* 가격 */}
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-gray-500 line-through text-sm">220만원</span>
+                  <span className="text-2xl font-bold text-amber-300">165만원</span>
+                  <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded">55만원 할인</span>
+                </div>
+
+                {/* 기능 목록 - 전체 가로폭 사용 */}
+                <ul className="space-y-1.5">
+                  <li className="flex items-center gap-2 text-gray-300 text-sm">
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0" />
+                    홈페이지 10P + Meta 광고 세팅 + 도메인
+                  </li>
+                  <li className="flex items-center gap-2 text-white">
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0" />
+                    <span className="font-semibold text-amber-300">1년 마케팅 자동화 무료</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-300 text-sm">
+                    <span className="w-1.5 h-1.5 bg-amber-400/60 rounded-full flex-shrink-0" />
+                    텔레그램 알림 + SMS 발송 포함
+                  </li>
+                </ul>
               </div>
 
               {/* 다른 티어 안내 */}
