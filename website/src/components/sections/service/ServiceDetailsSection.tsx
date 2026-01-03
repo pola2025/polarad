@@ -201,16 +201,16 @@ export default function ServiceDetailsSection() {
                             <div>
                                 <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                                     <CheckCircle2 className="w-5 h-5 text-blue-500" />
-                                    포함 내용
+                                    포함 내용 (티어별 상이)
                                 </h4>
                                 <ul className="space-y-2 text-gray-700 text-xs sm:text-sm lg:text-base">
                                     <li className="flex items-start gap-2 whitespace-nowrap">
                                         <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                                        기본 10페이지 이내 제작
+                                        Basic: 랜딩 1P / Normal~Premium: 5P~10P
                                     </li>
                                     <li className="flex items-start gap-2 whitespace-nowrap">
                                         <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                                        도메인 + 호스팅 1년간 무료 제공
+                                        도메인 1년 제공 (Normal 이상)
                                     </li>
                                     <li className="flex items-start gap-2 whitespace-nowrap">
                                         <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
@@ -218,7 +218,7 @@ export default function ServiceDetailsSection() {
                                     </li>
                                     <li className="flex items-start gap-2 whitespace-nowrap">
                                         <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                                        기본 DB 자동화 1개 (문의 폼 자동 수집)
+                                        입력폼 연동 (문의 폼 자동 수집)
                                     </li>
                                 </ul>
                             </div>
@@ -254,22 +254,22 @@ export default function ServiceDetailsSection() {
                                 </p>
                             </div>
 
-                            {/* 2년부터 유지비용 */}
+                            {/* 유지 비용 안내 */}
                             <div>
-                                <h4 className="font-semibold text-gray-900 mb-3">2년부터 유지 비용</h4>
+                                <h4 className="font-semibold text-gray-900 mb-3">유지 비용 안내</h4>
                                 <div className="space-y-2">
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-center py-2 border-b border-gray-200 gap-1">
-                                        <span className="text-gray-700">도메인 + 호스팅</span>
-                                        <span className="font-semibold text-gray-900">본인 부담/년</span>
+                                        <span className="text-gray-700">호스팅</span>
+                                        <span className="font-semibold text-gray-900">고객 부담 (전 티어)</span>
                                     </div>
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-center py-2 border-b border-gray-200 gap-1">
-                                        <span className="text-gray-700">Meta 자동화 지원 서비스</span>
-                                        <span className="font-semibold text-gray-900">200,000원/월</span>
+                                        <span className="text-gray-700">도메인 (2년차부터)</span>
+                                        <span className="font-semibold text-gray-900">고객 부담 (연 2~3만원)</span>
                                     </div>
                                 </div>
                                 <ul className="text-xs text-gray-500 mt-2 space-y-1">
-                                    <li>* 도메인 + 호스팅: 트래픽 월 100GB, 도메인 1년 2~3만원 수준</li>
-                                    <li>* Meta 자동화 지원: 입력폼 1개 기준, 3개월 단위 결제 (VAT 별도)</li>
+                                    <li>* 호스팅: Vercel, Cloudflare Pages 등 무료 플랜 활용 가능</li>
+                                    <li>* 도메인: 1년차는 Normal 이상 티어에서 제공</li>
                                 </ul>
                             </div>
                         </div>

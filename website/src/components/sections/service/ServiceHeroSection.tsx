@@ -1,10 +1,10 @@
 'use client'
 
-import { motion, useMotionValue, useSpring, useMotionTemplate, useTransform, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Sparkles, Package, Printer, Globe, Target, TrendingUp, Users, Zap, BarChart3, Phone, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowRight, Target, TrendingUp, Users, Zap, BarChart3, ChevronLeft, ChevronRight as ChevronRightIcon, Clock, Gift } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { AuroraBackground } from '@/components/ui/AuroraBackground'
-import { useRef, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 // 회전 캐러셀 카드 데이터
 const carouselCards = [
@@ -284,159 +284,7 @@ function TurntableCarousel() {
     )
 }
 
-// 마우스 추적 스포트라이트 + 흰색 글로우 가격 카드
-function PriceHighlightCard() {
-    const boxRef = useRef<HTMLDivElement>(null)
-    const [isHovered, setIsHovered] = useState(false)
 
-    const mouseX = useMotionValue(0)
-    const mouseY = useMotionValue(0)
-
-    const spotlightX = useSpring(mouseX, { stiffness: 300, damping: 30 })
-    const spotlightY = useSpring(mouseY, { stiffness: 300, damping: 30 })
-
-    // useMotionTemplate으로 실시간 업데이트
-    const spotlightBackground = useMotionTemplate`radial-gradient(600px circle at ${spotlightX}px ${spotlightY}px, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04) 30%, transparent 55%)`
-    const softGlowBackground = useMotionTemplate`radial-gradient(400px circle at ${spotlightX}px ${spotlightY}px, rgba(255, 255, 255, 0.08), transparent 45%)`
-
-    // 3D Tilt Effect
-    const rotateX = useSpring(useTransform(mouseY, [0, 300], [5, -5]), { stiffness: 150, damping: 20 })
-    const rotateY = useSpring(useTransform(mouseX, [0, 400], [-5, 5]), { stiffness: 150, damping: 20 })
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!boxRef.current) return
-        const rect = boxRef.current.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
-        mouseX.set(x)
-        mouseY.set(y)
-    }
-
-    const handleMouseLeave = () => {
-        mouseX.set(200)
-        mouseY.set(150)
-        setIsHovered(false)
-    }
-
-    return (
-        <motion.div
-            ref={boxRef}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={handleMouseLeave}
-            className="relative w-full group"
-            style={{ perspective: 1000 }}
-        >
-            {/* 흰색 글로우 후광 */}
-            <div className="absolute -inset-4 rounded-3xl opacity-40 blur-2xl"
-                style={{
-                    background: 'radial-gradient(ellipse at center, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 70%)'
-                }}
-            />
-
-            {/* 메인 카드 */}
-            <motion.div
-                style={{ rotateX, rotateY }}
-                className="relative bg-gray-900/90 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.08)] transform-style-3d"
-            >
-                {/* 추적 스포트라이트 효과 */}
-                <motion.div
-                    className="absolute inset-0 pointer-events-none z-10"
-                    style={{
-                        background: spotlightBackground,
-                        opacity: isHovered ? 1 : 0,
-                        transition: 'opacity 0.4s ease'
-                    }}
-                />
-                <motion.div
-                    className="absolute inset-0 pointer-events-none z-10"
-                    style={{
-                        background: softGlowBackground,
-                        opacity: isHovered ? 1 : 0,
-                        transition: 'opacity 0.4s ease',
-                        filter: 'blur(15px)'
-                    }}
-                />
-
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-gray-800/50">
-                    <div className="flex gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
-                        <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
-                        <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
-                    </div>
-                    <div className="text-xs text-gray-400 font-mono">All-in-One Package</div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6 lg:p-8 relative z-20">
-                    {/* 가격 영역 */}
-                    <div className="text-center mb-6">
-                        <div className="text-gray-400 text-sm mb-2">모든 것을 포함한 패키지 가격</div>
-                        <div className="flex items-baseline justify-center gap-2 mb-1">
-                            <span className="text-4xl lg:text-5xl font-bold text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">330</span>
-                            <span className="text-xl text-gray-300">만원</span>
-                        </div>
-                        <div className="text-gray-500 text-xs">VAT 포함 / VAT 별도 300만원</div>
-                    </div>
-
-                    {/* 구분선 */}
-                    <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-
-                    {/* 포함 항목 상세 */}
-                    <div className="space-y-3 mb-6">
-                        {/* 인쇄물 */}
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
-                                <Printer className="w-4 h-4 text-amber-400" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="text-white text-sm font-medium">인쇄물 4종</div>
-                                <div className="text-gray-500 text-xs truncate">명함 · 대봉투 · 계약서 · 명찰</div>
-                            </div>
-                        </div>
-                        {/* 홈페이지 */}
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0">
-                                <Globe className="w-4 h-4 text-blue-400" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="text-white text-sm font-medium">홈페이지 10P</div>
-                                <div className="text-gray-500 text-xs truncate">반응형 · 도메인 1년 · 호스팅 1년</div>
-                            </div>
-                        </div>
-                        {/* 광고 */}
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                                <Target className="w-4 h-4 text-emerald-400" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="text-white text-sm font-medium">광고 자동화</div>
-                                <div className="text-gray-500 text-xs truncate">Meta 광고 · 실시간 알림 · 리포팅</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 추가 혜택 */}
-                    <div className="bg-primary-500/5 border border-primary-500/20 rounded-xl p-3">
-                        <div className="flex items-center justify-center gap-4 text-xs">
-                            <span className="text-primary-400">✓ 상담 무료</span>
-                            <span className="text-primary-400">✓ 1:1 전담</span>
-                            <span className="text-primary-400">✓ 빠른 납품</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 상하단 글로우 라인 */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-            </motion.div>
-        </motion.div>
-    )
-}
 
 export default function ServiceHeroSection() {
     return (
@@ -458,10 +306,10 @@ export default function ServiceHeroSection() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-accent-400 text-sm font-semibold mb-8 backdrop-blur-sm"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold mb-8 backdrop-blur-sm"
                         >
-                            <Sparkles className="w-4 h-4" />
-                            <span>올인원 영업 솔루션</span>
+                            <Gift className="w-4 h-4" />
+                            <span>1월 프로모션 진행 중</span>
                         </motion.div>
 
                         <motion.h1
@@ -470,8 +318,8 @@ export default function ServiceHeroSection() {
                             transition={{ duration: 0.5, delay: 0.1 }}
                             className="text-4xl lg:text-6xl font-bold text-white mb-8 leading-tight tracking-tight break-keep text-balance"
                         >
-                            따로따로 맡기면<br />
-                            <span className="text-red-500">시간과 비용이 2배</span>
+                            온라인 영업 시스템<br />
+                            <span className="text-primary-400">30만원</span>부터 시작
                         </motion.h1>
 
                         <motion.p
@@ -480,70 +328,50 @@ export default function ServiceHeroSection() {
                             transition={{ duration: 0.5, delay: 0.2 }}
                             className="text-lg lg:text-xl text-gray-300 mb-6 leading-relaxed max-w-2xl mx-auto lg:mx-0 break-keep text-balance"
                         >
-                            인쇄물, 홈페이지, 광고까지<br className="hidden md:block" />
-                            <span className="text-white font-semibold">한 번에 해결</span>하세요.
+                            랜딩페이지부터 홈페이지+Meta 광고까지<br className="hidden md:block" />
+                            <span className="text-white font-semibold">필요한 만큼만</span> 선택하세요.
                         </motion.p>
 
-                        {/* 보강된 상세 설명 */}
+                        {/* 티어별 가격 안내 */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.25 }}
                             className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 mb-8 max-w-2xl mx-auto lg:mx-0"
                         >
-                            {/* 모바일: 한줄 정렬, 상세 내용 제외 */}
-                            <div className="flex sm:hidden items-center justify-center gap-1.5 xs:gap-2 text-[10px] xs:text-xs text-gray-300 whitespace-nowrap">
-                                <span className="flex items-center gap-0.5">
-                                    <Printer className="w-3 h-3 xs:w-3.5 xs:h-3.5 text-amber-400" />
-                                    <span>인쇄물4종</span>
-                                </span>
-                                <span className="text-white/30">·</span>
-                                <span className="flex items-center gap-0.5">
-                                    <Globe className="w-3 h-3 xs:w-3.5 xs:h-3.5 text-blue-400" />
-                                    <span>홈페이지10P</span>
-                                </span>
-                                <span className="text-white/30">·</span>
-                                <span className="flex items-center gap-0.5">
-                                    <Target className="w-3 h-3 xs:w-3.5 xs:h-3.5 text-emerald-400" />
-                                    <span>Meta광고</span>
-                                </span>
-                            </div>
-
-                            {/* 데스크탑: 아이콘 + 상세 내용 */}
-                            <div className="hidden sm:grid grid-cols-3 gap-4 text-center">
-                                <div className="flex flex-col items-center gap-2">
-                                    <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                                        <Printer className="w-6 h-6 text-amber-400" />
-                                    </div>
-                                    <div>
-                                        <div className="text-white font-semibold text-sm">인쇄물 4종</div>
-                                        <div className="text-gray-500 text-xs">명함·봉투·계약서·명찰</div>
-                                    </div>
+                            {/* 4개 티어 간단 안내 */}
+                            <div className="grid grid-cols-4 gap-2 sm:gap-4 text-center mb-4">
+                                <div className="flex flex-col items-center">
+                                    <div className="text-gray-400 text-[10px] sm:text-xs mb-1">Basic</div>
+                                    <div className="text-white font-bold text-sm sm:text-lg">30<span className="text-gray-400 text-[10px] sm:text-xs">만</span></div>
+                                    <div className="text-gray-500 text-[9px] sm:text-xs">랜딩 1P</div>
                                 </div>
-                                <div className="flex flex-col items-center gap-2">
-                                    <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                                        <Globe className="w-6 h-6 text-blue-400" />
-                                    </div>
-                                    <div>
-                                        <div className="text-white font-semibold text-sm">홈페이지 10P</div>
-                                        <div className="text-gray-500 text-xs">도메인+호스팅 1년</div>
-                                    </div>
+                                <div className="flex flex-col items-center">
+                                    <div className="text-gray-400 text-[10px] sm:text-xs mb-1">Normal</div>
+                                    <div className="text-white font-bold text-sm sm:text-lg">60<span className="text-gray-400 text-[10px] sm:text-xs">만</span></div>
+                                    <div className="text-gray-500 text-[9px] sm:text-xs">+Meta 세팅</div>
                                 </div>
-                                <div className="flex flex-col items-center gap-2">
-                                    <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                                        <Target className="w-6 h-6 text-emerald-400" />
-                                    </div>
-                                    <div>
-                                        <div className="text-white font-semibold text-sm">Meta 광고</div>
-                                        <div className="text-gray-500 text-xs">자동화+실시간 알림</div>
-                                    </div>
+                                <div className="flex flex-col items-center">
+                                    <div className="text-gray-400 text-[10px] sm:text-xs mb-1">Pro</div>
+                                    <div className="text-white font-bold text-sm sm:text-lg">110<span className="text-gray-400 text-[10px] sm:text-xs">만</span></div>
+                                    <div className="text-gray-500 text-[9px] sm:text-xs">홈페이지 5P</div>
+                                </div>
+                                <div className="flex flex-col items-center relative">
+                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-500 text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded text-white font-semibold">BEST</div>
+                                    <div className="text-amber-400 text-[10px] sm:text-xs mb-1 mt-1">Premium</div>
+                                    <div className="text-amber-400 font-bold text-sm sm:text-lg">220<span className="text-[10px] sm:text-xs">만</span></div>
+                                    <div className="text-gray-500 text-[9px] sm:text-xs">홈페이지 10P</div>
                                 </div>
                             </div>
 
-                            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/10 text-center">
-                                <span className="text-2xl font-bold text-white">330</span>
-                                <span className="text-gray-400 ml-1">만원</span>
-                                <span className="text-gray-500 text-xs ml-2">(VAT 포함)</span>
+                            {/* 프로모션 하이라이트 */}
+                            <div className="pt-3 border-t border-white/10 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 rounded-lg p-3 -mx-1">
+                                <div className="flex items-center justify-center gap-2 text-center">
+                                    <Clock className="w-4 h-4 text-amber-400" />
+                                    <span className="text-amber-400 text-xs sm:text-sm font-semibold">1/31까지 Premium</span>
+                                    <span className="text-white font-bold text-lg sm:text-xl">165<span className="text-gray-400 text-xs">만원</span></span>
+                                    <span className="text-gray-400 text-xs">+ 1년 자동화</span>
+                                </div>
                             </div>
                         </motion.div>
 
