@@ -259,8 +259,8 @@ export default function ServiceDetailsSection() {
                                 <h4 className="font-semibold text-gray-900 mb-3">유지 비용 안내</h4>
                                 <div className="space-y-2">
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-center py-2 border-b border-gray-200 gap-1">
-                                        <span className="text-gray-700">호스팅</span>
-                                        <span className="font-semibold text-gray-900">고객 부담 (전 티어)</span>
+                                        <span className="text-gray-700">도메인</span>
+                                        <span className="font-semibold text-primary-600">1년 무료 제공 (Normal 이상)</span>
                                     </div>
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-center py-2 border-b border-gray-200 gap-1">
                                         <span className="text-gray-700">도메인 (2년차부터)</span>
@@ -268,8 +268,8 @@ export default function ServiceDetailsSection() {
                                     </div>
                                 </div>
                                 <ul className="text-xs text-gray-500 mt-2 space-y-1">
-                                    <li>* 호스팅: Vercel, Cloudflare Pages 등 무료 플랜 활용 가능</li>
-                                    <li>* 도메인: 1년차는 Normal 이상 티어에서 제공</li>
+                                    <li>* 호스팅은 제공 항목에 포함되지 않습니다</li>
+                                    <li>* 무료 호스팅: Vercel, Cloudflare Pages 등 활용 가능</li>
                                 </ul>
                             </div>
                         </div>

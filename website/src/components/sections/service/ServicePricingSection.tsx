@@ -226,7 +226,7 @@ export default function ServicePricingSection() {
                     className="mt-10 text-center"
                 >
                     <p className="text-gray-500 text-sm">
-                        * 호스팅 비용은 고객 부담입니다. 모든 상품은 광고 소재 확인 후 진행됩니다.
+                        * 호스팅은 제공 항목에 포함되지 않습니다 (무료 호스팅 활용 가능). 모든 상품은 광고 소재 확인 후 진행됩니다.
                     </p>
                 </motion.div>
             </div>
