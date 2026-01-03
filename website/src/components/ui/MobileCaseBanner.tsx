@@ -59,23 +59,25 @@ export function MobileCaseBanner() {
 
   return (
     <div className="md:hidden fixed bottom-16 left-0 right-0 z-40 px-3 pb-2">
+      {/* 뱃지 - 배너 바깥 상단 */}
+      <div className="flex justify-start mb-1">
+        <div className="inline-flex items-center gap-1 bg-primary-600 px-2 py-0.5 rounded-t-lg">
+          <TrendingUp className="w-3 h-3 text-white" />
+          <span className="text-[10px] text-white font-medium">실제사례</span>
+        </div>
+      </div>
+
       <button
         onClick={handleClick}
-        className="w-full bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg overflow-hidden text-left"
+        className="w-full bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl rounded-tl-none shadow-lg overflow-hidden text-left"
       >
-        <div className="flex items-center">
-          {/* 왼쪽: 라벨 */}
-          <div className="bg-primary-600 px-3 py-3 flex flex-col items-center justify-center">
-            <TrendingUp className="w-4 h-4 text-white mb-0.5" />
-            <span className="text-[10px] text-white font-medium">실제사례</span>
-          </div>
-
-          {/* 중간: 데이터 */}
-          <div className="flex-1 px-3 py-2">
-            <div className="flex items-center gap-1 mb-1">
+        <div className="flex items-center px-3 py-2.5">
+          {/* 데이터 - 전체 가로폭 사용 */}
+          <div className="flex-1">
+            <div className="flex items-center gap-1.5 mb-1">
               <span className="text-xs text-primary-400 font-semibold">{current.industry}</span>
               {/* 인디케이터 */}
-              <div className="flex gap-1 ml-auto">
+              <div className="flex gap-1 ml-auto mr-2">
                 {caseData.map((_, i) => (
                   <div
                     key={i}
@@ -84,7 +86,7 @@ export function MobileCaseBanner() {
                 ))}
               </div>
             </div>
-            <div className="flex items-center gap-3 text-[11px]">
+            <div className="flex items-center gap-4 text-xs">
               <div>
                 <span className="text-gray-500">광고비 </span>
                 <span className="text-white font-medium">{current.adBudget}</span>
@@ -109,7 +111,7 @@ export function MobileCaseBanner() {
               e.stopPropagation()
               setIsDismissed(true)
             }}
-            className="px-3 py-3 text-gray-500 hover:text-white"
+            className="p-2 text-gray-500 hover:text-white"
             aria-label="닫기"
           >
             <X className="w-4 h-4" />

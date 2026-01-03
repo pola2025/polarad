@@ -236,18 +236,18 @@ export function PromotionPopup({ onClose }: PromotionPopupProps) {
                   <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded">55만원 할인</span>
                 </div>
 
-                {/* 기능 목록 - 전체 가로폭 사용 */}
-                <ul className="space-y-1.5">
-                  <li className="flex items-center gap-2 text-gray-300 text-sm">
-                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0" />
-                    홈페이지 10P + Meta 광고 세팅 + 도메인
+                {/* 기능 목록 - 폰트 축소로 한줄 유지 */}
+                <ul className="space-y-1">
+                  <li className="flex items-center gap-1.5 text-gray-300 text-xs whitespace-nowrap">
+                    <span className="w-1 h-1 bg-amber-400 rounded-full flex-shrink-0" />
+                    홈페이지 10P + Meta 광고 세팅 + 도메인 1년
                   </li>
-                  <li className="flex items-center gap-2 text-white">
-                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0" />
-                    <span className="font-semibold text-amber-300">1년 마케팅 자동화 무료</span>
+                  <li className="flex items-center gap-1.5 text-xs whitespace-nowrap">
+                    <span className="w-1 h-1 bg-amber-400 rounded-full flex-shrink-0" />
+                    <span className="font-semibold text-amber-300">1년 마케팅 자동화 무료 (6개월 → 12개월)</span>
                   </li>
-                  <li className="flex items-center gap-2 text-gray-300 text-sm">
-                    <span className="w-1.5 h-1.5 bg-amber-400/60 rounded-full flex-shrink-0" />
+                  <li className="flex items-center gap-1.5 text-gray-300 text-xs whitespace-nowrap">
+                    <span className="w-1 h-1 bg-amber-400/60 rounded-full flex-shrink-0" />
                     텔레그램 알림 + SMS 발송 포함
                   </li>
                 </ul>
