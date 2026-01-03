@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { X, TrendingUp } from 'lucide-react'
 
 const caseData = [
@@ -16,6 +15,7 @@ export function MobileCaseBanner() {
   const [isDismissed, setIsDismissed] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const pathname = usePathname()
+  const router = useRouter()
 
   const isServicePage = pathname === '/service'
 
@@ -40,15 +40,28 @@ export function MobileCaseBanner() {
     return () => clearInterval(timer)
   }, [isVisible])
 
-  if (isServicePage || isDismissed || !isVisible) return null
+  const handleClick = () => {
+    if (isServicePage) {
+      // 서비스 페이지에서는 스크롤
+      const element = document.getElementById('case-study')
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
+      // 다른 페이지에서는 이동
+      router.push('/service#case-study')
+    }
+  }
+
+  if (isDismissed || !isVisible) return null
 
   const current = caseData[currentIndex]
 
   return (
     <div className="md:hidden fixed bottom-16 left-0 right-0 z-40 px-3 pb-2">
-      <Link
-        href="/service#case-study"
-        className="block bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg overflow-hidden"
+      <button
+        onClick={handleClick}
+        className="w-full bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg overflow-hidden text-left"
       >
         <div className="flex items-center">
           {/* 왼쪽: 라벨 */}
@@ -102,7 +115,7 @@ export function MobileCaseBanner() {
             <X className="w-4 h-4" />
           </button>
         </div>
-      </Link>
+      </button>
     </div>
   )
 }

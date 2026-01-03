@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TrendingUp, X, ChevronRight } from 'lucide-react'
 
@@ -17,8 +16,8 @@ export function FloatingCaseBanner() {
   const [isDismissed, setIsDismissed] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const pathname = usePathname()
+  const router = useRouter()
 
-  // 서비스 페이지에서는 숨김
   const isServicePage = pathname === '/service'
 
   useEffect(() => {
@@ -47,7 +46,20 @@ export function FloatingCaseBanner() {
     setIsVisible(false)
   }
 
-  if (isServicePage || isDismissed) return null
+  const handleClick = () => {
+    if (isServicePage) {
+      // 서비스 페이지에서는 스크롤
+      const element = document.getElementById('case-study')
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
+      // 다른 페이지에서는 이동
+      router.push('/service#case-study')
+    }
+  }
+
+  if (isDismissed) return null
 
   const current = caseHighlights[currentIndex]
 
@@ -79,7 +91,7 @@ export function FloatingCaseBanner() {
             </div>
 
             {/* 케이스 데이터 */}
-            <Link href="/service#case-study" className="block p-4 hover:bg-gray-800/50 transition-colors">
+            <button onClick={handleClick} className="block w-full p-4 hover:bg-gray-800/50 transition-colors text-left">
               <div className="mb-3">
                 <span className="text-xs text-gray-400">{current.industry}</span>
               </div>
@@ -111,7 +123,7 @@ export function FloatingCaseBanner() {
                 <span>자세히 보기</span>
                 <ChevronRight className="w-3 h-3" />
               </div>
-            </Link>
+            </button>
           </div>
         </motion.div>
       )}
