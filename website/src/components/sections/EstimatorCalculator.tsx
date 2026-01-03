@@ -2,124 +2,198 @@
 
 import { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { Minus, Plus } from 'lucide-react'
+import { CheckCircle2, Sparkles } from 'lucide-react'
+
+interface Tier {
+  id: string
+  name: string
+  price: number
+  promoPrice?: number
+  description: string
+  features: string[]
+  isPromo?: boolean
+}
+
+const tiers: Tier[] = [
+  {
+    id: 'basic',
+    name: 'Basic',
+    price: 300000,
+    description: '랜딩페이지 1P',
+    features: [
+      '랜딩페이지 1페이지',
+      '반응형 디자인',
+      '상담 접수 폼',
+    ],
+  },
+  {
+    id: 'normal',
+    name: 'Normal',
+    price: 600000,
+    description: '랜딩 + Meta + 도메인',
+    features: [
+      '랜딩페이지 1페이지',
+      'Meta 광고 계정 세팅',
+      '도메인 1년 제공',
+      '반응형 디자인',
+    ],
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: 1100000,
+    description: '홈페이지 5P + Meta + 도메인',
+    features: [
+      '홈페이지 5페이지',
+      'Meta 광고 계정 세팅',
+      '도메인 1년 제공',
+      '반응형 디자인',
+      'SEO 기본 설정',
+    ],
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    price: 2200000,
+    promoPrice: 1650000,
+    description: '홈페이지 10P + 6개월 자동화',
+    features: [
+      '홈페이지 10페이지',
+      'Meta 광고 계정 세팅',
+      '도메인 1년 제공',
+      '6개월 마케팅 자동화',
+      '텔레그램 알림 + SMS 발송',
+      '반응형 디자인',
+      'SEO 최적화',
+    ],
+    isPromo: true,
+  },
+]
 
 export function EstimatorCalculator() {
-  const [pages, setPages] = useState(10)
+  const [selectedTier, setSelectedTier] = useState<string>('premium')
+  const [addPrint, setAddPrint] = useState(false)
 
-  const BASE_PRICE = 3000000 // VAT 별도
-  const ADDITIONAL_PAGE_PRICE = 200000 // VAT 별도
-  const VAT_RATE = 0.1
+  const currentTier = tiers.find(t => t.id === selectedTier)
+  const printPrice = selectedTier === 'basic' ? 1100000 : 550000 // 단독 110만 / 추가 55만
 
-  const additionalPages = Math.max(0, pages - 10)
-  const priceBeforeVAT = BASE_PRICE + (additionalPages * ADDITIONAL_PAGE_PRICE)
-  const vat = priceBeforeVAT * VAT_RATE
-  const totalPrice = priceBeforeVAT + vat
+  const basePrice = currentTier?.promoPrice || currentTier?.price || 0
+  const totalPrice = basePrice + (addPrint ? printPrice : 0)
 
   return (
     <Card variant="light">
       <CardHeader className="pb-3 lg:pb-4">
-        <CardTitle variant="light" className="text-lg lg:text-xl">견적 계산</CardTitle>
+        <CardTitle variant="light" className="text-lg lg:text-xl">상품 선택</CardTitle>
       </CardHeader>
       <CardContent variant="light" className="pt-0">
         <div className="space-y-4 lg:space-y-6">
-          {/* Page Counter */}
-          <div>
-            <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-2 lg:mb-3">
-              필요한 페이지 수
-            </label>
-            <div className="flex items-center gap-2 lg:gap-4">
+          {/* Tier Selection */}
+          <div className="grid grid-cols-2 gap-2 lg:gap-3">
+            {tiers.map((tier) => (
               <button
+                key={tier.id}
                 type="button"
-                onClick={() => setPages(Math.max(1, pages - 1))}
-                className="w-9 h-9 lg:w-12 lg:h-12 rounded-lg bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors text-gray-700 font-semibold border border-gray-300 flex items-center justify-center shrink-0"
-                aria-label="페이지 수 감소"
+                onClick={() => setSelectedTier(tier.id)}
+                className={`relative p-3 lg:p-4 rounded-xl border-2 text-left transition-all ${
+                  selectedTier === tier.id
+                    ? 'border-primary-500 bg-primary-50'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
+                }`}
               >
-                <Minus className="w-4 h-4 lg:w-5 lg:h-5" />
+                {tier.isPromo && (
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    할인
+                  </div>
+                )}
+                <div className="text-xs lg:text-sm font-bold text-gray-900 mb-1">{tier.name}</div>
+                <div className="flex items-baseline gap-1">
+                  {tier.promoPrice ? (
+                    <>
+                      <span className="text-gray-400 line-through text-xs">{(tier.price / 10000).toFixed(0)}만</span>
+                      <span className="text-lg lg:text-xl font-bold text-primary-600">{(tier.promoPrice / 10000).toFixed(0)}만</span>
+                    </>
+                  ) : (
+                    <span className="text-lg lg:text-xl font-bold text-gray-900">{(tier.price / 10000).toFixed(0)}만</span>
+                  )}
+                </div>
+                <div className="text-[10px] lg:text-xs text-gray-500 mt-1">{tier.description}</div>
               </button>
+            ))}
+          </div>
+
+          {/* Selected Tier Features */}
+          {currentTier && (
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-bold text-gray-900 text-sm lg:text-base">{currentTier.name} 구성</h4>
+                {currentTier.isPromo && (
+                  <span className="text-xs text-red-600 font-medium">~1/31 선착순 10개</span>
+                )}
+              </div>
+              <ul className="space-y-1.5 lg:space-y-2">
+                {currentTier.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-xs lg:text-sm text-gray-700">
+                    <CheckCircle2 className="w-4 h-4 text-primary-500 shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+                {currentTier.id === 'premium' && currentTier.promoPrice && (
+                  <li className="flex items-center gap-2 text-xs lg:text-sm text-amber-600 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
+                    <span>+6개월 자동화 추가 무료 (총 1년)</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {/* Add-on: Print */}
+          <div className="border border-gray-200 rounded-xl p-3 lg:p-4 bg-white">
+            <label className="flex items-start gap-3 cursor-pointer">
               <input
-                type="number"
-                value={pages}
-                onChange={(e) => setPages(Math.max(1, parseInt(e.target.value) || 1))}
-                className="flex-1 min-w-0 text-center text-lg lg:text-2xl font-bold border-2 border-gray-300 rounded-lg py-2 lg:py-3 focus:outline-none focus:border-primary-500 bg-gray-50 text-gray-900"
-                min="1"
+                type="checkbox"
+                checked={addPrint}
+                onChange={(e) => setAddPrint(e.target.checked)}
+                className="mt-1 w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
               />
-              <button
-                type="button"
-                onClick={() => setPages(pages + 1)}
-                className="w-9 h-9 lg:w-12 lg:h-12 rounded-lg bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors text-gray-700 font-semibold border border-gray-300 flex items-center justify-center shrink-0"
-                aria-label="페이지 수 증가"
-              >
-                <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
-              </button>
-            </div>
-            <p className="text-xs lg:text-sm text-gray-500 mt-2">
-              기본 10페이지 포함. 추가 페이지당 20만원(VAT 별도)
-            </p>
-          </div>
-
-          {/* Price Breakdown */}
-          <div className="border-t border-gray-200 pt-4 lg:pt-6 space-y-2 lg:space-y-3">
-            <div className="flex justify-between text-xs lg:text-sm text-gray-600">
-              <span>기본 패키지 (10페이지)</span>
-              <span className="font-semibold text-gray-900">3,000,000원</span>
-            </div>
-
-            {additionalPages > 0 && (
-              <div className="flex justify-between text-xs lg:text-sm text-gray-600">
-                <span>추가 페이지 ({additionalPages}페이지)</span>
-                <span className="font-semibold text-gray-900">
-                  {(additionalPages * ADDITIONAL_PAGE_PRICE).toLocaleString()}원
-                </span>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-900 text-sm lg:text-base">인쇄물 패키지 추가</span>
+                  <span className="text-sm lg:text-base font-bold text-gray-900">
+                    +{(printPrice / 10000).toFixed(0)}만원
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  명함 200매 + 대봉투 500매 + 계약서 500매 + 명찰
+                </p>
+                {selectedTier === 'basic' && (
+                  <p className="text-xs text-gray-400 mt-0.5">* 단독 구매 시 110만원</p>
+                )}
+                {selectedTier !== 'basic' && (
+                  <p className="text-xs text-gray-400 mt-0.5">* 상품과 함께 구매 시 55만원</p>
+                )}
               </div>
-            )}
+            </label>
+          </div>
 
-            <div className="flex justify-between text-xs lg:text-sm text-gray-600 border-t border-gray-200 pt-2 lg:pt-3">
-              <span>소계 (VAT 별도)</span>
-              <span className="font-semibold text-gray-900">{priceBeforeVAT.toLocaleString()}원</span>
-            </div>
-
-            <div className="flex justify-between text-xs lg:text-sm text-gray-600">
-              <span>부가세 (10%)</span>
-              <span className="font-semibold text-gray-900">{vat.toLocaleString()}원</span>
-            </div>
-
-            {/* 총 결제 금액 - 강조 */}
-            <div className="bg-primary-50 border border-primary-200 rounded-xl p-3 lg:p-4 mt-3 lg:mt-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm lg:text-base font-bold text-primary-700">총 결제 금액</span>
-                <span className="text-xl lg:text-2xl font-bold text-primary-600">{totalPrice.toLocaleString()}원</span>
+          {/* Total Price */}
+          <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-sm font-medium text-primary-700">예상 금액</span>
+                <p className="text-xs text-primary-600/70">VAT 포함 / 1회 제작비</p>
               </div>
+              <span className="text-2xl lg:text-3xl font-bold text-primary-600">
+                {totalPrice.toLocaleString()}원
+              </span>
             </div>
           </div>
 
-          {/* Package Includes */}
-          <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
-            <h4 className="font-semibold text-gray-900 mb-2 text-sm lg:text-base">패키지 포함 내역</h4>
-            <ul className="space-y-1 lg:space-y-1.5 text-xs lg:text-sm text-gray-600">
-              <li className="flex items-center gap-1.5">
-                <span className="text-primary-500">✓</span>
-                홈페이지 제작 ({pages}페이지)
-              </li>
-              <li className="flex items-center gap-1.5">
-                <span className="text-primary-500">✓</span>
-                <span className="hidden sm:inline">인쇄물 (명함 200매, 대봉투 500매, 계약서 500매, 명찰)</span>
-                <span className="sm:hidden">인쇄물 4종 (명함, 대봉투, 계약서, 명찰)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <span className="text-primary-500">✓</span>
-                Meta 광고 자동화 설정
-              </li>
-              <li className="flex items-center gap-1.5">
-                <span className="text-primary-500">✓</span>
-                도메인 + 호스팅 1년 무료
-              </li>
-              <li className="flex items-center gap-1.5">
-                <span className="text-primary-500">✓</span>
-                DB 자동화 1개
-              </li>
-            </ul>
-          </div>
+          {/* Notice */}
+          <p className="text-xs text-gray-500 text-center">
+            * 호스팅은 제공 항목에 포함되지 않습니다 (무료 호스팅 활용 가능)
+          </p>
         </div>
       </CardContent>
     </Card>

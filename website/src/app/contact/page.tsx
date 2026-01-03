@@ -61,7 +61,7 @@ export default function ContactPage() {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="text-sm lg:text-xl text-gray-300 mb-5 lg:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 break-keep"
                 >
-                  견적 계산부터 상담 신청까지 한 번에.<br className="hidden md:block" />
+                  상품 선택부터 상담 신청까지 한 번에.<br className="hidden md:block" />
                   <span className="text-white font-semibold">1영업일 내</span> 담당자가 직접 연락드립니다.
                 </motion.p>
 
@@ -243,10 +243,10 @@ export default function ContactPage() {
                 className="text-center mb-8 lg:mb-12"
               >
                 <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold text-gray-900 mb-2 lg:mb-4 break-keep">
-                  견적 계산 & 상담 신청
+                  상품 선택 & 상담 신청
                 </h2>
                 <p className="text-gray-600 text-sm lg:text-lg max-w-2xl mx-auto break-keep">
-                  예상 견적을 확인하고 상담을 신청하세요
+                  원하는 상품을 선택하고 상담을 신청하세요
                 </p>
               </motion.div>
 
@@ -268,11 +268,20 @@ export default function ContactPage() {
                 <div className="space-y-2 lg:space-y-3">
                   <details className="group">
                     <summary className="flex justify-between items-center gap-2 cursor-pointer text-gray-900 font-medium text-xs lg:text-sm hover:text-primary-600">
-                      <span>올인원 패키지에 무엇이 포함되나요?</span>
+                      <span>상품 구성은 어떻게 되나요?</span>
                       <span className="text-gray-400 group-open:rotate-180 transition-transform text-xs">▼</span>
                     </summary>
                     <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
-                      홈페이지 제작(10페이지), Meta 광고 자동화, 인쇄물 4종, 도메인+호스팅 1년 무료가 포함됩니다.
+                      4가지 티어로 구성됩니다. Basic 30만원, Normal 60만원, Pro 110만원, Premium 220만원. 인쇄물은 추가 옵션으로 선택 가능합니다.
+                    </p>
+                  </details>
+                  <details className="group">
+                    <summary className="flex justify-between items-center gap-2 cursor-pointer text-gray-900 font-medium text-xs lg:text-sm hover:text-primary-600">
+                      <span>현재 프로모션이 있나요?</span>
+                      <span className="text-gray-400 group-open:rotate-180 transition-transform text-xs">▼</span>
+                    </summary>
+                    <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
+                      1/31까지 선착순 10개 한정 Premium 165만원 + 1년 자동화 무료 프로모션 진행 중입니다.
                     </p>
                   </details>
                   <details className="group">
@@ -282,15 +291,6 @@ export default function ContactPage() {
                     </summary>
                     <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
                       기획서 확정 후 홈페이지 30~45일, 인쇄물 7~10일, 광고 설정 5~7일 소요됩니다.
-                    </p>
-                  </details>
-                  <details className="group">
-                    <summary className="flex justify-between items-center gap-2 cursor-pointer text-gray-900 font-medium text-xs lg:text-sm hover:text-primary-600">
-                      <span>환불이 가능한가요?</span>
-                      <span className="text-gray-400 group-open:rotate-180 transition-transform text-xs">▼</span>
-                    </summary>
-                    <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
-                      제작 시작 전 전액 환불 가능, 제작 후에는 품질 하자 시에만 가능합니다.
                     </p>
                   </details>
                 </div>

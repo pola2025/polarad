@@ -14,8 +14,8 @@ export default function UrgencyCTASection() {
     })
 
     useEffect(() => {
-        // Set deadline to December 31, 2025 23:59:59
-        const deadline = new Date('2025-12-31T23:59:59')
+        // Set deadline to January 31, 2026 23:59:59 KST
+        const deadline = new Date('2026-01-31T23:59:59+09:00')
 
         const timer = setInterval(() => {
             const now = new Date()
@@ -46,7 +46,7 @@ export default function UrgencyCTASection() {
                 <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-2xl text-center mb-12">
                     <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-red-100 text-red-600 font-bold mb-8 animate-pulse">
                         <Clock className="w-5 h-5 shrink-0" />
-                        <span className="text-sm sm:text-base">마감 임박: 12월 프로모션 종료까지</span>
+                        <span className="text-sm sm:text-base">마감 임박: 1월 프로모션 종료까지</span>
                     </div>
 
                     <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-12 leading-tight break-keep">
