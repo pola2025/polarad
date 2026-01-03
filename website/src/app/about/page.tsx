@@ -3,6 +3,7 @@
 import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema'
 import { Button } from '@/components/ui/Button'
 import { AuroraBackground } from '@/components/ui/AuroraBackground'
+import { FloatingLines } from '@/components/ui/FloatingLines'
 import { motion } from 'framer-motion'
 import { Building2, ArrowRight, Target, Zap, Shield, Heart, Users, Clock, BadgeCheck, Headphones } from 'lucide-react'
 
@@ -71,6 +72,19 @@ export default function AboutPage() {
         {/* Hero Section */}
         <section className="relative min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-7rem)] pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gray-950 text-white -mt-24 md:-mt-28">
           <AuroraBackground color="mixed" intensity="medium" />
+
+          {/* Floating Lines Effect */}
+          <FloatingLines 
+            linesGradient={['#E945F5', '#2F4BC0', '#E945F5']}
+            animationSpeed={1}
+            interactive={true}
+            bendRadius={5}
+            bendStrength={-0.5}
+            mouseDamping={0.05}
+            parallax={true}
+            parallaxStrength={0.2}
+            className="z-[1]"
+          />
 
           {/* Grid Pattern */}
           <div className="absolute inset-0 z-0 pointer-events-none">

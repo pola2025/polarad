@@ -4,6 +4,7 @@ import { OrganizationSchema } from '@/components/seo/OrganizationSchema'
 import { WebSiteSchema } from '@/components/seo/WebSiteSchema'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
 import { PromotionPopup } from '@/components/ui/PromotionPopup'
 import './globals.css'
 
@@ -133,10 +134,11 @@ export default function RootLayout({
         </Script>
 
         <Header />
-        <main className="min-h-screen pt-[76px] md:pt-[60px] lg:pt-[68px]">
+        <main className="min-h-screen pt-[60px] md:pt-[60px] lg:pt-[68px] pb-16 md:pb-0">
           {children}
         </main>
         <Footer />
+        <MobileBottomNav />
         <PromotionPopup />
       </body>
     </html>

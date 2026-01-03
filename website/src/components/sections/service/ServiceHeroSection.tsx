@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Target, TrendingUp, Users, Zap, BarChart3, ChevronLeft, ChevronRight as ChevronRightIcon, Clock, Gift } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { AuroraBackground } from '@/components/ui/AuroraBackground'
+import { FloatingLines } from '@/components/ui/FloatingLines'
 import { useState, useEffect } from 'react'
 
 // 회전 캐러셀 카드 데이터
@@ -291,6 +292,19 @@ export default function ServiceHeroSection() {
         <section className="relative min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-7rem)] pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gray-950 text-white perspective-1000 -mt-24 md:-mt-28">
             {/* Aurora Background Effect */}
             <AuroraBackground color="mixed" intensity="medium" />
+
+            {/* Floating Lines Effect */}
+            <FloatingLines 
+                linesGradient={['#E945F5', '#2F4BC0', '#E945F5']}
+                animationSpeed={1}
+                interactive={true}
+                bendRadius={5}
+                bendStrength={-0.5}
+                mouseDamping={0.05}
+                parallax={true}
+                parallaxStrength={0.2}
+                className="z-[1]"
+            />
 
             {/* Grid Pattern Overlay */}
             <div className="absolute inset-0 z-0 pointer-events-none">

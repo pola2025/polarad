@@ -1,13 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X } from 'lucide-react'
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
 
   const navLinks = [
@@ -20,9 +17,9 @@ export function Header() {
   ]
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#F5A623] md:bg-white/95 backdrop-blur-sm border-b border-gray-200 md:shadow-sm min-h-[76px] md:min-h-[60px] lg:min-h-[68px]">
-      <nav className="container h-[76px] md:h-[60px] lg:h-[68px] md:py-2 lg:py-3 flex flex-col">
-        <div className="flex items-center justify-between h-[76px] md:h-auto">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#F5A623] md:bg-white/95 backdrop-blur-sm border-b border-gray-200 md:shadow-sm min-h-[60px] md:min-h-[60px] lg:min-h-[68px]">
+      <nav className="container h-[60px] md:h-[60px] lg:h-[68px] md:py-2 lg:py-3 flex items-center">
+        <div className="flex items-center justify-between w-full">
           {/* Logo */}
           <Link
             href="/"
@@ -33,9 +30,9 @@ export function Header() {
             <Image
               src="/images/logo-mobile.png"
               alt="Polarad 로고"
-              width={180}
-              height={54}
-              className="h-12 w-auto md:hidden"
+              width={150}
+              height={45}
+              className="h-10 w-auto md:hidden"
               priority
             />
             {/* PC Logo */}
@@ -80,39 +77,14 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-white hover:text-white/80 transition-colors p-2"
-            aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
-            aria-expanded={isMenuOpen}
+          {/* Mobile: 마케팅소식 링크 (하단 네비에 없는 메뉴) */}
+          <Link
+            href="/marketing-news"
+            className="md:hidden text-white text-sm font-medium px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
           >
-            {isMenuOpen ? <X size={30} /> : <Menu size={30} />}
-          </button>
+            마케팅소식
+          </Link>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 pb-6 border-t border-white/20 space-y-1 animate-fade-in bg-white rounded-xl mx-[-0.5rem] px-2 mb-2">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`block transition-colors py-3 px-4 rounded-lg font-medium ${
-                    isActive
-                      ? 'bg-[#F5A623] text-white'
-                      : 'text-gray-700 hover:bg-[#F5A623] hover:text-white'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              )
-            })}
-          </div>
-        )}
       </nav>
     </header>
   )
