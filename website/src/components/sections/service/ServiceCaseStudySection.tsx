@@ -80,7 +80,7 @@ const colorClasses = {
 
 export default function ServiceCaseStudySection() {
     return (
-        <section className="py-20 lg:py-28 bg-gray-900">
+        <section id="case-study" className="py-20 lg:py-28 bg-gray-900 scroll-mt-20">
             <div className="container">
                 {/* Section Header */}
                 <motion.div
@@ -93,7 +93,8 @@ export default function ServiceCaseStudySection() {
                         실제 <span className="text-primary-400">성과 데이터</span>
                     </h2>
                     <p className="text-gray-400 text-lg max-w-2xl mx-auto break-keep">
-                        POLARAD 고객사의 실제 광고 운영 결과입니다
+                        폴라애드 고객사의<br className="sm:hidden" />
+                        실제 광고 운영 결과입니다
                     </p>
                 </motion.div>
 
@@ -168,9 +169,13 @@ export default function ServiceCaseStudySection() {
                     viewport={{ once: true }}
                     className="mt-10 text-center"
                 >
-                    <p className="text-gray-500 text-sm">
-                        * DB 생성 성과는 광고 소재 퀄리티와 광고비에 따라 달라질 수 있습니다.<br />
-                        POLARAD는 DB 판매 서비스가 아닌, 자체 DB 생성 시스템 구축 서비스입니다.
+                    <p className="text-gray-500 text-sm leading-relaxed">
+                        * DB 생성 성과는 광고 소재 퀄리티와<br className="sm:hidden" />
+                        광고비에 따라 달라질 수 있습니다.
+                    </p>
+                    <p className="text-gray-500 text-sm mt-2 leading-relaxed">
+                        폴라애드는 DB 판매 서비스가 아닌,<br className="sm:hidden" />
+                        자체 DB 생성 시스템 구축 서비스입니다.
                     </p>
                 </motion.div>
             </div>
