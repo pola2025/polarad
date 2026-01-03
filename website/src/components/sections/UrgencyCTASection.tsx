@@ -117,40 +117,9 @@ export default function UrgencyCTASection() {
                         <li className="flex flex-col gap-1.5 sm:gap-2 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 hover:bg-white/10 transition-colors">
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 className="w-4 sm:w-5 h-4 sm:h-5 text-yellow-500 flex-shrink-0" />
-                                <span className="text-white font-medium text-sm sm:text-base break-keep">커스텀 디자인 지원</span>
+                                <span className="text-white font-medium text-sm sm:text-base break-keep">Meta 광고 자동화 <span className="text-yellow-500">1년</span></span>
                             </div>
-                            <span className="text-xs sm:text-sm text-gray-400 pl-6 sm:pl-7 break-keep">기본 2회 + 추가 3회 (총 5회)</span>
-                        </li>
-                        <li className="flex flex-col gap-1.5 sm:gap-2 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 sm:w-5 h-4 sm:h-5 text-yellow-500 flex-shrink-0" />
-                                <span className="text-white font-medium text-sm sm:text-base break-keep">인쇄물 디자인+제작</span>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-400 pl-6 sm:pl-7 break-keep">명함, 대봉투, 계약서 풀패키지</span>
-                        </li>
-                        <li className="flex flex-col gap-1.5 sm:gap-2 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 sm:w-5 h-4 sm:h-5 text-yellow-500 flex-shrink-0" />
-                                <span className="text-white font-medium text-sm sm:text-base break-keep">도메인/호스팅 포함</span>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-400 pl-6 sm:pl-7 break-keep">월 서버비 5만원 초과 시 별도</span>
-                        </li>
-                        <li className="flex flex-col gap-1.5 sm:gap-2 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 sm:w-5 h-4 sm:h-5 text-yellow-500 flex-shrink-0" />
-                                <span className="text-white font-medium text-sm sm:text-base break-keep">Meta 광고 자동화 <span className="text-yellow-500">2년</span></span>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-400 pl-6 sm:pl-7 break-keep">10명 한정 (그 외 1년 제공)</span>
-                        </li>
-                        <li className="flex flex-col gap-1.5 sm:gap-2 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 sm:w-5 h-4 sm:h-5 text-yellow-500 flex-shrink-0" />
-                                <span className="text-white font-medium text-sm sm:text-base break-keep">프리미엄 광고 관리</span>
-                            </div>
-                            <ul className="text-xs sm:text-sm text-gray-400 list-disc list-inside pl-6 sm:pl-7 space-y-0.5">
-                                <li className="break-keep">주간/월간 리포트 & 설정 지원</li>
-                                <li className="break-keep">실시간 알림 & 문자 자동 발송</li>
-                            </ul>
+                            <span className="text-xs sm:text-sm text-gray-400 pl-6 sm:pl-7 break-keep">텔레그램 알림 + SMS 자동 발송 포함</span>
                         </li>
                     </ul>
 
