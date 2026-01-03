@@ -211,14 +211,13 @@ export function PromotionPopup({ onClose }: PromotionPopupProps) {
               </p>
             </div>
 
-            {/* Tier Cards */}
-            <div className="space-y-4 mb-6">
-              {/* Tier 1 - Featured */}
+            {/* Premium 프로모션 카드 */}
+            <div className="mb-6">
               <div className="tier-card relative bg-gradient-to-br from-amber-500/10 to-orange-600/10 border border-amber-500/40 rounded-xl p-5 hover:border-amber-400/60" style={{ animation: 'pulse-glow 3s ease-in-out infinite' }}>
                 <div className="absolute -top-2 -right-2">
                   <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                     <Sparkles size={12} />
-                    BEST
+                    선착순 10개
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -226,44 +225,36 @@ export function PromotionPopup({ onClose }: PromotionPopupProps) {
                     <Gift size={24} className="text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-amber-400 font-bold text-lg">1등급</span>
-                      <span className="text-gray-500 text-sm">선착순 10개 기업</span>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-amber-400 font-bold text-lg">Premium 패키지</span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-gray-500 line-through text-sm">220만원</span>
+                      <span className="text-2xl font-bold text-amber-300">165만원</span>
+                      <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded">55만원 할인</span>
                     </div>
                     <ul className="space-y-1.5">
+                      <li className="flex items-center gap-2 text-gray-300 text-sm">
+                        <span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
+                        홈페이지 10P + Meta 광고 세팅 + 도메인
+                      </li>
                       <li className="flex items-center gap-2 text-white">
                         <span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
-                        <span className="font-semibold text-amber-300">30% 할인</span>
+                        <span className="font-semibold text-amber-300">1년 마케팅 자동화 무료</span>
                       </li>
                       <li className="flex items-center gap-2 text-gray-300 text-sm">
                         <span className="w-1.5 h-1.5 bg-amber-400/60 rounded-full" />
-                        자동화 제공기간 <span className="text-amber-300 font-medium">2년</span> (기본 1년 + 1년 추가)
+                        텔레그램 알림 + SMS 발송 포함
                       </li>
                     </ul>
                   </div>
                 </div>
               </div>
 
-              {/* Tier 2 */}
-              <div className="tier-card bg-white/5 border border-white/10 rounded-xl p-5 hover:border-white/20 hover:bg-white/[0.07]">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl flex items-center justify-center">
-                    <Gift size={24} className="text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-gray-300 font-bold text-lg">2등급</span>
-                      <span className="text-gray-500 text-sm">이후 10개 기업</span>
-                    </div>
-                    <ul className="space-y-1.5">
-                      <li className="flex items-center gap-2 text-gray-300 text-sm">
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
-                        자동화 제공기간 <span className="text-white font-medium">2년</span> (+1년 추가)
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              {/* 다른 티어 안내 */}
+              <p className="text-center text-gray-500 text-xs mt-3">
+                다른 티어: Basic 30만원 / Normal 60만원 / Pro 110만원
+              </p>
             </div>
 
             {/* CTA Button with spotlight effect */}

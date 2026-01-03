@@ -136,91 +136,92 @@ export default function OnlineMktPage() {
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
-              새해 첫 고객을 위한 특별 혜택
+              Premium 패키지 특별 혜택
             </h2>
             <p className="text-white/90 text-sm md:text-base">
-              선착순 마감 시 조기 종료될 수 있습니다
+              1월 31일까지 · 선착순 10개 기업 한정
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
-            {/* 선착순 10개 기업 */}
-            <div className="bg-white rounded-2xl p-5 md:p-6 shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform">
+          <div className="max-w-2xl mx-auto">
+            {/* Premium 프로모션 카드 */}
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
               {/* 인기 뱃지 */}
               <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                BEST
+                선착순 10개
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-accent-400 to-accent-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <Gift className="w-7 h-7 text-white" />
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-2 mb-3">
+                  <Gift className="w-6 h-6 text-accent-600" />
+                  <span className="text-accent-600 font-bold text-lg">Premium 패키지</span>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-accent-600 font-bold text-lg">선착순 10개 기업</span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
-                    특별 할인 + 2년 자동화
-                  </h3>
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <span className="text-gray-400 line-through text-xl">220만원</span>
+                  <span className="text-3xl md:text-4xl font-bold text-accent-600">165만원</span>
+                  <span className="bg-red-100 text-red-600 text-sm font-bold px-2 py-1 rounded">55만원 할인</span>
+                </div>
+                <p className="text-gray-500 text-sm">VAT 포함 · 1회 제작비</p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-primary-600" />
+                    기본 구성
+                  </h4>
                   <ul className="space-y-2 text-gray-600 text-sm">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                      <span>패키지 특별 할인가 적용</span>
+                      <span>홈페이지 10페이지 제작</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                      <span><strong className="text-accent-600">2년</strong> 마케팅 자동화 무료 제공</span>
+                      <span>Meta 광고 계정 세팅</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                      <span>텔레그램 알림 + SMS 발송 포함</span>
+                      <span>도메인 1년 제공</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-accent-50 rounded-xl p-4 border border-accent-200">
+                  <h4 className="font-bold text-accent-700 mb-3 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-accent-600" />
+                    프로모션 혜택
+                  </h4>
+                  <ul className="space-y-2 text-gray-700 text-sm">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-accent-600 flex-shrink-0" />
+                      <span><strong className="text-accent-600">1년</strong> 마케팅 자동화 무료</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-accent-600 flex-shrink-0" />
+                      <span>텔레그램 실시간 알림</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-accent-600 flex-shrink-0" />
+                      <span>SMS 자동 발송</span>
                     </li>
                   </ul>
                 </div>
               </div>
-            </div>
 
-            {/* 선착순 20개 기업 */}
-            <div className="bg-white rounded-2xl p-5 md:p-6 shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <Timer className="w-7 h-7 text-white" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-primary-600 font-bold text-lg">선착순 20개 기업</span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
-                    2년 자동화 무료 제공
-                  </h3>
-                  <ul className="space-y-2 text-gray-600 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                      <span><strong className="text-primary-600">2년</strong> 마케팅 자동화 무료 제공</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                      <span>텔레그램 알림 + SMS 발송 포함</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                      <span>광고 성과 리포트 제공</span>
-                    </li>
-                  </ul>
-                </div>
+              <div className="text-center">
+                <a
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent-600 hover:bg-accent-700 text-white rounded-xl font-bold text-base transition-colors shadow-lg"
+                >
+                  프로모션 상담 신청
+                  <ArrowRight className="w-5 h-5" />
+                </a>
               </div>
             </div>
           </div>
 
-          <div className="text-center mt-6">
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-accent-600 rounded-xl font-bold text-base hover:bg-gray-50 transition-colors shadow-lg"
-            >
-              프로모션 상담 신청
-              <ArrowRight className="w-5 h-5" />
-            </a>
-          </div>
+          <p className="text-center text-white/70 text-xs mt-4">
+            * 다른 티어도 있습니다: Basic 30만원 / Normal 60만원 / Pro 110만원
+          </p>
         </div>
       </section>
 
