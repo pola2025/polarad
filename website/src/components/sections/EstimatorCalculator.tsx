@@ -180,19 +180,18 @@ export function EstimatorCalculator() {
           {/* Total Price */}
           <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
             <div className="flex justify-between items-center">
-              <div>
-                <span className="text-sm font-medium text-primary-700">예상 금액</span>
-                <p className="text-xs text-primary-600/70">VAT 포함 / 1회 제작비</p>
-              </div>
-              <span className="text-2xl lg:text-3xl font-bold text-primary-600">
+              <span className="text-xs lg:text-sm font-medium text-primary-700">예상 금액</span>
+              <span className="text-xl lg:text-3xl font-bold text-primary-600">
                 {totalPrice.toLocaleString()}원
               </span>
             </div>
+            <p className="text-xs text-primary-600/70 text-center mt-2">VAT 포함 / 1회 제작비</p>
           </div>
 
           {/* Notice */}
           <p className="text-xs text-gray-500 text-center">
-            * 호스팅은 제공 항목에 포함되지 않습니다 (무료 호스팅 활용 가능)
+            호스팅은 제공 항목에 포함되지 않습니다<br className="sm:hidden" />
+            <span className="hidden sm:inline"> </span>(무료 호스팅 활용 가능)
           </p>
         </div>
       </CardContent>
