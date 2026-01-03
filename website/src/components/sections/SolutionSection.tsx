@@ -268,9 +268,9 @@ export default function SolutionSection() {
                                             <div className="flex flex-col items-start gap-0.5">
                                                 <div className="flex items-center gap-1 text-primary-400">
                                                     <CheckCircle2 className="w-4 h-4" />
-                                                    <span className="text-xs font-medium">월 5만원~</span>
+                                                    <span className="text-xs font-medium">30만원~</span>
                                                 </div>
-                                                <span className="text-[10px] text-gray-500 pl-5">1년 무료</span>
+                                                <span className="text-[10px] text-gray-500 pl-5">1회 제작비</span>
                                             </div>
                                         </td>
                                         <td className="py-3">
@@ -308,9 +308,9 @@ export default function SolutionSection() {
                                     <div className="flex flex-col items-end gap-0.5">
                                         <div className="flex items-center gap-2 font-bold text-primary-400">
                                             <CheckCircle2 className="w-5 h-5" />
-                                            <span>월 5만원~ (자동화 시스템)</span>
+                                            <span>30만원~ (1회 제작비)</span>
                                         </div>
-                                        <span className="text-xs text-gray-500">제작 후 최초 1년 무료</span>
+                                        <span className="text-xs text-gray-500">추가 자동화 월 11만원~</span>
                                     </div>
                                 </div>
                             </div>
@@ -348,18 +348,18 @@ export default function SolutionSection() {
                     {/* 비용 안내 */}
                     <div className="mt-10 pt-8 border-t border-white/10">
                         <div className="space-y-4">
-                            {/* 기본 안내 */}
+                            {/* 티어 안내 */}
                             <div className="flex items-start gap-3">
                                 <CheckCircle2 className="w-5 h-5 text-primary-400 mt-0.5 shrink-0" />
                                 <div>
                                     <p className="text-gray-300 text-sm break-keep">
-                                        <span className="text-white font-semibold">최초 1년간 자동화 시스템 무료</span> 제공
+                                        <span className="text-white font-semibold">필요한 만큼만 선택하는 티어 시스템</span>
                                     </p>
                                     <p className="text-gray-500 text-xs mt-1">
-                                        2년차부터: 월 5만원 / 월 10만원
+                                        Basic 30만 → Normal 60만 → Pro 110만 → Premium 220만
                                     </p>
                                     <p className="text-gray-500 text-xs">
-                                        (연간 결제 / 월간 결제)
+                                        (VAT 포함 / 추가 자동화 월금액 별도)
                                     </p>
                                 </div>
                             </div>
@@ -368,12 +368,12 @@ export default function SolutionSection() {
                             <div className="flex items-start gap-3 p-4 rounded-xl bg-accent-500/10 border border-accent-500/20">
                                 <span className="text-lg">🎁</span>
                                 <div>
-                                    <p className="text-accent-400 font-bold text-sm">선착순 10개 기업 프로모션</p>
+                                    <p className="text-accent-400 font-bold text-sm">1/31까지 선착순 10개 기업</p>
                                     <p className="text-gray-400 text-sm mt-1 break-keep">
-                                        자동화 시스템 <span className="text-white font-semibold">2년간 무료</span> 제공
+                                        Premium <span className="text-white font-semibold">165만원</span> + 1년 자동화 무료
                                     </p>
                                     <p className="text-gray-500 text-xs">
-                                        (3년차부터 유료 전환)
+                                        (정가 220만원 → 55만원 할인)
                                     </p>
                                 </div>
                             </div>

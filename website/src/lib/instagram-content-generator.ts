@@ -70,16 +70,16 @@ const CONTENT_TOPICS = {
   },
   promo: {
     offers: [
-      '선착순 10개 기업 얼리버드!',
-      '20개 기업 한정 특별 혜택!',
-      '1월 31일까지 한정!',
-      '얼리버드 패키지 할인!',
+      '선착순 10개 기업 한정!',
+      '1월 31일까지 한정 프로모션!',
+      'Premium 티어 55만원 할인!',
+      '1년 자동화 무료 제공!',
     ],
     benefits: [
-      'Meta 자동화 2년 무료 (220만원 상당)',
-      '패키지 가격 할인 혜택',
-      '도메인+호스팅 2년 무료',
-      '프리미엄 컨설팅 무료',
+      'Premium 165만원 (정가 220만원)',
+      '1년 자동화 무료 제공',
+      '홈페이지 10P + Meta 세팅',
+      '도메인 1년 무료',
     ],
   },
   service: {
@@ -431,15 +431,15 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
       subHeadline: '영업에만 집중하시면 됩니다',
     },
     solution: {
-      badge: '✨ 올인원 패키지',
-      headline: '체계적인 자동화 접수 시스템\n영업에만 집중하시면 됩니다',
-      subHeadline: '모든 것을 한 번에 해결',
+      badge: '✨ 4티어 시스템',
+      headline: '필요한 만큼만 선택하세요\n30만원부터 시작',
+      subHeadline: '랜딩페이지부터 홈페이지+자동화까지',
       items: [
-        { icon: '🎯', text: 'Conversion Basecamp', highlight: '고객을 설득하고 DB를 추출하는 전환 기지' },
-        { icon: '🧲', text: 'Lead Magnet Engine', highlight: '잠재 고객을 정밀 타겟팅하여 유입' },
-        { icon: '🏆', text: 'Authority Kit', highlight: '미팅 현장에서 신뢰도를 높이는 브랜딩 키트' },
+        { icon: '🎯', text: 'Basic~Normal', highlight: '랜딩 1P + Meta 세팅 (30~60만원)' },
+        { icon: '🚀', text: 'Pro', highlight: '홈페이지 5P + Meta 세팅 (110만원)' },
+        { icon: '👑', text: 'Premium', highlight: '홈페이지 10P + 6개월 자동화 (220만원)' },
       ],
-      cta: '선착순 10개 기업 Meta 자동화 2년 무료! (220만원 상당)',
+      cta: '1/31까지 Premium 165만원 + 1년 자동화 무료!',
     },
     feature: {
       headline: '체계적인\n자동화 접수 시스템',
@@ -462,10 +462,10 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
       ],
     },
     promo: {
-      badge: '🎁 얼리버드 특별 혜택',
-      headline: '선착순 10개 기업\n한정!',
-      subHeadline: '1월 31일까지 신청하시면',
-      cta: 'Meta 자동화 2년 무료 (220만원)',
+      badge: '🎁 1월 프로모션',
+      headline: 'Premium 165만원\n+ 1년 자동화 무료!',
+      subHeadline: '1/31까지 선착순 10개 기업',
+      cta: '정가 220만원 → 55만원 할인',
     },
     service: {
       badge: '🖥️ 홈페이지 제작',
@@ -531,42 +531,37 @@ async function generateCaptionWithGemini(templateType: TemplateType, templateDat
  */
 async function callGeminiForCaption(templateType: TemplateType, templateData: TemplateData): Promise<string | null> {
   const prompt = `당신은 PolarAD(폴라애드) 마케팅 회사의 Instagram 캡션 전문 작성자입니다.
-B2B 영업 대표님들을 위한 "올인원 영업 자동화 솔루션"을 제공합니다.
+B2B 영업 대표님들을 위한 "온라인 영업 시스템"을 제공합니다.
 
-**[중요] 폴라애드 올인원 패키지 - 반드시 골고루 강조할 것**:
+**[중요] 폴라애드 4티어 시스템 - 필요한 만큼만 선택**:
 
-📌 1. PC/모바일 반응형 웹사이트 제작 (Conversion Basecamp)
-   - 10페이지 이내 반응형 웹 (PC, 태블릿, 모바일 최적화)
+📌 티어별 구성 (VAT 포함):
+   - Basic 30만원: 랜딩페이지 1P
+   - Normal 60만원: 랜딩 1P + Meta 광고 세팅 + 도메인 1년
+   - Pro 110만원: 홈페이지 5P + Meta 광고 세팅 + 도메인 1년
+   - Premium 220만원: 홈페이지 10P + Meta 세팅 + 6개월 자동화
+
+📌 홈페이지 (Conversion Basecamp)
+   - PC, 태블릿, 모바일 반응형 웹
    - SEO 최적화로 검색 상위 노출
    - DB 수집 폼 연동 (고객 문의 자동 수집)
-   - 도메인 + 호스팅 1년 무료
 
-📌 2. 인쇄물 제작 (Authority Kit) - 미팅 현장 신뢰도 UP
-   - 명함 200매
-   - 대봉투 500매
-   - 계약서 500매
-   - 프로페셔널한 브랜딩으로 계약 성사율 향상
-
-📌 3. Meta 광고 자동화 (Lead Magnet Engine)
-   - Facebook/Instagram 광고 자동화 설정
+📌 Meta 광고 (Lead Magnet Engine)
+   - Facebook/Instagram 광고 세팅
    - 타겟 오디언스 최적화
-   - 실시간 대시보드 성과 추적
+   - 실시간 성과 추적
 
-→ 이 모든 것이 "올인원 패키지"로 한 번에 제공됩니다!
+📌 추가 옵션 (별도):
+   - 인쇄물 4종 (명함/봉투/계약서/명찰): 단독 110만원 / 추가 55만원
+   - Meta 자동화 월금액: 3개월 22만/월, 6개월 16.5만/월, 1년 11만/월
+
 → 대표님은 고객 미팅과 계약 성사에만 집중하시면 됩니다.
 
-🎁 **[특별 프로모션] 2025년 1월 31일까지**
+🎁 **[1월 프로모션] 2025년 1월 31일까지, 선착순 10개 기업**
 
-   📍 자동화 서비스 가격 (VAT 포함):
-   - 3개월 단위 결제: 월 22만원
-   - 6개월 단위 결제: 월 16.5만원
-   - 12개월 단위 결제: 월 11만원
-
-   🎯 프로모션 혜택:
-   - 20개 기업 한정 특별 혜택
-   - 선착순 10개 기업 얼리버드: Meta 자동화 서비스 2년 무료 (220만원 상당) + 패키지 가격할인
-   - 2년간 도메인 + 호스팅 무료 제공
-   → 캡션에 "220만원 상당" 혜택과 "선착순 10개 기업 얼리버드" 강조할 것!
+   🎯 Premium 165만원 (정가 220만원 → 55만원 할인)
+   🎯 1년 자동화 무료 제공 (6개월 → 1년으로 업그레이드)
+   → 캡션에 "165만원" 프로모션과 "1년 자동화 무료" 강조할 것!
 
 **컨텐츠 정보**:
 - 타입: ${templateType}
@@ -674,32 +669,31 @@ function getDefaultCaption(templateType: TemplateType, data: TemplateData): stri
 
 ━━━━━━━━━━━━━━━━━
 
-✅ 폴라애드 올인원 패키지
+✅ 폴라애드 4티어 시스템
 
-📌 PC/모바일 반응형 웹사이트
-   → SEO 최적화로 검색 상위 노출
-   → DB 수집 폼 연동
+📌 Basic 30만원 - 랜딩페이지 1P
+📌 Normal 60만원 - +Meta 세팅+도메인
+📌 Pro 110만원 - 홈페이지 5P
+📌 Premium 220만원 - 홈페이지 10P+자동화
 
-📌 명함, 대봉투, 계약서 인쇄물
-   → 미팅 현장 신뢰도 UP
-
-📌 Meta 광고 자동화 설정
-   → 실시간 성과 대시보드
+필요한 만큼만 선택하세요!
 
 ━━━━━━━━━━━━━━━━━
 
-🎁 2025년 1월 31일까지
-   선착순 10개 기업 얼리버드!
+🎁 1월 프로모션 (~1/31)
+   선착순 10개 기업 한정!
 
-   Meta 자동화 2년 무료
-   (220만원 상당)
+   Premium 165만원
+   + 1년 자동화 무료
+
+   (정가 220만원 → 55만원 할인)
+
+━━━━━━━━━━━━━━━━━
 
 대표님은 고객 미팅과
 계약 성사에만 집중하세요.
 
 나머지는 저희가 다 해드립니다.
-
-━━━━━━━━━━━━━━━━━
 
 💬 무료 상담 신청
    → 프로필 링크 클릭`;
