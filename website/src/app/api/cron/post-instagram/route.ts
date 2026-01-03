@@ -11,6 +11,7 @@ import {
   generateInstagramCaption,
   publishToInstagram,
 } from '@/lib/instagram';
+import { uploadImageToR2, isR2Configured } from '@/lib/r2-storage';
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
@@ -18,8 +19,6 @@ const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
 const CRON_SECRET = process.env.CRON_SECRET;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = '-1003280236380';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_REPO = process.env.GITHUB_REPO; // format: "owner/repo"
 
 interface AirtableRecord {
   id: string;
@@ -127,82 +126,26 @@ async function resizeImageToSquare(imageUrl: string): Promise<Buffer> {
     .toBuffer();
 }
 
-// GitHub에 이미지 업로드 후 URL 반환 (Raw URL 사용으로 즉시 접근 가능)
-async function uploadImageToGitHub(
+// R2에 Instagram용 정사각형 이미지 업로드
+async function uploadInstagramImageToR2(
   imageBuffer: Buffer,
   slug: string
 ): Promise<string | null> {
-  if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    console.error('GitHub 설정 없음');
+  if (!isR2Configured()) {
+    console.error('❌ R2 설정 없음');
     return null;
   }
 
   try {
-    const filePath = `website/public/images/instagram/${slug}-square.jpg`;
-    const base64Content = imageBuffer.toString('base64');
-
-    // 기존 파일 확인 (SHA 필요)
-    let sha: string | undefined;
-    const checkRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
-      {
-        headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
-      }
-    );
-    if (checkRes.ok) {
-      const existingFile = await checkRes.json();
-      sha = existingFile.sha;
-      console.log('📂 기존 파일 발견, SHA:', sha);
-    }
-
-    // GitHub에 파일 업로드 (기존 파일 있으면 업데이트)
-    const res = await fetch(
-      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${GITHUB_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `📸 Instagram 이미지: ${slug}`,
-          content: base64Content,
-          ...(sha ? { sha } : {})
-        })
-      }
-    );
-
-    if (!res.ok) {
-      const error = await res.text();
-      console.error('GitHub 업로드 실패:', error);
-      return null;
-    }
-
-    // GitHub Raw URL 사용 - Vercel 배포 대기 없이 즉시 접근 가능
-    // Instagram Graph API가 즉시 이미지에 접근 가능
-    const imageUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${filePath}`;
-
-    // Raw URL 접근 가능 확인 (최대 10초 대기)
-    console.log('🔍 GitHub Raw URL 접근 확인 중...');
-    for (let i = 0; i < 5; i++) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      try {
-        const checkRes = await fetch(imageUrl, { method: 'HEAD' });
-        if (checkRes.ok) {
-          console.log(`✅ GitHub Raw URL 접근 가능 (${(i + 1) * 2}초 후)`);
-          return imageUrl;
-        }
-      } catch {
-        // 아직 접근 불가, 계속 대기
-      }
-      console.log(`⏳ Raw URL 확인 중... (${(i + 1) * 2}초)`);
-    }
-
-    // 10초 후에도 안되면 그냥 URL 반환
-    console.log('⚠️ Raw URL 확인 타임아웃, 진행 시도');
-    return imageUrl;
+    const filename = `${slug}-square-${Date.now()}.jpg`;
+    console.log(`☁️ R2 업로드 중: instagram/${filename}`);
+    
+    const r2Url = await uploadImageToR2(imageBuffer, filename, 'instagram');
+    console.log(`✅ R2 업로드 완료: ${r2Url}`);
+    
+    return r2Url;
   } catch (error) {
-    console.error('GitHub 업로드 오류:', error);
+    console.error('R2 업로드 오류:', error);
     return null;
   }
 }
@@ -336,22 +279,22 @@ export async function GET(request: Request) {
     const resizedImageBuffer = await resizeImageToSquare(imageUrl);
     console.log('✅ 이미지 리사이즈 완료');
 
-    // 4. GitHub에 리사이즈된 이미지 업로드
-    console.log('📤 GitHub에 이미지 업로드 중...');
-    const instagramImageUrl = await uploadImageToGitHub(resizedImageBuffer, slug);
+    // 4. R2에 리사이즈된 이미지 업로드
+    console.log('📤 R2에 이미지 업로드 중...');
+    const instagramImageUrl = await uploadInstagramImageToR2(resizedImageBuffer, slug);
 
     if (!instagramImageUrl) {
-      console.error('❌ GitHub 이미지 업로드 실패');
+      console.error('❌ R2 이미지 업로드 실패');
       await sendTelegramNotification('error', {
-        errorMessage: 'GitHub 이미지 업로드 실패'
+        errorMessage: 'R2 이미지 업로드 실패'
       });
       return NextResponse.json({
         success: false,
-        error: 'Failed to upload image to GitHub'
+        error: 'Failed to upload image to R2'
       }, { status: 500 });
     }
 
-    console.log('✅ GitHub 이미지 업로드 완료:', instagramImageUrl);
+    console.log('✅ R2 이미지 업로드 완료:', instagramImageUrl);
 
     // 5. Airtable에 이미지 URL 저장 + 게시 중 표시 (중복 방지)
     await saveImageUrlToAirtable(article.id, instagramImageUrl);
@@ -373,7 +316,7 @@ export async function GET(request: Request) {
 
     console.log('📝 AI 캡션 생성 완료');
 
-    // 7. Instagram 게시 (GitHub에서 호스팅되는 정사각형 이미지 사용)
+    // 7. Instagram 게시 (R2에서 호스팅되는 정사각형 이미지 사용)
     const result = await publishToInstagram(instagramImageUrl, caption);
 
     if (!result.success) {
