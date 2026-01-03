@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { X, TrendingUp } from 'lucide-react'
 
@@ -14,21 +14,41 @@ export function MobileCaseBanner() {
   const [isVisible, setIsVisible] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isScrolling, setIsScrolling] = useState(false)
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pathname = usePathname()
   const router = useRouter()
 
   const isServicePage = pathname === '/service'
 
   useEffect(() => {
-    // 스크롤 시 표시
+    // 스크롤 시 표시 + 흐림 효과
     const handleScroll = () => {
       if (window.scrollY > 200 && !isDismissed) {
         setIsVisible(true)
       }
+      
+      // 스크롤 중 흐리게
+      setIsScrolling(true)
+      
+      // 기존 타이머 취소
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current)
+      }
+      
+      // 스크롤 멈춤 감지 (150ms 후)
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false)
+      }, 150)
     }
 
     window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current)
+      }
+    }
   }, [isDismissed])
 
   // 케이스 자동 전환 (4초)
@@ -58,7 +78,11 @@ export function MobileCaseBanner() {
   const current = caseData[currentIndex]
 
   return (
-    <div className="md:hidden fixed bottom-16 left-0 right-0 z-40 px-3 pb-2">
+    <div 
+      className={`md:hidden fixed bottom-16 left-0 right-0 z-40 px-3 pb-2 transition-all duration-200 ${
+        isScrolling ? 'opacity-40 blur-[1px]' : 'opacity-100 blur-0'
+      }`}
+    >
       {/* 뱃지 - 배너 바깥 상단 */}
       <div className="flex justify-start mb-1">
         <div className="inline-flex items-center gap-1 bg-primary-600 px-2 py-0.5 rounded-t-lg">
