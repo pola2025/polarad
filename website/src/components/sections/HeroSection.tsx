@@ -5,6 +5,7 @@ import { Button } from '../ui/Button'
 import { ArrowRight, TrendingUp, Users, Database, ShieldCheck } from 'lucide-react'
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, useInView } from 'framer-motion'
 import { AuroraBackground } from '../ui/AuroraBackground'
+import { FloatingLines } from '../ui/FloatingLines'
 
 // 카운팅 애니메이션 컴포넌트
 function CountUp({ end, suffix = '', duration = 2 }: { end: number; suffix?: string; duration?: number }) {
@@ -65,6 +66,15 @@ export default function HeroSection() {
         <section ref={ref} className="relative min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-7rem)] pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gray-950 text-white perspective-1000 -mt-24 md:-mt-28">
             {/* Aurora Background Effect */}
             <AuroraBackground color="mixed" intensity="medium" />
+
+            {/* Floating Lines Effect */}
+            <FloatingLines 
+                lineCount={25}
+                colors={['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981']}
+                speed={0.8}
+                strokeWidth={1.5}
+                className="z-[1]"
+            />
 
             {/* Grid Pattern Overlay */}
             <div className="absolute inset-0 z-0 pointer-events-none">
