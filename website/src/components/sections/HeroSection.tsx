@@ -69,10 +69,14 @@ export default function HeroSection() {
 
             {/* Floating Lines Effect */}
             <FloatingLines 
-                lineCount={25}
-                colors={['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981']}
-                speed={0.8}
-                strokeWidth={1.5}
+                enabledWaves={['top', 'middle', 'bottom']}
+                lineCount={[10, 15, 20]}
+                lineDistance={[8, 6, 4]}
+                linesGradient={['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981']}
+                bendRadius={5.0}
+                bendStrength={-0.5}
+                interactive={true}
+                parallax={true}
                 className="z-[1]"
             />
 

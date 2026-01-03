@@ -7,6 +7,7 @@ import { ContactFormSection } from '@/components/sections/ContactFormSection'
 import { ContactInfoSection } from '@/components/sections/ContactInfoSection'
 import { BusinessHoursSection } from '@/components/sections/BusinessHoursSection'
 import { AuroraBackground } from '@/components/ui/AuroraBackground'
+import { FloatingLines } from '@/components/ui/FloatingLines'
 import { MessageSquare, Clock, CheckCircle2, Phone, Mail, ArrowRight, Sparkles, Shield, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -25,6 +26,19 @@ export default function ContactPage() {
         <section className="relative min-h-[auto] lg:min-h-[calc(100vh-7rem)] pt-28 pb-12 lg:pt-48 lg:pb-32 overflow-hidden bg-gray-950 text-white -mt-24 md:-mt-28">
           {/* Aurora Background Effect */}
           <AuroraBackground color="mixed" intensity="medium" />
+
+          {/* Floating Lines Effect */}
+          <FloatingLines 
+            enabledWaves={['top', 'middle', 'bottom']}
+            lineCount={[10, 15, 20]}
+            lineDistance={[8, 6, 4]}
+            linesGradient={['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981']}
+            bendRadius={5.0}
+            bendStrength={-0.5}
+            interactive={true}
+            parallax={true}
+            className="z-[1]"
+          />
 
           {/* Grid Pattern Overlay */}
           <div className="absolute inset-0 z-0 pointer-events-none">
