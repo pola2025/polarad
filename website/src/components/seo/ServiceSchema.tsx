@@ -5,8 +5,8 @@ export function ServiceSchema() {
     "@context": "https://schema.org",
     "@type": "Service",
     "serviceType": "온라인 마케팅 솔루션",
-    "name": "폴라애드 올인원 패키지",
-    "description": "홈페이지 제작, Meta 광고 자동화, 인쇄물 4종을 한 번에 제공하는 중소기업 맞춤 온라인 영업 솔루션",
+    "name": "폴라애드 온라인 영업 솔루션",
+    "description": "랜딩페이지 30만원부터, 홈페이지+Meta 광고 자동화까지. 중소기업 맞춤형 온라인 영업 시스템 구축. 경영컨설팅 광고비 15만원→DB 42건, 인테리어 광고비 100만원→DB 217건 실제 성과.",
     "provider": {
       "@type": "Organization",
       "name": "폴라애드",
@@ -18,38 +18,48 @@ export function ServiceSchema() {
     },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
-      "name": "폴라애드 서비스",
+      "name": "폴라애드 4티어 서비스",
       "itemListElement": [
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "올인원 패키지",
-            "description": "홈페이지 10페이지 + Meta 광고 설정 + 인쇄물 4종 + 도메인/호스팅 1년"
+            "name": "Basic 패키지",
+            "description": "랜딩페이지 1P 제작. 빠른 시작을 원하는 분께 추천"
           },
-          "price": "3300000",
+          "price": "300000",
+          "priceCurrency": "KRW"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Normal 패키지",
+            "description": "랜딩페이지 1P + Meta 광고 세팅 + 도메인 1년. 광고까지 한 번에"
+          },
+          "price": "600000",
+          "priceCurrency": "KRW"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pro 패키지",
+            "description": "홈페이지 5P + Meta 광고 세팅 + 도메인 1년. 본격적인 온라인 영업 시작"
+          },
+          "price": "1100000",
+          "priceCurrency": "KRW"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Premium 패키지 (프로모션)",
+            "description": "홈페이지 10P + 6개월→1년 자동화 + 도메인 1년. 1/31까지 선착순 10개 한정 165만원"
+          },
+          "price": "1650000",
           "priceCurrency": "KRW",
-          "priceValidUntil": "2025-12-31"
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "홈페이지 제작",
-            "description": "맞춤형 반응형 웹사이트 제작"
-          },
-          "price": "2000000",
-          "priceCurrency": "KRW"
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Meta 광고 설정",
-            "description": "Facebook/Instagram 광고 자동화 설정"
-          },
-          "price": "500000",
-          "priceCurrency": "KRW"
+          "priceValidUntil": "2025-01-31"
         }
       ]
     }

@@ -13,7 +13,7 @@ import ServiceCTASection from '@/components/sections/service/ServiceCTASection'
 
 export const metadata: Metadata = {
   title: '온라인 영업 솔루션 | 30만원부터 시작하는 홈페이지+Meta 광고',
-  description: '랜딩페이지 30만원부터, 홈페이지+Meta 광고 자동화까지. Premium 165만원 프로모션 진행 중(~1/31, 10개 한정). 중소기업 맞춤형 온라인 영업 시스템을 구축하세요.',
+  description: '랜딩페이지 30만원부터, 홈페이지+Meta 광고 자동화까지. Premium 165만원 프로모션(~1/31, 10개 한정). 경영컨설팅 광고비 15만원→DB 42건, 인테리어 광고비 100만원→DB 217건 실제 성과.',
 
   keywords: [
     '홈페이지 제작',
@@ -24,14 +24,22 @@ export const metadata: Metadata = {
     '중소기업 홈페이지',
     '반응형 홈페이지',
     '온라인 영업',
-    'DB 마케팅'
+    'DB 마케팅',
+    '리드 제너레이션',
+    '잠재고객 발굴',
+    '경영컨설팅 마케팅',
+    '인테리어 마케팅',
+    '직업교육 마케팅',
+    '광고 성과',
+    'DB 수집',
+    '계약 전환율'
   ],
 
   openGraph: {
     title: '온라인 영업 솔루션 | 폴라애드',
-    description: '30만원부터 시작하는 홈페이지+Meta 광고 자동화. Premium 165만원 프로모션 진행 중.',
+    description: '30만원부터 시작. 경영컨설팅 15만원→42건 DB, 인테리어 100만원→217건 DB 실제 성과. Premium 165만원 프로모션 중.',
     url: 'https://polarad.co.kr/service',
-    images: [{ url: '/icon.png', width: 512, height: 512 }],
+    images: [{ url: '/images/og-img.png', width: 1200, height: 630 }],
   },
 
   alternates: {

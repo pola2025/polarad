@@ -25,19 +25,26 @@ export const metadata: Metadata = {
     template: '%s | 폴라애드'
   },
 
-  description: '단순 홈페이지가 아닌 \'팔리는 시스템\'을 구축합니다. Meta 광고 자동화, 고효율 DB 수집, 인쇄물까지 한 번에. 대표님의 평생 자산(Asset)이 될 영업 엔진을 장착하세요.',
+  description: '랜딩페이지 30만원부터, 홈페이지+Meta 광고 자동화까지. 경영컨설팅 광고비 15만원→DB 42건, 인테리어 100만원→217건 실제 성과. Premium 165만원 프로모션 진행 중(~1/31).',
 
   keywords: [
     '온라인 영업',
     '홈페이지 제작',
-    'DB 추출',
+    '랜딩페이지 제작',
+    'DB 마케팅',
     '잠재고객 발굴',
     'Meta 광고',
+    'Meta 광고 자동화',
     '리드 제너레이션',
     '영업 자동화',
     '중소기업 마케팅',
     'B2B 영업',
-    '랜딩페이지'
+    '경영컨설팅 마케팅',
+    '인테리어 마케팅',
+    '직업교육 마케팅',
+    '광고 성과',
+    'DB 수집',
+    '계약 전환율'
   ],
 
   authors: [{ name: '폴라애드', url: 'https://polarad.co.kr' }],
@@ -55,14 +62,14 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     url: 'https://polarad.co.kr',
     siteName: '폴라애드',
-    title: '폴라애드 - Meta DB 수집 광고 & 운영 리포트',
-    description: '법인영업, 경영컨설팅, 온라인마케팅, DB마케팅 전문. 고효율 잠재고객 DB 수집부터 성과 분석까지.',
+    title: '폴라애드 | 30만원부터 시작하는 온라인 영업 솔루션',
+    description: '경영컨설팅 15만원→42건 DB, 인테리어 100만원→217건 DB 실제 성과. Premium 165만원 프로모션 진행 중(~1/31, 10개 한정).',
     images: [
       {
         url: '/images/og-img.png',
         width: 1200,
         height: 630,
-        alt: '폴라애드 - 경영컨설팅, 법인영업, 온라인마케팅 전문',
+        alt: '폴라애드 - 30만원부터 시작하는 온라인 영업 솔루션',
       },
     ],
   },
@@ -71,8 +78,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@polarad',
     creator: '@polarad',
-    title: '폴라애드 - Meta DB 수집 광고 & 운영 리포트',
-    description: '법인영업, 경영컨설팅, 온라인마케팅, DB마케팅 전문',
+    title: '폴라애드 | 30만원부터 시작하는 온라인 영업 솔루션',
+    description: '경영컨설팅 15만원→42건 DB, 인테리어 100만원→217건 DB. Premium 165만원 프로모션 진행 중.',
     images: ['/images/og-img.png'],
   },
 
