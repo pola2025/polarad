@@ -40,6 +40,7 @@ export type TemplateType =
   | 'stats'      // 통계/리포트
   | 'promo'      // 프로모션
   | 'service'    // 서비스 소개
+  | 'case'       // 실제 사례/성과
   | 'cta';       // 마무리
 
 /**
@@ -159,6 +160,8 @@ export function generateTemplateHtml(type: TemplateType, data: TemplateData): st
       return generatePromoTemplate(data, baseStyles, theme, bgPattern);
     case 'service':
       return generateServiceTemplate(data, baseStyles, theme, bgPattern);
+    case 'case':
+      return generateCaseTemplate(data, baseStyles, theme, bgPattern);
     case 'cta':
       return generateCtaTemplate(data, baseStyles, theme, bgPattern);
     default:
@@ -1226,12 +1229,223 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string, theme: 
 </html>`;
 }
 
+function generateCaseTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
+  const stats = data.stats || [
+    { label: '광고비', value: '₩150만원', change: '월 예산' },
+    { label: 'DB 수집', value: '127건', change: '월 평균' },
+    { label: '미팅 전환', value: '32%', change: '업계 2배' },
+  ];
+
+  return `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    ${baseStyles}
+    .instagram-post {
+      background: ${theme.bg};
+      padding: 70px;
+    }
+    .aurora::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: ${theme.aurora};
+    }
+    .grid-pattern {
+      ${bgPattern}
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 50px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: white;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; }
+    .brand-name { font-size: 28px; font-weight: 700; color: #fff; }
+    .badge {
+      padding: 14px 28px;
+      background: ${theme.primary}22;
+      border: 1px solid ${theme.primary}44;
+      border-radius: 100px;
+      font-size: 18px;
+      color: ${theme.primary};
+      font-weight: 600;
+    }
+    .case-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 32px;
+      padding: 50px;
+      margin-bottom: 40px;
+    }
+    .case-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .client-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .client-avatar {
+      width: 80px;
+      height: 80px;
+      background: ${theme.gradient};
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+    .client-name { font-size: 32px; color: #fff; font-weight: 700; }
+    .client-industry { font-size: 20px; color: #94a3b8; margin-top: 6px; }
+    .period {
+      font-size: 18px;
+      color: #64748b;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 30px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 20px;
+    }
+    .stat-value {
+      font-size: 48px;
+      font-weight: 800;
+      color: ${theme.primary};
+      margin-bottom: 10px;
+    }
+    .stat-label { font-size: 20px; color: #94a3b8; }
+    .stat-change {
+      font-size: 16px;
+      color: #10b981;
+      margin-top: 8px;
+    }
+    .quote-section {
+      background: ${theme.primary}11;
+      border-left: 4px solid ${theme.primary};
+      padding: 30px 40px;
+      border-radius: 0 20px 20px 0;
+    }
+    .quote-text {
+      font-size: 26px;
+      color: #e2e8f0;
+      line-height: 1.6;
+      font-style: italic;
+    }
+    .quote-author {
+      font-size: 18px;
+      color: #64748b;
+      margin-top: 16px;
+    }
+    .cta-section {
+      text-align: center;
+      margin-top: 50px;
+    }
+    .cta-text {
+      font-size: 28px;
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .cta-sub {
+      font-size: 20px;
+      color: ${theme.primary};
+    }
+    .footer {
+      display: flex;
+      justify-content: center;
+      margin-top: auto;
+    }
+    .website { font-size: 22px; color: #64748b; }
+    .website span { color: ${theme.primary}; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="instagram-post">
+    <div class="aurora"></div>
+    <div class="grid-pattern"></div>
+    <div class="content">
+      <div class="header">
+        <div class="brand">
+          <div class="logo">
+            <img src="https://polarad.co.kr/images/logo-mobile.png" alt="PolarAD">
+          </div>
+          <span class="brand-name">PolarAD</span>
+        </div>
+        <div class="badge">${data.badge || '📈 실제 사례'}</div>
+      </div>
+      <div class="case-card">
+        <div class="case-header">
+          <div class="client-info">
+            <div class="client-avatar">👤</div>
+            <div>
+              <div class="client-name">${data.headline.replace(/\n/g, ' ')}</div>
+              <div class="client-industry">${data.subHeadline || '영업 대표님'}</div>
+            </div>
+          </div>
+          <div class="period">운영 3개월 성과</div>
+        </div>
+        <div class="stats-grid">
+          ${stats.map(stat => `
+            <div class="stat-item">
+              <div class="stat-value">${stat.value}</div>
+              <div class="stat-label">${stat.label}</div>
+              <div class="stat-change">${stat.change}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="quote-section">
+          <p class="quote-text">"${data.cta || '폴라애드 덕분에 영업에만 집중할 수 있게 됐습니다'}"</p>
+          <p class="quote-author">- ${data.headline.replace(/\n/g, ' ')} 대표님</p>
+        </div>
+      </div>
+      <div class="cta-section">
+        <p class="cta-text">다음 성공 사례의 주인공이 되어보세요</p>
+        <p class="cta-sub">💬 무료 상담 신청 → polarad.co.kr</p>
+      </div>
+      <div class="footer">
+        <div class="website">🌐 <span>polarad.co.kr</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 function generateCtaTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
     { icon: '🖥️', text: '홈페이지' },
     { icon: '📱', text: 'Meta 광고' },
     { icon: '📊', text: '자동 리포트' },
-    { icon: '🖨️', text: '인쇄물' },
+    { icon: '🔔', text: '실시간 알림' },
   ];
 
   return `<!DOCTYPE html>
@@ -1360,6 +1574,7 @@ export const TEMPLATE_TYPES: TemplateType[] = [
   'stats',
   'promo',
   'service',
+  'case',
   'cta',
 ];
 

@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { X, TrendingUp } from 'lucide-react'
 
 const caseData = [
-  { industry: '경영컨설팅', adBudget: '320만', leads: '150건', conversion: '16건 계약' },
+  { industry: '경영컨설팅', adBudget: '320만', leads: '150건', conversion: '15건 계약' },
   { industry: '인테리어', adBudget: '320만', leads: '239건', conversion: '10건 계약' },
   { industry: '직업교육', adBudget: '200만', leads: '100건', conversion: '10명 등록' },
 ]

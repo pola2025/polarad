@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { TrendingUp, X, ChevronRight } from 'lucide-react'
 
 const caseHighlights = [
-  { industry: '경영컨설팅', leads: '150건/월', conversion: '10.7%' },
+  { industry: '경영컨설팅', leads: '150건/월', conversion: '10%' },
   { industry: '인테리어', leads: '239건/월', conversion: '4%' },
   { industry: '직업교육', leads: '100건/월', conversion: '10%' },
 ]

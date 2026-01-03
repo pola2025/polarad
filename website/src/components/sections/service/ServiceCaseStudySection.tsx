@@ -13,8 +13,8 @@ const caseStudies = [
         metrics: {
             adBudget: '약 320만원/월',
             leads: '150건/월',
-            conversion: '16건 계약',
-            conversionRate: '10.7%',
+            conversion: '15건 계약',
+            conversionRate: '10%',
             costPerLead: '약 2.1만원',
         },
         highlight: '높은 계약 전환율',

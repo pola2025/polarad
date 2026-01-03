@@ -21,12 +21,12 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const CONTENT_TOPICS = {
   intro: {
     themes: [
-      '체계적인 자동화 접수 시스템',
-      '안정적인 매출창출을 위한 온라인 영업 솔루션',
-      '영업에 필요한 모든 것을 한 번에',
+      '30만원부터 시작하는 온라인 영업 시스템',
+      '4티어 맞춤형 온라인 영업 솔루션',
       'DB 수집부터 계약까지 원스톱 솔루션',
+      '필요한 만큼만 선택하는 스마트한 마케팅',
     ],
-    services: ['홈페이지', 'Meta 광고', '인쇄물', '자동화 시스템', 'CRM'],
+    services: ['홈페이지', 'Meta 광고', '마케팅 자동화', 'DB 수집'],
   },
   problem: {
     painPoints: [
@@ -46,11 +46,18 @@ const CONTENT_TOPICS = {
   },
   solution: {
     packages: [
-      { name: 'Conversion Basecamp', desc: '고객을 설득하고 DB를 추출하는 전환 기지' },
-      { name: 'Lead Magnet Engine', desc: '잠재 고객을 정밀 타겟팅하여 유입' },
-      { name: 'Authority Kit', desc: '미팅 현장에서 신뢰도를 높이는 브랜딩 키트' },
+      { name: 'Basic 30만원', desc: '랜딩페이지 1P - 부담 없이 시작' },
+      { name: 'Normal 60만원', desc: '랜딩 1P + Meta 세팅 + 도메인' },
+      { name: 'Pro 110만원', desc: '홈페이지 5P + Meta 세팅 + 도메인' },
+      { name: 'Premium 165만원', desc: '홈페이지 10P + 1년 자동화 (프로모션)' },
     ],
-    benefits: ['전환율 높은 랜딩페이지', '정밀 타겟팅 광고', '브랜드 신뢰도 향상'],
+    benefits: ['30만원부터 부담 없이 시작', '성과 확인 후 업그레이드 가능', '1년 자동화 무료 (Premium)'],
+    lowBarrierMessages: [
+      '먼저 Basic으로 시작해보고 결정하세요',
+      '30만원으로 효과를 직접 확인해보세요',
+      '부담 없이 시작, 성과 보고 업그레이드',
+      '작게 시작해서 크게 성장하세요',
+    ],
   },
   feature: {
     features: [
@@ -101,11 +108,11 @@ const CONTENT_TOPICS = {
         ],
       },
       {
-        name: '인쇄물 제작',
+        name: '마케팅 자동화',
         features: [
-          { name: '명함', desc: '200매 기본 제공' },
-          { name: '대봉투', desc: '500매 기본 제공' },
-          { name: '계약서', desc: '500매 기본 제공' },
+          { name: '텔레그램 알림', desc: 'DB 접수 즉시 알림' },
+          { name: 'SMS 발송', desc: '고객 문의 자동 응답' },
+          { name: '자동 리포트', desc: '광고 성과 일일 보고' },
         ],
       },
     ],
@@ -116,6 +123,45 @@ const CONTENT_TOPICS = {
       '나머지는 저희가 다 해드립니다',
       '복잡한 마케팅은 맡기세요',
       '대표님은 계약에만 집중하세요',
+    ],
+  },
+  case: {
+    cases: [
+      {
+        industry: '경영컨설팅',
+        period: '3개월',
+        stats: [
+          { label: '광고비', value: '₩320만', change: '월 예산' },
+          { label: 'DB 수집', value: '150건', change: '월 평균' },
+          { label: '계약 성사', value: '15건', change: '전환율 10%' },
+        ],
+        quote: '폴라애드 덕분에 영업에만 집중할 수 있게 됐습니다',
+      },
+      {
+        industry: '인테리어',
+        period: '3개월',
+        stats: [
+          { label: '광고비', value: '₩320만', change: '월 예산' },
+          { label: 'DB 수집', value: '239건', change: '월 평균' },
+          { label: '계약 성사', value: '10건', change: '전환율 4.2%' },
+        ],
+        quote: 'DB 품질이 확실히 다릅니다. 계약까지 이어지는 고객이 많아요',
+      },
+      {
+        industry: '직업교육',
+        period: '2개월',
+        stats: [
+          { label: '광고비', value: '₩200만', change: '월 예산' },
+          { label: 'DB 수집', value: '100건', change: '월 평균' },
+          { label: '등록 완료', value: '10명', change: '전환율 10%' },
+        ],
+        quote: '자동화 시스템으로 문의 응대 시간이 확 줄었습니다',
+      },
+    ],
+    ctaMessages: [
+      '다음 성공 사례의 주인공이 되어보세요',
+      '30만원부터 시작해서 이런 성과를 만들어보세요',
+      '실제 고객들의 성과입니다',
     ],
   },
 };
@@ -359,6 +405,29 @@ Instagram 이미지용 텍스트를 생성해주세요. 짧고 임팩트 있게 
 
 기존과 다른 새로운 표현으로 작성하세요. JSON만 출력하세요.`;
 
+    case 'case':
+      const randomCase = topic.cases[Math.floor(Math.random() * topic.cases.length)];
+      return `${baseContext}
+
+**템플릿 타입**: 실제 사례/성과
+**참고 사례**: ${JSON.stringify(randomCase)}
+**CTA 메시지**: ${topic.ctaMessages.join(', ')}
+
+다음 JSON 형식으로 응답하세요:
+{
+  "badge": "배지 텍스트 (이모지 포함, 예: 📈 실제 사례)",
+  "headline": "고객/업종명 (예: 경영컨설팅 A사)",
+  "subHeadline": "고객 설명 (예: 영업 대표님)",
+  "stats": [
+    {"label": "지표명", "value": "값", "change": "부가 설명"},
+    {"label": "지표명", "value": "값", "change": "부가 설명"},
+    {"label": "지표명", "value": "값", "change": "부가 설명"}
+  ],
+  "cta": "고객 추천사 (30자 이내)"
+}
+
+실제 성과처럼 보이는 숫자를 사용하세요. JSON만 출력하세요.`;
+
     case 'cta':
       return `${baseContext}
 
@@ -415,7 +484,7 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
       items: [
         { icon: '🖥️', text: '홈페이지' },
         { icon: '📱', text: 'Meta 광고' },
-        { icon: '🖨️', text: '인쇄물' },
+        { icon: '🤖', text: '마케팅 자동화' },
       ],
       cta: '무료 상담 신청',
     },
@@ -478,6 +547,17 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
       ],
       cta: '무료 상담 받아보세요',
     },
+    case: {
+      badge: '📈 실제 사례',
+      headline: '경영컨설팅 A사',
+      subHeadline: '영업 대표님',
+      stats: [
+        { label: '광고비', value: '₩320만', change: '월 예산' },
+        { label: 'DB 수집', value: '150건', change: '월 평균' },
+        { label: '계약 성사', value: '15건', change: '전환율 10%' },
+      ],
+      cta: '폴라애드 덕분에 영업에만 집중할 수 있게 됐습니다',
+    },
     cta: {
       headline: '영업에만 집중하세요',
       subHeadline: '나머지는 저희가 다 해드립니다',
@@ -485,7 +565,7 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
         { icon: '🖥️', text: '홈페이지' },
         { icon: '📱', text: 'Meta 광고' },
         { icon: '📊', text: '자동 리포트' },
-        { icon: '🖨️', text: '인쇄물' },
+        { icon: '🔔', text: '실시간 알림' },
       ],
       cta: '무료 상담 신청',
     },
@@ -533,31 +613,40 @@ async function callGeminiForCaption(templateType: TemplateType, templateData: Te
   const prompt = `당신은 PolarAD(폴라애드) 마케팅 회사의 Instagram 캡션 전문 작성자입니다.
 B2B 영업 대표님들을 위한 "온라인 영업 시스템"을 제공합니다.
 
+**[핵심 전략] 저부담 시작 → 성과 확인 → 업그레이드**
+
+⚠️ 캡션에 반드시 포함할 핵심 메시지:
+   - "30만원부터 부담 없이 시작"
+   - "먼저 Basic으로 효과를 확인해보세요"
+   - "성과를 보고 업그레이드하셔도 됩니다"
+   - 비용 부담을 낮춰 접수율/계약률 향상 유도
+
 **[중요] 폴라애드 4티어 시스템 - 필요한 만큼만 선택**:
 
 📌 티어별 구성 (VAT 포함):
-   - Basic 30만원: 랜딩페이지 1P
+   - Basic 30만원: 랜딩페이지 1P (부담 없이 시작!)
    - Normal 60만원: 랜딩 1P + Meta 광고 세팅 + 도메인 1년
    - Pro 110만원: 홈페이지 5P + Meta 광고 세팅 + 도메인 1년
-   - Premium 220만원: 홈페이지 10P + Meta 세팅 + 6개월 자동화
+   - Premium 165만원: 홈페이지 10P + 1년 자동화 (프로모션!)
 
-📌 홈페이지 (Conversion Basecamp)
+📌 홈페이지
    - PC, 태블릿, 모바일 반응형 웹
    - SEO 최적화로 검색 상위 노출
    - DB 수집 폼 연동 (고객 문의 자동 수집)
 
-📌 Meta 광고 (Lead Magnet Engine)
+📌 Meta 광고
    - Facebook/Instagram 광고 세팅
    - 타겟 오디언스 최적화
    - 실시간 성과 추적
 
-📌 추가 옵션 (별도):
-   - 인쇄물 4종 (명함/봉투/계약서/명찰): 단독 110만원 / 추가 55만원
-   - Meta 자동화 월금액: 3개월 22만/월, 6개월 16.5만/월, 1년 11만/월
+📌 마케팅 자동화 (Premium 포함)
+   - 텔레그램 실시간 DB 알림
+   - SMS 자동 발송
+   - 광고 성과 자동 리포트
 
 → 대표님은 고객 미팅과 계약 성사에만 집중하시면 됩니다.
 
-🎁 **[1월 프로모션] 2025년 1월 31일까지, 선착순 10개 기업**
+🎁 **[1월 프로모션] 2026년 1월 31일까지, 선착순 10개 기업**
 
    🎯 Premium 165만원 (정가 220만원 → 55만원 할인)
    🎯 1년 자동화 무료 제공 (6개월 → 1년으로 업그레이드)
@@ -596,14 +685,14 @@ B2B 영업 대표님들을 위한 "온라인 영업 시스템"을 제공합니�
 - 구체적인 예시, 수치, 고객 사례 언급 (3~4줄)
 - 각 문단은 3~4줄 후 빈 줄로 구분
 
-[체크리스트 섹션 - 올인원 패키지 강조]
+[체크리스트 섹션 - 4티어 시스템 강조]
 ━━━━━━━━━━━━━━━━━
+✅ 30만원부터 부담 없이 시작 가능
 ✅ PC/모바일 반응형 웹사이트
-✅ 명함, 대봉투, 계약서 인쇄물
-✅ Meta 광고 자동화 설정
-✅ (추가 포인트 1개 더)
+✅ Meta 광고 타겟팅 설정
+✅ 텔레그램/SMS 실시간 알림 (Premium)
 ━━━━━━━━━━━━━━━━━
-→ 체크리스트는 반드시 위 3가지 서비스 포함!
+→ "먼저 Basic으로 시작해보세요" 메시지 필수!
 
 [마무리 - 4~5줄]
 - 프로모션 혜택 다시 한번 강조
@@ -676,7 +765,9 @@ function getDefaultCaption(templateType: TemplateType, data: TemplateData): stri
 📌 Pro 110만원 - 홈페이지 5P
 📌 Premium 220만원 - 홈페이지 10P+자동화
 
-필요한 만큼만 선택하세요!
+💡 30만원부터 부담 없이 시작!
+먼저 Basic으로 효과를 확인해보세요.
+성과를 보고 업그레이드하셔도 됩니다.
 
 ━━━━━━━━━━━━━━━━━
 
