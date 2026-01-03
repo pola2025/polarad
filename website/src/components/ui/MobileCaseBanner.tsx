@@ -21,6 +21,12 @@ export function MobileCaseBanner() {
 
   const isServicePage = pathname === '/service'
 
+  // 페이지 이동 시 다시 표시
+  useEffect(() => {
+    setIsDismissed(false)
+    setIsVisible(false)
+  }, [pathname])
+
   useEffect(() => {
     // 스크롤 시 표시 + 흐림 효과
     const handleScroll = () => {
