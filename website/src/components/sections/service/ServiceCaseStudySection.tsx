@@ -106,28 +106,21 @@ export default function ServiceCaseStudySection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="relative"
+                                className={`rounded-2xl border ${colors.border} overflow-hidden`}
                             >
-                                {/* 상단 뱃지 - 카드 위에 걸침 */}
-                                <div className="flex justify-start ml-4 mb-[-8px] relative z-10">
-                                    <span className={`${colors.headerBg} text-white text-[11px] font-medium px-3 py-1 rounded-full`}>
-                                        이용 고객 사례
-                                    </span>
-                                </div>
-
-                                <div className={`rounded-2xl border ${colors.border} overflow-hidden`}>
-                                    {/* 상품 티어 헤더 - 아이콘 + 티어 + 가격 한 줄 */}
-                                    <div className={`${colors.headerBg} px-4 sm:px-6 py-3`}>
-                                        <div className="flex items-center justify-between whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <PlanIcon className="w-5 h-5 text-white shrink-0" />
-                                                <span className="text-white font-bold text-base sm:text-lg">{caseStudy.plan}</span>
-                                            </div>
-                                            <span className="text-white/90 text-xs sm:text-sm font-medium bg-white/20 px-2 sm:px-2.5 py-1 rounded-full">
-                                                {caseStudy.planPrice}
-                                            </span>
+                                {/* 상품 티어 헤더 - 한 줄 배치 */}
+                                <div className={`${colors.headerBg} px-4 sm:px-6 py-3`}>
+                                    <div className="flex items-center justify-between whitespace-nowrap">
+                                        <div className="flex items-center gap-1.5 sm:gap-2">
+                                            <PlanIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
+                                            <span className="text-white font-bold text-sm sm:text-lg">{caseStudy.plan}</span>
+                                            <span className="text-white/70 text-[11px] sm:text-sm">이용 고객 사례</span>
                                         </div>
+                                        <span className="text-white/90 text-[11px] sm:text-sm font-medium bg-white/20 px-2 py-0.5 sm:py-1 rounded-full">
+                                            {caseStudy.planPrice}
+                                        </span>
                                     </div>
+                                </div>
 
                                 {/* 카드 본문 */}
                                 <div className={`${colors.bg} p-6 lg:p-8`}>
@@ -171,7 +164,6 @@ export default function ServiceCaseStudySection() {
                                         <TrendingUp className="w-4 h-4" />
                                         <span className="text-sm font-medium">{caseStudy.highlight}</span>
                                     </div>
-                                </div>
                                 </div>
                             </motion.div>
                         )
