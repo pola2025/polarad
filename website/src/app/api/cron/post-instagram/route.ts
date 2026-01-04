@@ -12,6 +12,7 @@ import {
   publishToInstagram,
 } from '@/lib/instagram';
 import { uploadImageToR2, isR2Configured } from '@/lib/r2-storage';
+import { logErrorToSlack, logSuccessToSlack } from '@/lib/slack-logger';
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
@@ -340,11 +341,17 @@ export async function GET(request: Request) {
       caption
     );
 
-    // 9. 텔레그램 알림
-    await sendTelegramNotification('success', {
-      title,
-      instagramUrl: result.permalink
-    });
+    // 9. 텔레그램 + Slack 알림
+    await Promise.all([
+      sendTelegramNotification('success', {
+        title,
+        instagramUrl: result.permalink
+      }),
+      logSuccessToSlack(
+        '/api/cron/post-instagram',
+        `${title}\n${result.permalink}`
+      ),
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -360,10 +367,22 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('❌ 에러:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
 
-    await sendTelegramNotification('error', {
-      errorMessage
-    });
+    // 텔레그램 + Slack 알림
+    await Promise.all([
+      sendTelegramNotification('error', { errorMessage }),
+      logErrorToSlack({
+        source: '/api/cron/post-instagram',
+        errorMessage,
+        errorStack,
+        envStatus: {
+          AIRTABLE: AIRTABLE_API_KEY ? '✅' : '❌',
+          R2: isR2Configured() ? '✅' : '❌',
+          INSTAGRAM_TOKEN: process.env.INSTAGRAM_ACCESS_TOKEN ? '✅' : '❌',
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       error: 'Instagram posting failed',

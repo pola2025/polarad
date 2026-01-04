@@ -662,12 +662,19 @@ async function generateCaptionWithGemini(templateType: TemplateType, templateDat
   // 최대 3번 재시도
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const caption = await callGeminiForCaption(templateType, templateData);
-      if (caption && caption.length >= 500) {
-        console.log(`✅ 캡션 생성 성공 (시도 ${attempt}): ${caption.length}자`);
-        return caption;
+      const result = await callGeminiForCaption(templateType, templateData);
+      
+      // finish_reason 체크 - MAX_TOKENS면 잘린 것
+      if (result.finishReason === 'MAX_TOKENS') {
+        console.warn(`⚠️ 캡션이 토큰 한도로 잘림 (시도 ${attempt})`);
+        continue;
       }
-      console.warn(`⚠️ 캡션 길이 부족 (시도 ${attempt}): ${caption?.length || 0}자`);
+      
+      if (result.caption && result.caption.length >= 800) {
+        console.log(`✅ 캡션 생성 성공 (시도 ${attempt}): ${result.caption.length}자`);
+        return result.caption;
+      }
+      console.warn(`⚠️ 캡션 길이 부족 (시도 ${attempt}): ${result.caption?.length || 0}자 (최소 800자 필요)`);
     } catch (error) {
       console.error(`❌ 캡션 생성 실패 (시도 ${attempt}):`, error);
     }
@@ -682,10 +689,15 @@ async function generateCaptionWithGemini(templateType: TemplateType, templateDat
   return getDefaultCaption(templateType, templateData);
 }
 
+interface CaptionResult {
+  caption: string | null;
+  finishReason: string | null;
+}
+
 /**
  * Gemini API 호출 (캡션)
  */
-async function callGeminiForCaption(templateType: TemplateType, templateData: TemplateData): Promise<string | null> {
+async function callGeminiForCaption(templateType: TemplateType, templateData: TemplateData): Promise<CaptionResult> {
   const prompt = `당신은 PolarAD(폴라애드) 마케팅 회사의 Instagram 캡션 전문 작성자입니다.
 B2B 영업 대표님들을 위한 "온라인 영업 시스템"을 제공합니다.
 
@@ -797,7 +809,7 @@ B2B 영업 대표님들을 위한 "온라인 영업 시스템"을 제공합니�
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.75, maxOutputTokens: 4000 },
+        generationConfig: { temperature: 0.75, maxOutputTokens: 8192 },
       }),
     }
   );
@@ -808,8 +820,11 @@ B2B 영업 대표님들을 위한 "온라인 영업 시스템"을 제공합니�
 
   const result = await res.json();
   const caption = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+  const finishReason = result.candidates?.[0]?.finishReason || null;
+  
+  console.log(`📝 캡션 생성 결과: ${caption?.length || 0}자, finishReason: ${finishReason}`);
 
-  return caption || null;
+  return { caption: caption || null, finishReason };
 }
 
 /**
