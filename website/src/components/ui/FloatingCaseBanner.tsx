@@ -89,7 +89,7 @@ export function FloatingCaseBanner() {
           exit={{ opacity: 0, x: 100 }}
           className="fixed right-4 bottom-24 md:bottom-8 z-40 hidden sm:block"
         >
-          <div className="relative bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden w-[240px]">
+          <div className="relative bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden w-[280px]">
             {/* 닫기 버튼 */}
             <button
               onClick={handleDismiss}
@@ -101,11 +101,11 @@ export function FloatingCaseBanner() {
 
             {/* 상품 티어 헤더 - 가장 눈에 띄게 */}
             <div className={`${style.headerBg} px-4 py-3`}>
-              <div className="flex items-center gap-2">
-                <PlanIcon className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <PlanIcon className="w-5 h-5 text-white shrink-0" />
                 <div>
                   <span className="text-white text-sm font-bold">{current.plan} 이용 고객 사례</span>
-                  <span className="text-white/80 text-xs ml-1.5">({current.planPrice}/월)</span>
+                  <span className="text-white/80 text-xs ml-1.5">({current.planPrice})</span>
                 </div>
               </div>
             </div>
