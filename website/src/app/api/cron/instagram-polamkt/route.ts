@@ -13,6 +13,7 @@ import { NextResponse } from 'next/server';
 import { generateInstagramContent } from '@/lib/instagram-content-generator';
 import { generateTemplateHtml } from '@/lib/instagram-templates';
 import { uploadToCloudinary } from '@/lib/cloudinary';
+import { logErrorToSlack, logSuccessToSlack } from '@/lib/slack-logger';
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -47,20 +48,46 @@ const GRAPH_API_BASE = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
 // 실제 운영 시에는 browserless.io 또는 자체 서버 필요
 const SCREENSHOT_SERVICE_URL = process.env.SCREENSHOT_SERVICE_URL;
 
+// 환경변수 상태 확인 함수
+function getEnvStatus(): Record<string, string> {
+  return {
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY ? '✅' : '❌',
+    HCTI_API_USER_ID: process.env.HCTI_API_USER_ID ? '✅' : '❌',
+    HCTI_API_KEY: process.env.HCTI_API_KEY ? '✅' : '❌',
+    CLOUDINARY: process.env.CLOUDINARY_CLOUD_NAME ? '✅' : '❌',
+    INSTAGRAM_TOKEN: INSTAGRAM_ACCESS_TOKEN ? '✅' : '❌',
+    TELEGRAM: TELEGRAM_BOT_TOKEN ? '✅' : '❌',
+  };
+}
+
 // 텔레그램 알림
 async function sendTelegramNotification(
-  type: 'success' | 'error',
+  type: 'success' | 'error' | 'warning',
   data: {
     title?: string;
     instagramUrl?: string;
     errorMessage?: string;
+    errorStack?: string;
     templateType?: string;
     failedStep?: CronStep;
+    lastSuccessStep?: CronStep;
     duration?: number;
     stepDurations?: Record<string, number>;
+    envStatus?: Record<string, string>;
+    additionalInfo?: string;
   }
 ): Promise<void> {
   if (!TELEGRAM_BOT_TOKEN) return;
+
+  const stepNames: Record<CronStep, string> = {
+    init: '초기화',
+    gemini: 'Gemini 콘텐츠 생성',
+    template: 'HTML 템플릿 적용',
+    capture: '이미지 캡처 (HCTI)',
+    cloudinary: 'Cloudinary 업로드',
+    instagram: 'Instagram 게시',
+    complete: '완료',
+  };
 
   let message: string;
 
@@ -72,27 +99,46 @@ async function sendTelegramNotification(
 🔗 *Instagram:* [게시글 보기](${data.instagramUrl})${durationInfo}
 
 ✅ 폴라애드 컨텐츠가 성공적으로 게시되었습니다!`;
+  } else if (type === 'warning') {
+    message = `⚠️ *polamkt Instagram 경고*
+
+${data.additionalInfo || ''}
+
+ℹ️ 작업은 계속 진행됩니다.`;
   } else {
-    const stepNames: Record<CronStep, string> = {
-      init: '초기화',
-      gemini: 'Gemini 콘텐츠 생성',
-      template: 'HTML 템플릿 적용',
-      capture: '이미지 캡처 (HCTI)',
-      cloudinary: 'Cloudinary 업로드',
-      instagram: 'Instagram 게시',
-      complete: '완료',
-    };
-    const stepInfo = data.failedStep ? `\n📍 *실패 단계:* ${stepNames[data.failedStep]}` : '';
-    const durationInfo = data.stepDurations 
-      ? `\n⏱️ *단계별 소요시간:*\n${Object.entries(data.stepDurations).map(([k, v]) => `  - ${k}: ${(v / 1000).toFixed(1)}초`).join('\n')}`
+    // 에러 메시지 구성
+    const failedStepInfo = data.failedStep 
+      ? `\n\n📍 *실패 단계:* ${stepNames[data.failedStep]}`
       : '';
     
+    const lastSuccessInfo = data.lastSuccessStep && data.lastSuccessStep !== 'init'
+      ? `\n✅ *마지막 성공:* ${stepNames[data.lastSuccessStep]}`
+      : '';
+    
+    // 단계별 소요시간 (완료된 것만)
+    const durationInfo = data.stepDurations 
+      ? `\n\n⏱️ *단계별 소요시간:*\n${Object.entries(data.stepDurations)
+          .filter(([k]) => k !== 'total')
+          .map(([k, v]) => `  ${k}: ${(v / 1000).toFixed(1)}초`)
+          .join('\n')}`
+      : '';
+
+    // 환경변수 상태 (에러 시에만)
+    const envInfo = data.envStatus
+      ? `\n\n🔧 *환경변수:*\n${Object.entries(data.envStatus).map(([k, v]) => `  ${k}: ${v}`).join('\n')}`
+      : '';
+
+    // 에러 스택 (첫 줄만)
+    const stackInfo = data.errorStack
+      ? `\n\n📋 *스택:* \`${data.errorStack.split('\n')[0].slice(0, 80)}\``
+      : '';
+
     message = `❌ *polamkt Instagram 자동 게시 실패*
-${stepInfo}
-⚠️ *오류:* ${data.errorMessage}
-${durationInfo}
-🔧 수동 확인이 필요합니다.
-💡 수동 실행: polarad.co.kr/api/cron/instagram-polamkt?force=true`;
+${failedStepInfo}${lastSuccessInfo}
+
+⚠️ *오류:* ${data.errorMessage}${stackInfo}${durationInfo}${envInfo}
+
+💡 *수동 실행:* polarad.co.kr/api/cron/instagram-polamkt?force=true`;
   }
 
   try {
@@ -469,12 +515,19 @@ ${content.hashtags.join(' ')}`;
     });
     console.log('========================================\n');
 
-    // 7. 텔레그램 알림
-    await sendTelegramNotification('success', {
-      templateType: content.templateType,
-      instagramUrl: publishResult.permalink,
-      duration: totalDuration,
-    });
+    // 7. 텔레그램 + Slack 알림
+    await Promise.all([
+      sendTelegramNotification('success', {
+        templateType: content.templateType,
+        instagramUrl: publishResult.permalink,
+        duration: totalDuration,
+      }),
+      logSuccessToSlack(
+        '/api/cron/instagram-polamkt',
+        `템플릿: ${content.templateType}\n${publishResult.permalink}`,
+        totalDuration
+      ),
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -493,25 +546,53 @@ ${content.hashtags.join(' ')}`;
     stepDurations[currentStep] = Date.now() - stepStartTime;
     stepDurations['total'] = totalDuration;
 
-    console.error('\n❌ ========================================');
-    console.error(`❌ 에러 발생! (단계: ${currentStep})`);
-    console.error(`⏱️ 실패까지 소요시간: ${(totalDuration / 1000).toFixed(1)}초`);
-    console.error('에러 상세:', error);
-    console.error('========================================\n');
+    // 마지막 성공 단계 계산
+    const stepOrder: CronStep[] = ['init', 'gemini', 'template', 'capture', 'cloudinary', 'instagram', 'complete'];
+    const failedIndex = stepOrder.indexOf(currentStep);
+    const lastSuccessStep = failedIndex > 0 ? stepOrder[failedIndex - 1] : 'init';
 
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
 
-    await sendTelegramNotification('error', {
-      errorMessage,
-      failedStep: currentStep,
-      stepDurations,
-    });
+    console.error('\n❌ ========================================');
+    console.error(`❌ 에러 발생! (단계: ${currentStep})`);
+    console.error(`✅ 마지막 성공 단계: ${lastSuccessStep}`);
+    console.error(`⏱️ 실패까지 소요시간: ${(totalDuration / 1000).toFixed(1)}초`);
+    console.error('에러 메시지:', errorMessage);
+    if (errorStack) {
+      console.error('스택 트레이스:', errorStack);
+    }
+    console.error('========================================\n');
+
+    // 상세 에러 정보와 함께 텔레그램 + Slack 알림
+    await Promise.all([
+      sendTelegramNotification('error', {
+        errorMessage,
+        errorStack,
+        failedStep: currentStep,
+        lastSuccessStep,
+        stepDurations,
+        envStatus: getEnvStatus(),
+      }),
+      logErrorToSlack({
+        source: '/api/cron/instagram-polamkt',
+        errorMessage,
+        errorStack,
+        step: currentStep,
+        lastSuccessStep,
+        duration: totalDuration,
+        envStatus: getEnvStatus(),
+        additionalData: { stepDurations },
+      }),
+    ]);
 
     return NextResponse.json({
       error: 'Instagram posting failed',
       message: errorMessage,
       failedStep: currentStep,
+      lastSuccessStep,
       stepDurations,
+      envStatus: getEnvStatus(),
     }, { status: 500 });
   }
 }
