@@ -1,15 +1,15 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingUp, Users, Target, Building2, GraduationCap, Hammer } from 'lucide-react'
+import { TrendingUp, Crown, Gem, Building2, GraduationCap, Hammer } from 'lucide-react'
 
 const caseStudies = [
     {
         icon: Building2,
         industry: '경영컨설팅',
-        plan: 'Pro',
-        planPrice: '110만',
-        color: 'emerald',
+        plan: 'Premium',
+        planPrice: '220만',
+        color: 'amber',
         metrics: {
             adBudget: '약 320만원/월',
             leads: '150건/월',
@@ -37,9 +37,9 @@ const caseStudies = [
     {
         icon: GraduationCap,
         industry: '직업기술교육',
-        plan: 'Premium',
-        planPrice: '220만',
-        color: 'blue',
+        plan: 'Pro',
+        planPrice: '110만',
+        color: 'emerald',
         metrics: {
             adBudget: '약 200만원/월',
             leads: '100건/월',
@@ -57,24 +57,18 @@ const colorClasses = {
         border: 'border-emerald-800/50',
         icon: 'text-emerald-400',
         iconBg: 'bg-emerald-900/50',
-        badge: 'bg-emerald-900/50 text-emerald-400 border-emerald-700',
+        headerBg: 'bg-gradient-to-r from-emerald-600 to-emerald-500',
         highlight: 'text-emerald-400',
+        planIcon: Gem,
     },
     amber: {
         bg: 'bg-amber-950/30',
         border: 'border-amber-800/50',
         icon: 'text-amber-400',
         iconBg: 'bg-amber-900/50',
-        badge: 'bg-amber-900/50 text-amber-400 border-amber-700',
+        headerBg: 'bg-gradient-to-r from-amber-600 to-amber-500',
         highlight: 'text-amber-400',
-    },
-    blue: {
-        bg: 'bg-blue-950/30',
-        border: 'border-blue-800/50',
-        icon: 'text-blue-400',
-        iconBg: 'bg-blue-900/50',
-        badge: 'bg-blue-900/50 text-blue-400 border-blue-700',
-        highlight: 'text-blue-400',
+        planIcon: Crown,
     },
 }
 
@@ -103,6 +97,7 @@ export default function ServiceCaseStudySection() {
                     {caseStudies.map((caseStudy, index) => {
                         const Icon = caseStudy.icon
                         const colors = colorClasses[caseStudy.color as keyof typeof colorClasses]
+                        const PlanIcon = colors.planIcon
 
                         return (
                             <motion.div
@@ -111,51 +106,64 @@ export default function ServiceCaseStudySection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className={`rounded-2xl border ${colors.border} ${colors.bg} p-6 lg:p-8`}
+                                className={`rounded-2xl border ${colors.border} overflow-hidden`}
                             >
-                                {/* Header */}
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="flex items-center gap-3">
+                                {/* 상품 티어 헤더 - 가장 눈에 띄는 위치 */}
+                                <div className={`${colors.headerBg} px-6 py-4`}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <PlanIcon className="w-5 h-5 text-white" />
+                                            <span className="text-white font-bold text-lg">{caseStudy.plan}</span>
+                                            <span className="text-white/80 text-sm">이용 고객 사례</span>
+                                        </div>
+                                        <span className="text-white/90 text-sm font-medium bg-white/20 px-2.5 py-1 rounded-full">
+                                            {caseStudy.planPrice}/월
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* 카드 본문 */}
+                                <div className={`${colors.bg} p-6 lg:p-8`}>
+                                    {/* 업종 정보 */}
+                                    <div className="flex items-center gap-3 mb-6">
                                         <div className={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center`}>
                                             <Icon className={`w-6 h-6 ${colors.icon}`} />
                                         </div>
                                         <div>
+                                            <span className="text-xs text-gray-500">업종</span>
                                             <h3 className="text-lg font-bold text-white">{caseStudy.industry}</h3>
-                                            <span className={`text-xs px-2 py-0.5 rounded border ${colors.badge}`}>
-                                                {caseStudy.plan} ({caseStudy.planPrice})
-                                            </span>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Metrics */}
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center py-2 border-b border-gray-800">
-                                        <span className="text-gray-500 text-sm">월 광고비</span>
-                                        <span className="text-white font-medium">{caseStudy.metrics.adBudget}</span>
+                                    {/* Metrics */}
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center py-2 border-b border-gray-800">
+                                            <span className="text-gray-500 text-sm">월 광고비</span>
+                                            <span className="text-white font-medium">{caseStudy.metrics.adBudget}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center py-2 border-b border-gray-800">
+                                            <span className="text-gray-500 text-sm">월 DB 수집</span>
+                                            <span className="text-white font-medium">{caseStudy.metrics.leads}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center py-2 border-b border-gray-800">
+                                            <span className="text-gray-500 text-sm">DB 단가</span>
+                                            <span className="text-white font-medium">{caseStudy.metrics.costPerLead}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center py-2 border-b border-gray-800">
+                                            <span className="text-gray-500 text-sm">전환</span>
+                                            <span className="text-white font-medium">{caseStudy.metrics.conversion}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center py-2">
+                                            <span className="text-gray-500 text-sm">전환율</span>
+                                            <span className={`font-bold text-lg ${colors.highlight}`}>{caseStudy.metrics.conversionRate}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex justify-between items-center py-2 border-b border-gray-800">
-                                        <span className="text-gray-500 text-sm">월 DB 수집</span>
-                                        <span className="text-white font-medium">{caseStudy.metrics.leads}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center py-2 border-b border-gray-800">
-                                        <span className="text-gray-500 text-sm">DB 단가</span>
-                                        <span className="text-white font-medium">{caseStudy.metrics.costPerLead}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center py-2 border-b border-gray-800">
-                                        <span className="text-gray-500 text-sm">전환</span>
-                                        <span className="text-white font-medium">{caseStudy.metrics.conversion}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center py-2">
-                                        <span className="text-gray-500 text-sm">전환율</span>
-                                        <span className={`font-bold ${colors.highlight}`}>{caseStudy.metrics.conversionRate}</span>
-                                    </div>
-                                </div>
 
-                                {/* Highlight */}
-                                <div className={`mt-6 pt-4 border-t border-gray-800 flex items-center gap-2 ${colors.highlight}`}>
-                                    <TrendingUp className="w-4 h-4" />
-                                    <span className="text-sm font-medium">{caseStudy.highlight}</span>
+                                    {/* Highlight */}
+                                    <div className={`mt-6 pt-4 border-t border-gray-800 flex items-center gap-2 ${colors.highlight}`}>
+                                        <TrendingUp className="w-4 h-4" />
+                                        <span className="text-sm font-medium">{caseStudy.highlight}</span>
+                                    </div>
                                 </div>
                             </motion.div>
                         )
