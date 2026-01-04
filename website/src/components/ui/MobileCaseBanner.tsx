@@ -108,10 +108,9 @@ export function MobileCaseBanner() {
     >
       {/* 상품 티어 뱃지 - 가장 눈에 띄게 */}
       <div className="flex justify-start mb-1">
-        <div className={`inline-flex items-center gap-1.5 ${style.bg} px-3 py-1 rounded-t-lg`}>
-          <PlanIcon className="w-3.5 h-3.5 text-white" />
-          <span className="text-xs text-white font-bold">{current.plan}</span>
-          <span className="text-[10px] text-white/80">이용 고객 사례</span>
+        <div className={`inline-flex items-center gap-1.5 ${style.bg} px-2.5 py-1 rounded-t-lg whitespace-nowrap`}>
+          <PlanIcon className="w-3 h-3 text-white shrink-0" />
+          <span className="text-[11px] text-white font-bold">{current.plan} 이용 고객 사례</span>
         </div>
       </div>
 
