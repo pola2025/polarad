@@ -38,8 +38,8 @@ function getContentYear(): string {
   const now = new Date();
   const kstOffset = 9 * 60 * 60 * 1000;
   const kstDate = new Date(now.getTime() + kstOffset);
-  // 다음 연도 사용 (최신 정보 강조)
-  return String(kstDate.getUTCFullYear() + 1);
+  // 현재 연도 사용 (올해 = 2026년)
+  return String(kstDate.getUTCFullYear());
 }
 
 const CURRENT_YEAR = getContentYear();
@@ -195,7 +195,7 @@ ${feedbackSection}
 
 1. **분량**: 1500~2500자 (글자수 기준)
 2. **구조**: 명확한 서론-본론-결론 + 3개 이상의 소제목(##)
-3. **연도**: 반드시 ${CURRENT_YEAR}년 기준으로 작성 (2024년, 2025년 절대 사용 금지)
+3. **연도**: 반드시 ${CURRENT_YEAR}년 기준으로 작성. 올해는 ${CURRENT_YEAR}년, 작년은 ${Number(CURRENT_YEAR) - 1}년. (2024년, 2027년 이후 연도 사용 금지)
 4. **톤앤매너**: 전문적이면서 친근하게
 5. **마크다운**: ##, ###, -, **, \` 등 적극 활용
 6. **CTA**: 글 마지막에 폴라애드 문의 유도 (자연스럽게)
@@ -203,7 +203,7 @@ ${feedbackSection}
 
 ## 금지 사항
 
-- ❌ 2024년, 2025년 언급 (${CURRENT_YEAR}년만 사용)
+- ❌ 2024년 이전, 2027년 이후 연도 언급 금지 (올해=${CURRENT_YEAR}년, 작년=${Number(CURRENT_YEAR) - 1}년만 허용)
 - ❌ 틱톡(TikTok) 관련 내용
 - ❌ 건강, 의료, 음식, 여행 등 마케팅과 무관한 내용
 - ❌ 개인정보, 프라이버시 관련 내용
@@ -237,11 +237,11 @@ export function validateContentV2(
     });
   }
 
-  // 연도 체크 (2024, 2025 금지)
-  if (content.includes('2024') || content.includes('2025')) {
+  // 연도 체크 (2024 이전, 2027 이후 금지)
+  if (content.includes('2024') || content.includes('2027') || content.includes('2028')) {
     issues.push({
       type: 'error',
-      message: `금지된 연도 포함 (2024 또는 2025). ${CURRENT_YEAR}년만 사용하세요.`,
+      message: `금지된 연도 포함. 올해(${CURRENT_YEAR}년)와 작년(${Number(CURRENT_YEAR) - 1}년)만 사용하세요.`,
     });
   }
 

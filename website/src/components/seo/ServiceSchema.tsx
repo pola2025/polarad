@@ -25,7 +25,7 @@ export function ServiceSchema() {
           "itemOffered": {
             "@type": "Service",
             "name": "Basic 패키지",
-            "description": "랜딩페이지 1P 제작. 빠른 시작을 원하는 분께 추천"
+            "description": "Meta 광고 세팅 + 자동화 최초설정. 광고만 빠르게 시작하는 분께 추천"
           },
           "price": "300000",
           "priceCurrency": "KRW"
@@ -35,7 +35,7 @@ export function ServiceSchema() {
           "itemOffered": {
             "@type": "Service",
             "name": "Normal 패키지",
-            "description": "랜딩페이지 1P + Meta 광고 세팅 + 도메인 1년. 광고까지 한 번에"
+            "description": "랜딩페이지 1P + Meta 광고 세팅 + 자동화 1개월 + 도메인 1년. 광고 테스트를 시작하는 분께 추천"
           },
           "price": "600000",
           "priceCurrency": "KRW"
@@ -45,7 +45,7 @@ export function ServiceSchema() {
           "itemOffered": {
             "@type": "Service",
             "name": "Pro 패키지",
-            "description": "홈페이지 5P + Meta 광고 세팅 + 도메인 1년. 본격적인 온라인 영업 시작"
+            "description": "홈페이지 5P + Meta 광고 세팅 + 자동화 2개월 + 도메인 1년 + SEO 최적화. 본격적인 온라인 영업 시작"
           },
           "price": "1100000",
           "priceCurrency": "KRW"
@@ -55,7 +55,7 @@ export function ServiceSchema() {
           "itemOffered": {
             "@type": "Service",
             "name": "Premium 패키지 (프로모션)",
-            "description": "홈페이지 10P + 6개월→1년 자동화 + 도메인 1년. 1/31까지 선착순 10개 한정 165만원"
+            "description": "홈페이지 10P + 자동화 6개월 + 게시글 자동생성기 + 도메인 1년 + 알림 + SEO. 1/31까지 선착순 10개 한정 165만원"
           },
           "price": "1650000",
           "priceCurrency": "KRW",

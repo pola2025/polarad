@@ -286,7 +286,7 @@ export default function ContactPage() {
                       <span className="text-gray-400 group-open:rotate-180 transition-transform text-xs">▼</span>
                     </summary>
                     <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
-                      4가지 티어로 구성됩니다. Basic 30만원, Normal 60만원, Pro 110만원, Premium 220만원. 인쇄물은 추가 옵션으로 선택 가능합니다.
+                      4가지 티어로 구성됩니다. Basic(30만원): Meta 광고세팅 + 자동화 최초설정, Normal(60만원): 랜딩 1P + Meta 세팅 + 자동화 1개월, Pro(110만원): 홈페이지 5P + 자동화 2개월 + SEO, Premium(220만원): 홈페이지 10P + 자동화 6개월 + 게시글 자동생성기 + SEO. 인쇄물은 추가 옵션입니다.
                     </p>
                   </details>
                   <details className="group">

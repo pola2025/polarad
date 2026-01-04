@@ -206,7 +206,7 @@ export default function ServiceDetailsSection() {
                                 <ul className="space-y-2 text-gray-700 text-xs sm:text-sm lg:text-base">
                                     <li className="flex items-start gap-2 whitespace-nowrap">
                                         <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                                        Basic: 랜딩 1P / Normal~Premium: 5P~10P
+                                        Normal: 랜딩 1P / Pro: 5P / Premium: 10P
                                     </li>
                                     <li className="flex items-start gap-2 whitespace-nowrap">
                                         <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />

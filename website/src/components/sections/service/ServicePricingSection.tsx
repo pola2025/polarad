@@ -1,13 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check, X, Star, Zap, Rocket, Crown, Clock, Users } from 'lucide-react'
+import { Check, X, Star, Zap, Rocket, Crown, ArrowUp, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 interface Feature {
     text: string
     included: boolean
     highlight?: boolean
+    badge?: 'new' | 'upgrade'
 }
 
 interface Tier {
@@ -25,16 +26,16 @@ const tiers: Tier[] = [
     {
         name: 'Basic',
         price: '30',
-        description: '브랜딩 채널만 필요한 분',
+        description: '광고만 빠르게 시작하는 분',
         icon: Star,
         color: 'gray',
         features: [
-            { text: '랜딩페이지 1P (4섹션)', included: true },
-            { text: '입력폼 연동', included: true },
-            { text: '반응형 디자인', included: true },
+            { text: 'Meta 광고 세팅', included: true },
+            { text: 'Meta 자동화 최초설정', included: true },
+            { text: '랜딩페이지', included: false },
             { text: '도메인 제공', included: false },
-            { text: 'Meta 광고 세팅', included: false },
-            { text: 'Meta 자동화', included: false },
+            { text: 'SEO 최적화', included: false },
+            { text: '게시글 자동생성기', included: false },
         ],
         cta: '상담 신청',
         popular: false,
@@ -46,12 +47,12 @@ const tiers: Tier[] = [
         icon: Zap,
         color: 'blue',
         features: [
-            { text: '랜딩페이지 1P (4섹션)', included: true },
-            { text: '입력폼 연동', included: true },
-            { text: '반응형 디자인', included: true },
-            { text: '도메인 1년 제공', included: true },
-            { text: 'Meta 광고 세팅 1회', included: true },
-            { text: 'Meta 자동화', included: false },
+            { text: '랜딩페이지 1P (4섹션)', included: true, badge: 'new' },
+            { text: 'Meta 광고 세팅', included: true },
+            { text: 'Meta 자동화 1개월', included: true, badge: 'upgrade' },
+            { text: '도메인 1년 제공', included: true, badge: 'new' },
+            { text: 'SEO 최적화', included: false },
+            { text: '게시글 자동생성기', included: false },
         ],
         cta: '상담 신청',
         popular: false,
@@ -63,12 +64,12 @@ const tiers: Tier[] = [
         icon: Rocket,
         color: 'emerald',
         features: [
-            { text: '홈페이지 5P (섹션 무제한)', included: true },
-            { text: '입력폼 연동', included: true },
-            { text: '반응형 디자인', included: true },
+            { text: '홈페이지 5P (섹션 최대 4개)', included: true, badge: 'upgrade' },
+            { text: 'Meta 광고 세팅', included: true },
+            { text: 'Meta 자동화 2개월', included: true, badge: 'upgrade' },
             { text: '도메인 1년 제공', included: true },
-            { text: 'Meta 광고 세팅 1회', included: true },
-            { text: 'Meta 자동화', included: false },
+            { text: 'SEO 최적화', included: true, badge: 'new' },
+            { text: '게시글 자동생성기', included: false },
         ],
         cta: '상담 신청',
         popular: false,
@@ -80,12 +81,12 @@ const tiers: Tier[] = [
         icon: Crown,
         color: 'amber',
         features: [
-            { text: '홈페이지 10P (섹션 무제한)', included: true },
-            { text: '입력폼 연동', included: true },
-            { text: '반응형 디자인', included: true },
-            { text: '도메인 1년 제공', included: true },
-            { text: 'Meta 광고 세팅 1회', included: true },
-            { text: 'Meta 자동화 6개월', included: true, highlight: true },
+            { text: '홈페이지 10P', included: true, badge: 'upgrade' },
+            { text: 'Meta 광고 세팅', included: true },
+            { text: 'Meta 자동화 6개월', included: true, badge: 'upgrade', highlight: true },
+            { text: '도메인 1년 + 알림 제공', included: true, badge: 'upgrade' },
+            { text: 'SEO 최적화', included: true },
+            { text: '게시글 자동생성기 설치', included: true, badge: 'new', highlight: true },
         ],
         cta: '상담 신청',
         popular: true,
@@ -197,8 +198,20 @@ export default function ServicePricingSection() {
                                             ) : (
                                                 <X className="w-4 h-4 mt-0.5 shrink-0 text-gray-600" />
                                             )}
-                                            <span className={`text-sm ${feature.included ? (feature.highlight ? 'text-amber-300 font-medium' : 'text-gray-300') : 'text-gray-600'}`}>
+                                            <span className={`text-sm flex items-center gap-1.5 flex-wrap ${feature.included ? (feature.highlight ? 'text-amber-300 font-medium' : 'text-gray-300') : 'text-gray-600'}`}>
                                                 {feature.text}
+                                                {feature.badge === 'new' && (
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                                                        <Sparkles className="w-2.5 h-2.5" />
+                                                        NEW
+                                                    </span>
+                                                )}
+                                                {feature.badge === 'upgrade' && (
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                                        <ArrowUp className="w-2.5 h-2.5" />
+                                                        UP
+                                                    </span>
+                                                )}
                                             </span>
                                         </li>
                                     ))}

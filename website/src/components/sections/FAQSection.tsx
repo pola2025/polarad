@@ -8,7 +8,7 @@ export default function FAQSection() {
   const faqs = [
     {
       question: '상품 구성은 어떻게 되나요?',
-      answer: '4가지 티어로 구성됩니다. Basic(30만원): 랜딩페이지 1P, Normal(60만원): 랜딩 1P + Meta 세팅 + 도메인 1년, Pro(110만원): 홈페이지 5P + Meta 세팅 + 도메인 1년, Premium(220만원): 홈페이지 10P + 6개월 자동화 + 도메인 1년. 인쇄물은 추가 옵션으로 선택 가능합니다.'
+      answer: '4가지 티어로 구성됩니다. Basic(30만원): Meta 광고세팅 + 자동화 최초설정, Normal(60만원): 랜딩 1P + Meta 세팅 + 자동화 1개월 + 도메인, Pro(110만원): 홈페이지 5P + Meta 세팅 + 자동화 2개월 + 도메인 + SEO, Premium(220만원): 홈페이지 10P + Meta 세팅 + 자동화 6개월 + 게시글 자동생성기 + 도메인 + 알림 + SEO. 인쇄물은 추가 옵션으로 선택 가능합니다.'
     },
     {
       question: '현재 진행 중인 프로모션이 있나요?',
