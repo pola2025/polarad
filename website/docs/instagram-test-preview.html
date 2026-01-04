@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Instagram 컨텐츠 테스트</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Pretendard', sans-serif; 
+      background: #1a1a2e; 
+      color: #fff;
+      padding: 40px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #60a5fa;
+    }
+    .meta {
+      color: #94a3b8;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    .image-section h2, .caption-section h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #94a3b8;
+    }
+    .image-frame {
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .image-frame iframe {
+      width: 540px;
+      height: 675px;
+      border: none;
+      transform-origin: top left;
+      transform: scale(0.5);
+    }
+    .caption-box {
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 24px;
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.8;
+      max-height: 700px;
+      overflow-y: auto;
+    }
+    .hashtags {
+      color: #60a5fa;
+    }
+    .template-data {
+      margin-top: 40px;
+      padding: 24px;
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+    }
+    .template-data h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #94a3b8;
+    }
+    .template-data pre {
+      font-size: 12px;
+      color: #cbd5e1;
+      overflow-x: auto;
+    }
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .stat {
+      background: #1e293b;
+      padding: 12px 20px;
+      border-radius: 8px;
+    }
+    .stat-label { font-size: 12px; color: #64748b; }
+    .stat-value { font-size: 18px; font-weight: 600; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Instagram 컨텐츠 테스트</h1>
+    <div class="meta">
+      템플릿 타입: <strong>promo</strong> | 
+      생성 시간: 2026. 1. 4. 오전 2:10:11
+    </div>
+    
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">캡션 길이</div>
+        <div class="stat-value">1815자</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">해시태그</div>
+        <div class="stat-value">7개</div>
+      </div>
+    </div>
+    
+    <div class="preview-grid" style="margin-top: 30px;">
+      <div class="image-section">
+        <h2>🖼️ 이미지 미리보기 (50% 축소)</h2>
+        <div class="image-frame">
+          <iframe srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;link href=&quot;https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+  &lt;style&gt;
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .instagram-post {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 80px;
+    }
+    .aurora {
+      position: absolute;
+      inset: 0;
+      opacity: 0.4;
+    }
+    .grid-pattern {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; }
+    .brand-name { font-size: 28px; font-weight: 700; color: #fff; }
+    .badge {
+      padding: 12px 24px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 100px;
+      font-size: 18px;
+      color: #3b82f6;
+      font-weight: 600;
+    }
+    .footer {
+      display: flex;
+      justify-content: center;
+      margin-top: auto;
+      padding-top: 40px;
+    }
+    .website {
+      font-size: 22px;
+      color: #64748b;
+    }
+    .website span { color: #3b82f6; font-weight: 600; }
+  
+    .instagram-post {
+      background: linear-gradient(145deg, #1f1218 0%, #3b1a2e 100%);
+      align-items: center;
+      justify-content: center;
+    }
+    .aurora::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 30% 20%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+    }
+    .grid-pattern {
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%);
+    }
+    .content {
+      text-align: center;
+      align-items: center;
+      gap: 40px;
+      height: auto;
+    }
+    .promo-badge {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, rgba(234,179,8,0.2) 0%, rgba(245,158,11,0.2) 100%);
+      border: 2px solid rgba(234,179,8,0.5);
+      border-radius: 100px;
+      font-size: 24px;
+      color: #fbbf24;
+      font-weight: 700;
+    }
+    .main-text {
+      font-size: 52px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      word-break: keep-all;
+    }
+    .main-text .gold {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .main-text .highlight {
+      background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sub-text {
+      font-size: 28px;
+      color: #94a3b8;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+    .benefit-box {
+      padding: 40px 60px;
+      background: rgba(255,255,255,0.03);
+      border: 2px solid #ec48994d;
+      border-radius: 24px;
+      margin: 20px 0;
+    }
+    .benefit-title {
+      font-size: 28px;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+    .benefit-value {
+      font-size: 52px;
+      font-weight: 800;
+      color: #fbbf24;
+    }
+    .benefit-note {
+      font-size: 20px;
+      color: #64748b;
+      margin-top: 12px;
+    }
+    .urgency {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 26px;
+      color: #ef4444;
+      font-weight: 600;
+    }
+    .cta-button {
+      padding: 28px 70px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      border-radius: 60px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      box-shadow: 0 15px 40px rgba(234, 179, 8, 0.4);
+    }
+    .website span { color: #ec4899; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;instagram-post&quot;&gt;
+    &lt;div class=&quot;aurora&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;grid-pattern&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;content&quot;&gt;
+      &lt;div class=&quot;promo-badge&quot;&gt;🎁 1월 프로모션&lt;/div&gt;
+      &lt;h1 class=&quot;main-text&quot;&gt;Premium 165만원&lt;br&gt;+ 1년 자동화 무료!&lt;/h1&gt;
+      &lt;p class=&quot;sub-text&quot;&gt;1/31까지 선착순 10개 기업&lt;/p&gt;
+      &lt;div class=&quot;benefit-box&quot;&gt;
+        &lt;div class=&quot;benefit-title&quot;&gt;지금 신청하시면&lt;/div&gt;
+        &lt;div class=&quot;benefit-value&quot;&gt;정가 220만원 → 55만원 할인&lt;/div&gt;
+        &lt;div class=&quot;benefit-note&quot;&gt;(정가 120만원 상당)&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;urgency&quot;&gt;🔴 마감 임박! 서두르세요&lt;/div&gt;
+      &lt;div class=&quot;cta-button&quot;&gt;지금 바로 신청 →&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;website&quot; style=&quot;position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);&quot;&gt;🌐 &lt;span&gt;polarad.co.kr&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
+        </div>
+      </div>
+      
+      <div class="caption-section">
+        <h2>📝 캡션</h2>
+        <div class="caption-box">매일 아침, 눈을 뜨자마자
+오늘 만날 고객이 없어 막막하신가요? 😟
+전화번호부를 뒤적이며 콜드콜을 돌리는
+비효율적인 영업 방식은 이제 멈춰야 합니다.
+
+2025년 B2B 영업의 핵심은
+내가 고객을 찾아다니는 것이 아니라,
+고객이 나를 찾아오게 만드는
+'시스템'을 구축하는 것에 있습니다.
+
+대표님, 혹시 이런 고민 하고 계시지 않나요?
+"홈페이지는 있는데 문의가 하나도 안 와요."
+"광고를 하고 싶은데 방법을 모르겠어요."
+"영업 사원을 뽑자니 인건비가 부담돼요."
+
+이 모든 고민을 한 번에 해결해 드립니다.
+폴라애드는 단순한 마케팅 대행사가 아닙니다.
+대표님을 위한 든든한 영업 파트너로서
+24시간 잠들지 않는 온라인 영업 사원을
+대표님의 회사에 파견해 드리는 개념입니다.
+
+저희가 제공하는 프리미엄 시스템은
+단순히 예쁜 홈페이지를 만드는 것이 아닙니다.
+철저하게 '고객 DB 확보'에 초점을 맞춘
+Conversion Basecamp(전환 기지)를 구축합니다.
+
+PC와 태블릿, 모바일 등 어떤 환경에서도
+완벽하게 작동하는 반응형 웹사이트는 기본,
+검색 엔진 최적화(SEO) 기술을 적용하여
+잠재 고객이 검색했을 때 상위에 노출되도록
+기술적인 설계를 완벽하게 마쳐드립니다.
+
+여기에 Meta(페이스북/인스타그램) 광고라는
+강력한 Lead Magnet Engine을 장착합니다.
+대표님의 서비스가 꼭 필요한 타겟 고객만을
+정교하게 선별하여 광고를 송출하고,
+실시간으로 성과를 추적하여 최적화합니다.
+
+가장 놀라운 점은 바로 '자동화'입니다.
+고객이 문의를 남기는 즉시
+자동으로 응대하고 데이터를 수집하는
+자동화 시스템이 구축되어 있어,
+고객을 놓치는 일이 발생하지 않습니다.
+
+이제 대표님은 복잡한 마케팅이나
+지루한 가망 고객 발굴 작업에서 벗어나세요.
+오직 퀄리티 높은 고객과의 미팅,
+그리고 계약 성사에만 집중하시면 됩니다.
+나머지 번거로운 과정은 폴라애드가 맡겠습니다.
+
+그래서 준비한 1월의 파격적인 제안!
+새해를 맞아 영업 시스템을 혁신하고 싶은
+대표님들을 위해 특별한 선물을 준비했습니다.
+
+정상가 220만원인 Premium 패키지를
+무려 55만원 할인된 '165만원'에 제공합니다.
+홈페이지 10페이지 제작부터 Meta 광고 세팅,
+그리고 도메인 1년 지원까지 모두 포함된 금액입니다.
+
+여기서 끝이 아닙니다.
+기존 6개월만 제공되던 자동화 시스템 이용권을
+'1년 무료'로 파격 업그레이드해 드립니다.
+월 구독료로 환산하면 엄청난 혜택입니다.
+1년 동안 시스템 유지비 걱정 없이
+오로지 영업 성과를 내는 데만 집중해 보세요.
+
+단, 저희가 한 분 한 분 퀄리티를 유지하며
+세팅을 도와드려야 하기 때문에
+이번 프로모션은 1월 31일까지만 진행되며,
+선착순 딱 10개 기업만 모실 수 있습니다.
+이미 문의가 많아 조기 마감이 예상됩니다.
+
+망설이는 시간에도 경쟁사는
+이미 온라인 시스템을 구축하고 있습니다.
+2025년, 더 이상 발로 뛰는 영업이 아닌
+시스템으로 승부하는 스마트한 영업을 시작하세요.
+
+━━━━━━━━━━━━━━━━━
+✅ PC/모바일 완벽 호환 반응형 웹사이트 10P
+✅ 명함, 대봉투, 계약서 등 필수 인쇄물 디자인
+✅ Meta 광고 타겟팅 및 자동화 시스템 설정
+✅ 1년 자동화 솔루션 무료 업그레이드 혜택
+━━━━━━━━━━━━━━━━━
+
+지금 이 글을 보고 계신 순간에도
+선착순 자리는 채워지고 있습니다.
+165만원으로 1년 치 영업 걱정을 끝낼 기회,
+절대 놓치지 마시길 바랍니다.
+
+우리 회사의 영업 시스템 진단이 필요하신가요?
+또는 이번 프로모션에 대해 더 궁금하신가요?
+부담 없이 편하게 물어봐 주세요.
+친절하고 상세하게 안내해 드리겠습니다.
+
+💬 무료 상담 및 선착순 신청 → 프로필 링크 클릭
+
+.
+.
+.
+
+#영업자동화 #온라인마케팅 #polarad #명함제작 #홈페이지제작 #B2B마케팅 #자동화</div>
+      </div>
+    </div>
+    
+    <div class="template-data">
+      <h2>🔧 템플릿 데이터 (Gemini 생성)</h2>
+      <pre>{
+  "badge": "🎁 1월 프로모션",
+  "headline": "Premium 165만원\n+ 1년 자동화 무료!",
+  "subHeadline": "1/31까지 선착순 10개 기업",
+  "cta": "정가 220만원 → 55만원 할인"
+}</pre>
+    </div>
+  </div>
+  
+  <script>
+    // iframe 내용 수정 (escape된 HTML 복원)
+    const iframe = document.querySelector('iframe');
+    const htmlContent = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .instagram-post {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 80px;
+    }
+    .aurora {
+      position: absolute;
+      inset: 0;
+      opacity: 0.4;
+    }
+    .grid-pattern {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; }
+    .brand-name { font-size: 28px; font-weight: 700; color: #fff; }
+    .badge {
+      padding: 12px 24px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 100px;
+      font-size: 18px;
+      color: #3b82f6;
+      font-weight: 600;
+    }
+    .footer {
+      display: flex;
+      justify-content: center;
+      margin-top: auto;
+      padding-top: 40px;
+    }
+    .website {
+      font-size: 22px;
+      color: #64748b;
+    }
+    .website span { color: #3b82f6; font-weight: 600; }
+  
+    .instagram-post {
+      background: linear-gradient(145deg, #1f1218 0%, #3b1a2e 100%);
+      align-items: center;
+      justify-content: center;
+    }
+    .aurora::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 30% 20%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+    }
+    .grid-pattern {
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%);
+    }
+    .content {
+      text-align: center;
+      align-items: center;
+      gap: 40px;
+      height: auto;
+    }
+    .promo-badge {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, rgba(234,179,8,0.2) 0%, rgba(245,158,11,0.2) 100%);
+      border: 2px solid rgba(234,179,8,0.5);
+      border-radius: 100px;
+      font-size: 24px;
+      color: #fbbf24;
+      font-weight: 700;
+    }
+    .main-text {
+      font-size: 52px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      word-break: keep-all;
+    }
+    .main-text .gold {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .main-text .highlight {
+      background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sub-text {
+      font-size: 28px;
+      color: #94a3b8;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+    .benefit-box {
+      padding: 40px 60px;
+      background: rgba(255,255,255,0.03);
+      border: 2px solid #ec48994d;
+      border-radius: 24px;
+      margin: 20px 0;
+    }
+    .benefit-title {
+      font-size: 28px;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+    .benefit-value {
+      font-size: 52px;
+      font-weight: 800;
+      color: #fbbf24;
+    }
+    .benefit-note {
+      font-size: 20px;
+      color: #64748b;
+      margin-top: 12px;
+    }
+    .urgency {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 26px;
+      color: #ef4444;
+      font-weight: 600;
+    }
+    .cta-button {
+      padding: 28px 70px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      border-radius: 60px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      box-shadow: 0 15px 40px rgba(234, 179, 8, 0.4);
+    }
+    .website span { color: #ec4899; }
+  </style>
+</head>
+<body>
+  <div class="instagram-post">
+    <div class="aurora"></div>
+    <div class="grid-pattern"></div>
+    <div class="content">
+      <div class="promo-badge">🎁 1월 프로모션</div>
+      <h1 class="main-text">Premium 165만원<br>+ 1년 자동화 무료!</h1>
+      <p class="sub-text">1/31까지 선착순 10개 기업</p>
+      <div class="benefit-box">
+        <div class="benefit-title">지금 신청하시면</div>
+        <div class="benefit-value">정가 220만원 → 55만원 할인</div>
+        <div class="benefit-note">(정가 120만원 상당)</div>
+      </div>
+      <div class="urgency">🔴 마감 임박! 서두르세요</div>
+      <div class="cta-button">지금 바로 신청 →</div>
+    </div>
+    <div class="website" style="position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);">🌐 <span>polarad.co.kr</span></div>
+  </div>
+</body>
+</html>`;
+    iframe.srcdoc = htmlContent;
+  </script>
+</body>
+</html>
