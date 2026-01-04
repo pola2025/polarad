@@ -206,7 +206,7 @@ export async function generateInstagramContent(): Promise<GeneratedContent> {
 }
 
 /**
- * Gemini로 템플릿 데이터 생성
+ * Gemini로 템플릿 데이터 생성 (재시도 로직 포함)
  */
 async function generateContentWithGemini(templateType: TemplateType): Promise<TemplateData> {
   if (!GEMINI_API_KEY) {
@@ -217,32 +217,62 @@ async function generateContentWithGemini(templateType: TemplateType): Promise<Te
   const topic = CONTENT_TOPICS[templateType];
   const prompt = buildPromptForTemplate(templateType, topic);
 
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 1000,
-          },
-        }),
+  // 최대 2번 재시도
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      console.log(`🤖 Gemini 템플릿 데이터 생성 중... (시도 ${attempt}/2)`);
+      
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.7, // 약간 낮춰서 더 안정적인 JSON 생성
+              maxOutputTokens: 1000,
+            },
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        console.error(`❌ Gemini API 오류 (시도 ${attempt}): ${res.status}`);
+        continue;
       }
-    );
 
-    const result = await res.json();
-    const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      const result = await res.json();
+      const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
-    if (responseText) {
-      return parseGeminiResponse(templateType, responseText);
+      if (!responseText) {
+        console.error(`❌ Gemini 응답 비어있음 (시도 ${attempt})`);
+        continue;
+      }
+
+      // 파싱 시도
+      const parsed = parseGeminiResponse(templateType, responseText);
+      
+      // 파싱 성공 여부 확인 (기본값이 아닌 경우)
+      const defaultContent = getDefaultContent(templateType);
+      if (parsed.headline !== defaultContent.headline) {
+        console.log(`✅ Gemini 템플릿 데이터 생성 성공 (시도 ${attempt})`);
+        return parsed;
+      }
+      
+      console.warn(`⚠️ Gemini 파싱 실패로 폴백됨 (시도 ${attempt})`);
+      
+    } catch (error) {
+      console.error(`❌ Gemini 컨텐츠 생성 실패 (시도 ${attempt}):`, error);
     }
-  } catch (error) {
-    console.error('Gemini 컨텐츠 생성 실패:', error);
+
+    // 재시도 전 대기
+    if (attempt < 2) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
 
+  console.log('⚠️ 모든 Gemini 시도 실패 - 기본 컨텐츠 사용');
   return getDefaultContent(templateType);
 }
 
@@ -455,20 +485,66 @@ Instagram 이미지용 텍스트를 생성해주세요. 짧고 임팩트 있게 
 }
 
 /**
- * Gemini 응답 파싱
+ * Gemini 응답에서 JSON 추출 및 정리
+ */
+function extractAndCleanJson(responseText: string): string {
+  let jsonStr = responseText;
+  
+  // 1. 코드 블록 제거
+  if (jsonStr.includes('```')) {
+    const match = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (match) {
+      jsonStr = match[1];
+    } else {
+      jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    }
+  }
+  
+  // 2. JSON 객체만 추출 (앞뒤 텍스트 제거)
+  const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    jsonStr = jsonMatch[0];
+  }
+  
+  // 3. 일반적인 JSON 오류 수정
+  jsonStr = jsonStr
+    // 작은따옴표 → 큰따옴표 (속성명)
+    .replace(/'/g, '"')
+    // 후행 쉼표 제거 (배열/객체 끝)
+    .replace(/,\s*([}\]])/g, '$1')
+    // 줄바꿈이 문자열 내에 있으면 \n으로 이스케이프
+    .replace(/:\s*"([^"]*)\n([^"]*)"/g, (match, p1, p2) => {
+      return `: "${p1}\\n${p2}"`;
+    })
+    // 제어 문자 제거 (탭 제외)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+  
+  return jsonStr.trim();
+}
+
+/**
+ * Gemini 응답 파싱 (강화된 버전)
  */
 function parseGeminiResponse(templateType: TemplateType, responseText: string): TemplateData {
   try {
-    // JSON 추출 (코드 블록 제거)
-    let jsonStr = responseText;
-    if (jsonStr.includes('```')) {
-      jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    }
-
-    const parsed = JSON.parse(jsonStr.trim());
+    const jsonStr = extractAndCleanJson(responseText);
+    const parsed = JSON.parse(jsonStr);
+    console.log(`✅ Gemini 템플릿 데이터 파싱 성공 (${templateType})`);
     return parsed as TemplateData;
   } catch (error) {
-    console.error('Gemini 응답 파싱 실패:', error);
+    // 파싱 실패 시 상세 로그
+    console.error('❌ Gemini 응답 파싱 실패:', error);
+    console.error('📝 원본 응답 (첫 500자):', responseText.slice(0, 500));
+    
+    // 정리된 JSON 시도
+    try {
+      const cleanedJson = extractAndCleanJson(responseText);
+      console.error('📝 정리된 JSON (첫 500자):', cleanedJson.slice(0, 500));
+    } catch {
+      // 무시
+    }
+    
+    console.log('⚠️ 기본 컨텐츠로 폴백합니다.');
     return getDefaultContent(templateType);
   }
 }
