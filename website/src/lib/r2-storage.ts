@@ -6,12 +6,19 @@
 
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
-// R2 설정 (환경변수에 줄바꿈/공백이 포함되어 있을 수 있으므로 trim 처리)
-const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID?.trim();
-const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID?.trim();
-const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY?.trim();
-const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME?.trim() || 'pola-newsletter';
-const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL?.trim(); // 커스텀 도메인 또는 r2.dev URL
+// R2 설정 (환경변수에 줄바꿈/공백/특수문자가 포함되어 있을 수 있으므로 정리)
+// trim()만으로는 줄바꿈(\r\n)이 제거되지 않을 수 있음
+const cleanEnvVar = (value: string | undefined): string | undefined => {
+  if (!value) return undefined;
+  // 모든 종류의 공백, 줄바꿈, 캐리지 리턴 제거
+  return value.replace(/[\s\r\n]+/g, '').trim();
+};
+
+const R2_ACCOUNT_ID = cleanEnvVar(process.env.R2_ACCOUNT_ID);
+const R2_ACCESS_KEY_ID = cleanEnvVar(process.env.R2_ACCESS_KEY_ID);
+const R2_SECRET_ACCESS_KEY = cleanEnvVar(process.env.R2_SECRET_ACCESS_KEY);
+const R2_BUCKET_NAME = cleanEnvVar(process.env.R2_BUCKET_NAME) || 'pola-newsletter';
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL?.trim(); // URL은 공백만 제거 (슬래시 등 유지)
 
 // S3 클라이언트 생성 (lazy initialization)
 let s3Client: S3Client | null = null;
