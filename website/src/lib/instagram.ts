@@ -51,6 +51,7 @@ const CATEGORY_HASHTAGS: Record<string, string[]> = {
 /**
  * Gemini AI를 사용하여 블로그 컨텐츠를 인스타그램용으로 재구성
  * 홈페이지 유도 없이 핵심 내용만 요약하여 독립적인 정보 제공
+ * polamkt 수준의 품질: pro 모델 + 재시도 + 길이 검증
  */
 async function generateAICaption(title: string, content: string, category: string): Promise<string> {
   if (!GEMINI_API_KEY) {
@@ -60,70 +61,127 @@ async function generateAICaption(title: string, content: string, category: strin
 
   const prompt = `당신은 인스타그램 마케팅 콘텐츠 작성 전문가입니다. 아래 블로그 글의 핵심 정보를 인스타그램 게시물로 재구성해주세요.
 
+⚠️ **[필수] 최소 1000자 이상 작성할 것!** (해시태그 제외)
+→ 짧은 캡션은 인스타그램 알고리즘에 불리합니다.
+→ 반드시 아래 구조를 모두 포함해서 충분한 분량으로 작성하세요.
+
 **블로그 제목**: ${title}
 
 **블로그 내용**:
-${content.slice(0, 6000)}
+${content.slice(0, 8000)}
 
 **요구사항**:
-1. 블로그 내용의 핵심 팩트와 실용적인 정보를 상세히 추출
-2. 읽는 사람이 이 게시물만 보고도 충분히 유용한 정보를 얻을 수 있어야 함
-3. 핵심 포인트 5-8개를 구체적이고 실용적인 문장으로 정리
-4. 각 포인트 앞에 ✅, 💡, 📌, 🔥, ⚡, 👉, 🎯, ⭐ 등 적절한 이모지 사용
-5. 첫 줄은 주제를 명확히 전달하는 제목 형식 (이모지 포함)
-6. 전체 길이는 1000-1500자 (인스타그램 최대 2200자 허용)
-7. 해시태그는 포함하지 마세요 (별도 추가됨)
-8. MDX 문법, 코드 블록, 컴포넌트 태그, HTML 태그 모두 제거
-9. "프로필 링크", "자세한 내용은", "홈페이지 방문" 같은 외부 유도 문구 절대 금지
-10. 각 포인트는 단순 나열이 아닌 구체적인 설명과 예시 포함
-11. 중간에 빈 줄을 적절히 넣어 가독성 확보
+1. **총 길이**: 1000~1500자 (해시태그 제외) - 반드시 지킬 것!
+2. **인스타그램 가로폭 최적화**: 한 줄당 25~30자 이내, 빈 줄로 문단 구분
 
-**예시 형식**:
-🔥 [제목: 핵심 주제를 한 줄로]
+3. **구조 (필수)**:
+[도입부 - 3~4줄]
+- 첫 줄: 이모지 + 핵심 주제를 한 줄로
+- 누구에게 필요한 정보인지 명시
+- 왜 중요한지 간단히 언급
 
-✅ [핵심 정보 1]
-[1-2문장으로 구체적인 설명]
+[본문 - 15~20줄]
+- 핵심 포인트 5-8개를 구체적으로 정리
+- 각 포인트 앞에 ✅, 💡, 📌, 🔥, ⚡, 👉, 🎯, ⭐ 등 이모지
+- 각 포인트는 제목 + 1-2문장 설명으로 구성
+- 구체적인 수치, 예시, 방법 포함
 
-✅ [핵심 정보 2]
-[1-2문장으로 구체적인 설명]
+[체크리스트 섹션 - 선택적]
+- 실행 가능한 액션 아이템 3-5개
 
-💡 [핵심 정보 3]
-[1-2문장으로 구체적인 설명]
+[마무리 - 4~5줄]
+- 핵심 요약 또는 강조
+- 💬 댓글 유도 질문 (공감 유도)
+- 저장/공유 유도 문구
 
-📌 [핵심 정보 4]
-[1-2문장으로 구체적인 설명]
+**금지사항**:
+- 해시태그 포함 금지 (별도 추가됨)
+- MDX 문법, 코드 블록, 컴포넌트 태그, HTML 태그 모두 제거
+- "프로필 링크", "자세한 내용은", "홈페이지 방문" 같은 외부 유도 문구 절대 금지
 
-🎯 [핵심 정보 5]
-[1-2문장으로 구체적인 설명]
-
-⭐ [추가 팁이나 주의사항]
-
-💬 [마무리 - 공감 유도 또는 질문으로 댓글 유도]
-
+⚠️ 반드시 1000자 이상으로 작성하세요! 짧으면 다시 작성해야 합니다.
 캡션만 출력하세요. 다른 설명 없이 바로 캡션 텍스트만 작성하세요.`;
 
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 2000 }
-      })
-    });
+  const MAX_RETRIES = 3;
+  const MIN_CAPTION_LENGTH = 800;
 
-    const result = await res.json();
-    const aiCaption = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      console.log(`📝 AI 캡션 생성 시도 ${attempt}/${MAX_RETRIES}...`);
 
-    if (aiCaption) {
-      console.log('✅ AI 캡션 생성 완료');
-      return aiCaption;
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.75, maxOutputTokens: 8192 }
+        })
+      });
+
+      const result = await res.json();
+      const aiCaption = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+      const finishReason = result.candidates?.[0]?.finishReason || 'UNKNOWN';
+
+      console.log(`📊 생성 결과: ${aiCaption.length}자, finishReason: ${finishReason}`);
+
+      // finishReason이 MAX_TOKENS면 잘린 것 - 재시도
+      if (finishReason === 'MAX_TOKENS') {
+        console.warn(`⚠️ 캡션이 토큰 한도로 잘림 (시도 ${attempt})`);
+        continue;
+      }
+
+      // 길이 검증: 800자 이상이어야 함
+      if (aiCaption && aiCaption.length >= MIN_CAPTION_LENGTH) {
+        console.log(`✅ AI 캡션 생성 완료 (시도 ${attempt}): ${aiCaption.length}자`);
+        return aiCaption;
+      }
+
+      console.warn(`⚠️ 캡션 길이 부족: ${aiCaption.length}자 < ${MIN_CAPTION_LENGTH}자 (시도 ${attempt})`);
+
+    } catch (error) {
+      console.error(`AI 캡션 생성 실패 (시도 ${attempt}):`, error);
     }
-  } catch (error) {
-    console.error('AI 캡션 생성 실패:', error);
   }
 
+  console.error('❌ AI 캡션 생성 최종 실패 - 기본 캡션 사용');
   return '';
+}
+
+/**
+ * AI 실패 시 사용할 기본 캡션 생성
+ * 최소 500자 이상 보장
+ */
+function generateFallbackCaption(data: CaptionData, categoryEmoji: string): string {
+  const description = data.description || '';
+  const tags = data.tags || [];
+
+  // description에서 핵심 문장 추출 (마침표 기준)
+  const sentences = description.split(/[.!?]/).filter(s => s.trim().length > 10);
+  const keyPoints = sentences.slice(0, 5);
+
+  return `${categoryEmoji} ${data.title}
+
+마케터라면 꼭 알아야 할 정보입니다!
+오늘도 실무에 도움되는 마케팅 인사이트를 전해드릴게요.
+
+📌 핵심 내용
+
+${keyPoints.length > 0 ? keyPoints.map((point, i) => {
+  const emojis = ['✅', '💡', '📍', '🔥', '⭐'];
+  return `${emojis[i % emojis.length]} ${point.trim()}`;
+}).join('\n\n') : `✅ ${description.slice(0, 300)}`}
+
+${tags.length > 0 ? `\n🏷️ 관련 키워드: ${tags.slice(0, 5).join(', ')}` : ''}
+
+━━━━━━━━━━━━━━━
+
+📢 이 정보가 도움이 되셨다면
+저장해두고 필요할 때 다시 확인하세요!
+
+💬 궁금한 점이나 추가로 알고 싶은 내용이 있다면
+댓글로 남겨주세요!
+
+❤️ 좋아요와 팔로우도 부탁드려요!`;
 }
 
 /**
@@ -141,21 +199,15 @@ export async function generateInstagramCaption(data: CaptionData): Promise<strin
     const aiCaption = await generateAICaption(data.title, data.content, data.category);
     if (aiCaption) {
       mainContent = aiCaption;
+      console.log(`📊 최종 캡션 길이: ${mainContent.length}자`);
     } else {
-      // AI 실패 시 기본 템플릿 (내용 요약만)
-      mainContent = `${categoryEmoji} ${data.title}
-
-${data.description.length > 200 ? data.description.slice(0, 197) + '...' : data.description}
-
-💬 도움이 되셨다면 저장해두세요!`;
+      // AI 실패 시 개선된 기본 템플릿
+      console.log('⚠️ AI 캡션 실패 - 기본 템플릿 사용');
+      mainContent = generateFallbackCaption(data, categoryEmoji);
     }
   } else {
-    // content가 없으면 기본 템플릿 (내용 요약만)
-    mainContent = `${categoryEmoji} ${data.title}
-
-${data.description.length > 200 ? data.description.slice(0, 197) + '...' : data.description}
-
-💬 도움이 되셨다면 저장해두세요!`;
+    // content가 없으면 기본 템플릿
+    mainContent = generateFallbackCaption(data, categoryEmoji);
   }
 
   // 해시태그만 추가 (폴라애드 문구 제외)
