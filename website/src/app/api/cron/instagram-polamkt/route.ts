@@ -482,14 +482,27 @@ export async function GET(request: Request) {
     }
     console.log(`✅ Cloudinary 업로드 완료: ${uploadResult.url}`);
 
-    // 5. 캡션 + 해시태그 조합
-    const fullCaption = `${content.caption}
+    // 5. 캡션 + 해시태그 조합 (Instagram 2,200자 제한 적용)
+    const INSTAGRAM_CAPTION_LIMIT = 2200;
+    const separator = '\n\n.\n.\n.\n\n';
+    const hashtagsStr = content.hashtags.join(' ');
+    const reservedLength = separator.length + hashtagsStr.length;
+    const maxCaptionLength = INSTAGRAM_CAPTION_LIMIT - reservedLength - 10; // 여유 10자
 
-.
-.
-.
+    // 캡션이 너무 길면 자르기
+    let trimmedCaption = content.caption;
+    if (trimmedCaption.length > maxCaptionLength) {
+      console.log(`⚠️ 캡션 길이 초과: ${trimmedCaption.length}자 → ${maxCaptionLength}자로 자름`);
+      // 문장 단위로 자르기 시도
+      trimmedCaption = trimmedCaption.slice(0, maxCaptionLength);
+      const lastNewline = trimmedCaption.lastIndexOf('\n');
+      if (lastNewline > maxCaptionLength * 0.8) {
+        trimmedCaption = trimmedCaption.slice(0, lastNewline);
+      }
+    }
 
-${content.hashtags.join(' ')}`;
+    const fullCaption = `${trimmedCaption}${separator}${hashtagsStr}`;
+    console.log(`📝 최종 캡션 길이: ${fullCaption.length}자 (제한: ${INSTAGRAM_CAPTION_LIMIT}자)`);
 
     // 6. Instagram 게시
     trackStep('instagram');

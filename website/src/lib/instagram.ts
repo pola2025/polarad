@@ -210,10 +210,27 @@ export async function generateInstagramCaption(data: CaptionData): Promise<strin
     mainContent = generateFallbackCaption(data, categoryEmoji);
   }
 
-  // 해시태그만 추가 (폴라애드 문구 제외)
-  const caption = `${mainContent}
+  // 해시태그만 추가 (폴라애드 문구 제외) + Instagram 2,200자 제한 적용
+  const INSTAGRAM_CAPTION_LIMIT = 2200;
+  const separator = '\n\n';
+  const hashtagsStr = categoryHashtags.join(' ');
+  const reservedLength = separator.length + hashtagsStr.length;
+  const maxContentLength = INSTAGRAM_CAPTION_LIMIT - reservedLength - 10; // 여유 10자
 
-${categoryHashtags.join(' ')}`;
+  // 캡션이 너무 길면 자르기
+  let trimmedContent = mainContent;
+  if (trimmedContent.length > maxContentLength) {
+    console.log(`⚠️ 캡션 길이 초과: ${trimmedContent.length}자 → ${maxContentLength}자로 자름`);
+    trimmedContent = trimmedContent.slice(0, maxContentLength);
+    // 문장 단위로 자르기 시도
+    const lastNewline = trimmedContent.lastIndexOf('\n');
+    if (lastNewline > maxContentLength * 0.8) {
+      trimmedContent = trimmedContent.slice(0, lastNewline);
+    }
+  }
+
+  const caption = `${trimmedContent}${separator}${hashtagsStr}`;
+  console.log(`📝 최종 캡션 길이: ${caption.length}자 (제한: ${INSTAGRAM_CAPTION_LIMIT}자)`);
 
   return caption;
 }
