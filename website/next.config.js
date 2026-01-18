@@ -37,6 +37,9 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
+  // 네이티브 Node 모듈 외부화 (Satori 캡처용)
+  serverExternalPackages: ['@resvg/resvg-js'],
+
   // 헤더 설정 (보안 + SEO)
   async headers() {
     return [

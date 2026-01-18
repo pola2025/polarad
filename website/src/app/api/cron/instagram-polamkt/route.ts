@@ -14,6 +14,7 @@ import { generateInstagramContent } from '@/lib/instagram-content-generator';
 import { generateTemplateHtml } from '@/lib/instagram-templates';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 import { logErrorToSlack, logSuccessToSlack } from '@/lib/slack-logger';
+import { captureHtmlWithSatori } from '@/lib/satori-capture';
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -44,16 +45,15 @@ const INSTAGRAM_ACCOUNT_ID = process.env.POLAMKT_INSTAGRAM_ACCOUNT_ID || '178414
 const GRAPH_API_VERSION = 'v21.0';
 const GRAPH_API_BASE = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
 
-// html2canvas를 사용한 HTML → 이미지 변환 서비스 URL
-// 실제 운영 시에는 browserless.io 또는 자체 서버 필요
-const SCREENSHOT_SERVICE_URL = process.env.SCREENSHOT_SERVICE_URL;
+// 캡처 방식: Satori(메인) → HCTI(백업) → screenshotone(최후)
 
 // 환경변수 상태 확인 함수
 function getEnvStatus(): Record<string, string> {
   return {
     GEMINI_API_KEY: process.env.GEMINI_API_KEY ? '✅' : '❌',
-    HCTI_API_USER_ID: process.env.HCTI_API_USER_ID ? '✅' : '❌',
-    HCTI_API_KEY: process.env.HCTI_API_KEY ? '✅' : '❌',
+    SATORI: '✅ (자체 구현)',
+    HCTI_BACKUP: process.env.HCTI_API_USER_ID && process.env.HCTI_API_KEY ? '✅' : '❌',
+    SCREENSHOTONE_BACKUP: process.env.SCREENSHOTONE_API_KEY ? '✅' : '❌',
     CLOUDINARY: process.env.CLOUDINARY_CLOUD_NAME ? '✅' : '❌',
     INSTAGRAM_TOKEN: INSTAGRAM_ACCESS_TOKEN ? '✅' : '❌',
     TELEGRAM: TELEGRAM_BOT_TOKEN ? '✅' : '❌',
@@ -83,7 +83,7 @@ async function sendTelegramNotification(
     init: '초기화',
     gemini: 'Gemini 콘텐츠 생성',
     template: 'HTML 템플릿 적용',
-    capture: '이미지 캡처 (HCTI)',
+    capture: '이미지 캡처 (Satori)',
     cloudinary: 'Cloudinary 업로드',
     instagram: 'Instagram 게시',
     complete: '완료',
@@ -165,50 +165,36 @@ ${failedStepInfo}${lastSuccessInfo}
   }
 }
 
-// HTML을 이미지로 캡쳐 (여러 방법 시도)
-async function captureHtmlToImage(html: string): Promise<Buffer | null> {
-  // 디버깅: 환경변수 확인
-  console.log('🔍 환경변수 확인:', {
-    HCTI_API_USER_ID: process.env.HCTI_API_USER_ID ? '설정됨' : '없음',
-    HCTI_API_KEY: process.env.HCTI_API_KEY ? '설정됨' : '없음',
-    SCREENSHOT_SERVICE_URL: SCREENSHOT_SERVICE_URL ? '설정됨' : '없음',
+// HTML을 이미지로 캡쳐 (Satori 메인 + 외부 서비스 백업)
+async function captureHtmlToImage(htmlContent: string): Promise<Buffer | null> {
+  // 디버깅: 캡처 방식 확인
+  console.log('🔍 캡처 방식:', {
+    SATORI: '✅ 자체 구현 (메인)',
+    HCTI_BACKUP: process.env.HCTI_API_USER_ID ? '✅ 설정됨' : '❌ 없음',
+    SCREENSHOTONE_BACKUP: process.env.SCREENSHOTONE_API_KEY ? '✅ 설정됨' : '❌ 없음',
   });
 
-  // 방법 1: 외부 스크린샷 서비스 사용
-  if (SCREENSHOT_SERVICE_URL) {
-    try {
-      const response = await fetch(SCREENSHOT_SERVICE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          html,
-          width: 1080,
-          height: 1350,
-          type: 'png',
-        }),
-      });
-
-      if (response.ok) {
-        const arrayBuffer = await response.arrayBuffer();
-        return Buffer.from(arrayBuffer);
-      }
-    } catch (error) {
-      console.error('외부 스크린샷 서비스 실패:', error);
+  // 방법 1: Satori (자체 구현 - 메인, 무제한)
+  try {
+    console.log('📸 Satori 캡처 시작 (메인)...');
+    const imageBuffer = await captureHtmlWithSatori(htmlContent, 1080, 1350);
+    if (imageBuffer) {
+      console.log(`✅ Satori 성공: ${(imageBuffer.length / 1024).toFixed(1)}KB`);
+      return imageBuffer;
     }
+    console.warn('⚠️ Satori 반환값 없음, 백업 방식 시도...');
+  } catch (error) {
+    console.error('❌ Satori 캡처 실패:', error);
+    console.log('⚠️ 백업 캡처 방식으로 전환...');
   }
 
-  // 방법 2: htmlcsstoimage.com API 사용 (무료 플랜 있음)
+  // 방법 2: htmlcsstoimage.com API (백업 - 한도 제한 있음)
   const HCTI_API_USER_ID = process.env.HCTI_API_USER_ID;
   const HCTI_API_KEY = process.env.HCTI_API_KEY;
 
-  console.log('🔍 HCTI 환경변수 상세:', {
-    userIdLength: HCTI_API_USER_ID?.length,
-    keyLength: HCTI_API_KEY?.length
-  });
-
   if (HCTI_API_USER_ID && HCTI_API_KEY) {
     try {
-      console.log('📸 htmlcsstoimage API 호출 시작...');
+      console.log('📸 HCTI API 호출 시작 (백업 1)...');
       const response = await fetch('https://hcti.io/v1/image', {
         method: 'POST',
         headers: {
@@ -216,7 +202,7 @@ async function captureHtmlToImage(html: string): Promise<Buffer | null> {
           'Authorization': 'Basic ' + Buffer.from(`${HCTI_API_USER_ID}:${HCTI_API_KEY}`).toString('base64'),
         },
         body: JSON.stringify({
-          html,
+          html: htmlContent,
           css: '',
           google_fonts: 'Pretendard',
           viewport_width: 1080,
@@ -225,32 +211,29 @@ async function captureHtmlToImage(html: string): Promise<Buffer | null> {
       });
 
       const result = await response.json();
-      console.log('📸 htmlcsstoimage 응답:', result);
+      console.log('📸 HCTI 응답:', result);
 
       if (result.url) {
-        // 이미지 URL에서 다운로드
         console.log('📥 이미지 다운로드 중:', result.url);
         const imageResponse = await fetch(result.url);
         const arrayBuffer = await imageResponse.arrayBuffer();
-        console.log('✅ 이미지 다운로드 완료, 크기:', arrayBuffer.byteLength);
+        console.log(`✅ HCTI 성공: ${(arrayBuffer.byteLength / 1024).toFixed(1)}KB`);
         return Buffer.from(arrayBuffer);
       } else {
-        console.error('❌ htmlcsstoimage URL 없음:', result);
+        console.error('❌ HCTI URL 없음:', result);
       }
     } catch (error) {
-      console.error('htmlcsstoimage 실패:', error);
+      console.error('❌ HCTI 실패:', error);
     }
-  } else {
-    console.log('⚠️ HCTI 환경변수 미설정, 건너뜀');
   }
 
-  // 방법 3: screenshotone.com API 사용
+  // 방법 3: screenshotone.com API (최후 백업)
   const SCREENSHOTONE_API_KEY = process.env.SCREENSHOTONE_API_KEY;
 
   if (SCREENSHOTONE_API_KEY) {
     try {
-      // HTML을 base64로 인코딩
-      const htmlBase64 = Buffer.from(html).toString('base64');
+      console.log('📸 screenshotone API 호출 시작 (백업 2)...');
+      const htmlBase64 = Buffer.from(htmlContent).toString('base64');
 
       const params = new URLSearchParams({
         access_key: SCREENSHOTONE_API_KEY,
@@ -265,14 +248,15 @@ async function captureHtmlToImage(html: string): Promise<Buffer | null> {
 
       if (response.ok) {
         const arrayBuffer = await response.arrayBuffer();
+        console.log(`✅ screenshotone 성공: ${(arrayBuffer.byteLength / 1024).toFixed(1)}KB`);
         return Buffer.from(arrayBuffer);
       }
     } catch (error) {
-      console.error('screenshotone 실패:', error);
+      console.error('❌ screenshotone 실패:', error);
     }
   }
 
-  console.error('❌ 이미지 캡쳐 실패: 사용 가능한 서비스 없음');
+  console.error('❌ 이미지 캡쳐 실패: 모든 캡처 방식 실패');
   return null;
 }
 
@@ -435,8 +419,9 @@ export async function GET(request: Request) {
     // 환경변수 체크
     console.log('📋 환경변수 상태:');
     console.log(`  - GEMINI_API_KEY: ${process.env.GEMINI_API_KEY ? '✅ 설정됨' : '❌ 없음'}`);
-    console.log(`  - HCTI_API_USER_ID: ${process.env.HCTI_API_USER_ID ? '✅ 설정됨' : '❌ 없음'}`);
-    console.log(`  - HCTI_API_KEY: ${process.env.HCTI_API_KEY ? '✅ 설정됨' : '❌ 없음'}`);
+    console.log(`  - SATORI (자체 캡처): ✅ 내장됨 (메인)`);
+    console.log(`  - HCTI (백업 1): ${process.env.HCTI_API_USER_ID && process.env.HCTI_API_KEY ? '✅ 설정됨' : '❌ 없음'}`);
+    console.log(`  - SCREENSHOTONE (백업 2): ${process.env.SCREENSHOTONE_API_KEY ? '✅ 설정됨' : '❌ 없음'}`);
     console.log(`  - CLOUDINARY_CLOUD_NAME: ${process.env.CLOUDINARY_CLOUD_NAME ? '✅ 설정됨' : '❌ 없음'}`);
     console.log(`  - POLAMKT_INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN ? '✅ 설정됨 (' + INSTAGRAM_ACCESS_TOKEN.slice(0, 10) + '...)' : '❌ 없음'}`);
     console.log(`  - TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN ? '✅ 설정됨' : '❌ 없음'}`);
