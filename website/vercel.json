@@ -12,10 +12,6 @@
     {
       "path": "/api/cron/post-instagram",
       "schedule": "30 0 * * 0,1,2,3,5,6"
-    },
-    {
-      "path": "/api/cron/instagram-polamkt",
-      "schedule": "0 3 * * *"
     }
   ]
 }
