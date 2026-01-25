@@ -5,7 +5,6 @@ import { WebSiteSchema } from '@/components/seo/WebSiteSchema'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
-import { PromotionPopup } from '@/components/ui/PromotionPopup'
 import { FloatingCaseBanner } from '@/components/ui/FloatingCaseBanner'
 import { MobileCaseBanner } from '@/components/ui/MobileCaseBanner'
 import './globals.css'
@@ -150,7 +149,6 @@ export default function RootLayout({
         <MobileBottomNav />
         <MobileCaseBanner />
         <FloatingCaseBanner />
-        <PromotionPopup />
       </body>
     </html>
   )
