@@ -385,10 +385,11 @@ async function getPostPermalink(postId: string): Promise<string | undefined> {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const forceRun = url.searchParams.get('force') === 'true';
+  const dryRun = url.searchParams.get('dryrun') === 'true';
 
-  // Cron 인증 확인
+  // Cron 인증 확인 (dryrun도 force처럼 인증 우회)
   const authHeader = request.headers.get('authorization');
-  if (!forceRun && CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  if (!forceRun && !dryRun && CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
     console.log('❌ 인증 실패 - CRON_SECRET 불일치');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -414,6 +415,7 @@ export async function GET(request: Request) {
     console.log('📸 polamkt Instagram 자동 게시 시작');
     console.log(`⏰ 시작 시간: ${new Date().toISOString()}`);
     console.log(`🔧 Force Run: ${forceRun}`);
+    console.log(`🧪 Dry Run: ${dryRun}`);
     console.log('========================================\n');
 
     // 환경변수 체크
@@ -439,6 +441,35 @@ export async function GET(request: Request) {
     console.log('🎨 HTML 템플릿 적용 중...');
     const html = generateTemplateHtml(content.templateType, content.templateData);
     console.log(`✅ HTML 템플릿 적용 완료 (${html.length}자)`);
+
+    // 🧪 드라이런 모드: Gemini 응답만 확인하고 종료
+    if (dryRun) {
+      const totalDuration = Date.now() - startTime;
+      console.log('\n🧪 ========================================');
+      console.log('🧪 DRY RUN 모드 - Instagram 게시 건너뜀');
+      console.log(`⏱️ 소요시간: ${(totalDuration / 1000).toFixed(1)}초`);
+      console.log('========================================\n');
+
+      // 캡션 + 해시태그 조합 (미리보기용)
+      const separator = '\n\n.\n.\n.\n\n';
+      const hashtagsStr = content.hashtags.join(' ');
+      const fullCaption = `${content.caption}${separator}${hashtagsStr}`;
+
+      return NextResponse.json({
+        success: true,
+        dryRun: true,
+        templateType: content.templateType,
+        templateData: content.templateData,
+        caption: content.caption,
+        captionLength: content.caption.length,
+        hashtags: content.hashtags,
+        fullCaption: fullCaption,
+        fullCaptionLength: fullCaption.length,
+        htmlPreview: html.slice(0, 500) + '...',
+        duration: totalDuration,
+        message: '🧪 드라이런 완료 - Gemini 응답 확인용',
+      });
+    }
 
     // 3. HTML → 이미지 캡쳐
     trackStep('capture');
