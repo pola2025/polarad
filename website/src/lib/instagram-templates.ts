@@ -933,7 +933,7 @@ function generateStatsTemplate(data: TemplateData, baseStyles: string, theme: Th
           <div class="logo"><img src="https://www.polarad.co.kr/instagram/logo.png" alt="PolarAD"></div>
           <span class="brand-name">PolarAD</span>
         </div>
-        <div class="badge">${data.badge || '📊 자동 리포팅'}</div>
+        <div class="badge">${data.badge || '📊 실제 성과'}</div>
       </div>
       <div class="title-section">
         <h1 class="title">${data.headline.replace(/\n/g, '<br>')}</h1>
@@ -941,7 +941,7 @@ function generateStatsTemplate(data: TemplateData, baseStyles: string, theme: Th
       </div>
       <div class="dashboard">
         <div class="dashboard-header">
-          <span class="dashboard-title">📈 실시간 광고 성과</span>
+          <span class="dashboard-title">📈 DB접수 랜딩 성과</span>
           <span class="date-range">최근 7일</span>
         </div>
         <div class="kpi-row">
