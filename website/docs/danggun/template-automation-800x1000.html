@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=800, height=1000">
+  <title>자동화 안내 - 800x1000</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 800px;
+      height: 1000px;
+      background: linear-gradient(180deg, #0a0a0a 0%, #111 50%, #0a0a0a 100%);
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 상단 글로우 - 민트 */
+    .top-glow {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 250px;
+      background: radial-gradient(ellipse, rgba(0,200,200,0.15) 0%, transparent 70%);
+    }
+
+    /* 프로모션 태그 */
+    .promo-tag {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+    }
+
+    .tag {
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .tag.mint {
+      background: linear-gradient(135deg, #00d4d4 0%, #00a0a0 100%);
+    }
+
+    .tag.teal {
+      background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+    }
+
+    /* 메인 컨텐츠 */
+    .main-content {
+      position: absolute;
+      top: 110px;
+      left: 50px;
+      right: 50px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 88px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .title .highlight {
+      background: linear-gradient(135deg, #00d4d4 0%, #00a0a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sub-headline {
+      font-size: 24px;
+      color: #999;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    /* 핵심 메시지 - 큰 글씨 */
+    .main-message {
+      position: absolute;
+      bottom: 280px;
+      left: 0;
+      right: 0;
+      text-align: center;
+    }
+
+    .message-sub {
+      font-size: 28px;
+      color: #888;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .message-big {
+      font-size: 140px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      text-shadow:
+        0 0 10px rgba(0,210,210,0.8),
+        0 0 20px rgba(0,210,210,0.6),
+        0 0 40px rgba(0,180,180,0.4),
+        0 0 80px rgba(0,150,150,0.3);
+      filter: brightness(1.1);
+    }
+
+    .message-big .up {
+      color: #f59e0b;
+      text-shadow:
+        0 0 8px rgba(245,158,11,0.6),
+        0 0 16px rgba(245,158,11,0.4);
+    }
+
+    /* 체크리스트 그리드 */
+    .features {
+      position: absolute;
+      bottom: 100px;
+      left: 50px;
+      right: 50px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(145deg, rgba(0,80,80,0.3) 0%, rgba(0,40,40,0.5) 100%);
+      padding: 18px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,200,200,0.35);
+      box-shadow:
+        inset 0 1px 0 rgba(0,255,255,0.1),
+        inset 0 -1px 0 rgba(0,0,0,0.2),
+        0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .feature .check {
+      width: 26px;
+      height: 26px;
+      border: 2px solid #00d4d4;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: linear-gradient(145deg, rgba(0,100,100,0.3) 0%, rgba(0,50,50,0.5) 100%);
+    }
+
+    .feature .check svg {
+      width: 14px;
+      height: 14px;
+      stroke: #00e0e0;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .feature span {
+      font-size: 17px;
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+
+    /* 푸터 */
+    .footer {
+      position: absolute;
+      bottom: 40px;
+      left: 50px;
+      right: 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: #555;
+    }
+
+    .footer-site {
+      font-size: 16px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-glow"></div>
+
+  <div class="promo-tag">
+    <div class="tag mint">DB수집</div>
+    <div class="tag teal">광고자동화</div>
+  </div>
+
+  <div class="main-content">
+    <p class="sub-headline">영업의 차별화 전략</p>
+
+    <h1 class="title">
+      <span class="highlight">DB접수</span> 즉시<br>
+      자동 응대 시작
+    </h1>
+  </div>
+
+  <div class="main-message">
+    <p class="message-sub">빠른 상담은</p>
+    <p class="message-big">전환율 <span class="up">UP!</span></p>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>DB접수 즉시 알림</span>
+    </div>
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>자동 문자발송</span>
+    </div>
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>실시간 리스트업</span>
+    </div>
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>통합 대시보드</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-logo">PolaAd</span>
+    <span class="footer-site">polarad.co.kr</span>
+  </div>
+</body>
+</html>

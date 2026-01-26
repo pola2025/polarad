@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=800, height=1000">
+  <title>PREMIUM 상품</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 800px;
+      height: 1000px;
+      background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 상단 영역 - 잘리는 부분 (0~300px) */
+    .top-zone {
+      height: 300px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .badge-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge {
+      background: linear-gradient(135deg, #d4a574 0%, #c9956c 100%);
+      color: #1a1a1a;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recommend-tag {
+      background: #ff6b35;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* 중앙 영역 - 2:1 미리보기 (300~700px) */
+    .safe-zone {
+      height: 400px;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* 가이드라인 (개발용 - 나중에 제거) */
+    .safe-zone::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 2px dashed rgba(255,255,255,0.1);
+      pointer-events: none;
+    }
+
+    .category {
+      font-size: 14px;
+      color: #d4a574;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .title .highlight {
+      background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #888;
+      margin-bottom: 30px;
+    }
+
+    .price-container {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .price {
+      font-size: 80px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .price-unit {
+      font-size: 32px;
+      font-weight: 700;
+      color: #d4a574;
+    }
+
+    .price-vat {
+      font-size: 16px;
+      color: #666;
+      margin-left: 8px;
+    }
+
+    /* 하단 영역 - 잘리는 부분 (700~1000px) */
+    .bottom-zone {
+      height: 300px;
+      padding: 30px 40px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 40px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      color: #ccc;
+    }
+
+    .feature .check {
+      width: 24px;
+      height: 24px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .feature .check svg {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .feature .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .tag.hot {
+      background: #ef4444;
+      color: white;
+    }
+
+    .tag.up {
+      background: #10b981;
+      color: white;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 30px;
+      left: 40px;
+      right: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .footer .site {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <!-- 상단 영역 (잘리는 부분) -->
+  <div class="top-zone">
+    <div class="logo">PolaAd</div>
+    <div class="badge-container">
+      <div class="badge">
+        <span>👑</span>
+        <span>PREMIUM</span>
+      </div>
+      <div class="recommend-tag">추천</div>
+    </div>
+  </div>
+
+  <!-- 중앙 영역 (2:1 미리보기 safe zone) -->
+  <div class="safe-zone">
+    <div class="category">ALL-IN-ONE PACKAGE</div>
+    <h1 class="title">
+      <span class="highlight">풀 패키지</span>로<br>
+      완벽하게 시작
+    </h1>
+    <p class="subtitle">온라인 영업 시스템을 완성하고 싶은 분께</p>
+    <div class="price-container">
+      <span class="price">220</span>
+      <span class="price-unit">만원</span>
+      <span class="price-vat">VAT 포함</span>
+    </div>
+  </div>
+
+  <!-- 하단 영역 (잘리는 부분) -->
+  <div class="bottom-zone">
+    <div class="features">
+      <div class="feature">
+        <div class="check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span>홈페이지 10P</span>
+        <span class="tag up">UP</span>
+      </div>
+      <div class="feature">
+        <div class="check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span>Meta 광고 세팅</span>
+      </div>
+      <div class="feature">
+        <div class="check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span>자동화 6개월</span>
+        <span class="tag hot">HOT</span>
+      </div>
+      <div class="feature">
+        <div class="check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span>도메인 + 알림</span>
+        <span class="tag up">UP</span>
+      </div>
+      <div class="feature">
+        <div class="check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span>SEO 최적화</span>
+      </div>
+      <div class="feature">
+        <div class="check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span>게시글 자동생성기</span>
+        <span class="tag hot">HOT</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>상담 후 진행됩니다</span>
+    <span class="site">polarad.co.kr</span>
+  </div>
+</body>
+</html>

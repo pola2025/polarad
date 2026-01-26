@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>당근마켓 소식 복사 도구</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .copied { background-color: #10b981 !important; }
+    .hook-line { border-left: 3px solid #f59e0b; padding-left: 12px; }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-2 text-center">🥕 당근마켓 소식 복사 도구</h1>
+    <p class="text-gray-400 text-center mb-2">클릭하면 클립보드에 복사됩니다</p>
+    <p class="text-yellow-500 text-center text-sm mb-8">⚡ 미리보기 3줄 = 이모지+제목 / 후킹1 / 🎁프로모션태그</p>
+
+    <!-- PROMO -->
+    <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-gray-700">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">🎁</span>
+        <h2 class="text-xl font-bold text-gray-300">PROMO (11만원)</h2>
+        <span class="bg-gray-600 text-xs px-2 py-1 rounded">실버</span>
+      </div>
+
+      <div class="bg-gray-900 rounded-lg p-4 mb-4 border border-yellow-600/30">
+        <p class="text-xs text-yellow-500 mb-2">📱 미리보기 3줄</p>
+        <div class="space-y-1 text-sm">
+          <p class="hook-line font-bold">✅ [특가] 홈페이지 3페이지 단돈 11만원</p>
+          <p class="hook-line">"홈페이지 없어서 못 믿겠다" 이 말 들어보셨죠?</p>
+          <p class="hook-line text-gray-400">🎁 2026 신년 특별 프로모션... <span class="text-blue-400">더보기</span></p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-gray-500 w-12">제목</span>
+          <code id="promo-title" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm">✅ [특가] 홈페이지 3페이지 단돈 11만원</code>
+          <button onclick="copyText('promo-title', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-sm text-gray-500 w-12 pt-2">본문</span>
+          <pre id="promo-body" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm whitespace-pre-wrap">"홈페이지 없어서 못 믿겠다" 이 말 들어보셨죠?
+🎁 2026 신년 특별 프로모션
+
+✅ 홈페이지 3페이지
+✅ 모바일 최적화
+✅ 기본 SEO
+✅ 무료 수정 1회
+
+📞 상담 후 진행됩니다
+🔗 polarad.co.kr</pre>
+          <button onclick="copyText('promo-body', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BASIC -->
+    <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-gray-700">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">📄</span>
+        <h2 class="text-xl font-bold text-white">BASIC (30만원)</h2>
+        <span class="bg-white text-black text-xs px-2 py-1 rounded">화이트</span>
+      </div>
+
+      <div class="bg-gray-900 rounded-lg p-4 mb-4 border border-yellow-600/30">
+        <p class="text-xs text-yellow-500 mb-2">📱 미리보기 3줄</p>
+        <div class="space-y-1 text-sm">
+          <p class="hook-line font-bold">⭐ [기본] 홈페이지 5페이지 30만원</p>
+          <p class="hook-line">명함만 건네면 끝? 요즘은 링크 하나가 신뢰입니다</p>
+          <p class="hook-line text-gray-400">🎁 2026 신년 특별 프로모션... <span class="text-blue-400">더보기</span></p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-gray-500 w-12">제목</span>
+          <code id="basic-title" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm">⭐ [기본] 홈페이지 5페이지 30만원</code>
+          <button onclick="copyText('basic-title', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-sm text-gray-500 w-12 pt-2">본문</span>
+          <pre id="basic-body" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm whitespace-pre-wrap">명함만 건네면 끝? 요즘은 링크 하나가 신뢰입니다
+🎁 2026 신년 특별 프로모션
+
+✅ 홈페이지 5페이지
+✅ 반응형 디자인
+✅ SEO 최적화
+✅ 무료 수정 2회
+
+📞 상담 후 진행됩니다
+🔗 polarad.co.kr</pre>
+          <button onclick="copyText('basic-body', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NORMAL -->
+    <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-cyan-800">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">⭐</span>
+        <h2 class="text-xl font-bold text-cyan-400">NORMAL (60만원)</h2>
+        <span class="bg-cyan-600 text-white text-xs px-2 py-1 rounded">시안</span>
+      </div>
+
+      <div class="bg-gray-900 rounded-lg p-4 mb-4 border border-yellow-600/30">
+        <p class="text-xs text-yellow-500 mb-2">📱 미리보기 3줄</p>
+        <div class="space-y-1 text-sm">
+          <p class="hook-line font-bold">🔥 [인기] 홈페이지+광고세팅 60만원</p>
+          <p class="hook-line">홈페이지 만들어놓고 아무도 안 오면 의미없죠</p>
+          <p class="hook-line text-gray-400">🎁 2026 신년 특별 프로모션... <span class="text-blue-400">더보기</span></p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-gray-500 w-12">제목</span>
+          <code id="normal-title" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm">🔥 [인기] 홈페이지+광고세팅 60만원</code>
+          <button onclick="copyText('normal-title', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-sm text-gray-500 w-12 pt-2">본문</span>
+          <pre id="normal-body" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm whitespace-pre-wrap">홈페이지 만들어놓고 아무도 안 오면 의미없죠
+🎁 2026 신년 특별 프로모션
+
+✅ 홈페이지 7페이지
+✅ Meta 광고 세팅
+✅ 도메인 연결
+✅ SEO 최적화
+
+📞 상담 후 진행됩니다
+🔗 polarad.co.kr</pre>
+          <button onclick="copyText('normal-body', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRO -->
+    <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-green-700">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">🚀</span>
+        <h2 class="text-xl font-bold text-green-400">PRO (110만원)</h2>
+        <span class="bg-green-600 text-white text-xs px-2 py-1 rounded">그린</span>
+      </div>
+
+      <div class="bg-gray-900 rounded-lg p-4 mb-4 border border-yellow-600/30">
+        <p class="text-xs text-yellow-500 mb-2">📱 미리보기 3줄</p>
+        <div class="space-y-1 text-sm">
+          <p class="hook-line font-bold">💎 [추천] 홈페이지+광고+자동화 110만원</p>
+          <p class="hook-line">문의 왔는데 못 봐서 놓친 적 있으세요?</p>
+          <p class="hook-line text-gray-400">🎁 2026 신년 특별 프로모션... <span class="text-blue-400">더보기</span></p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-gray-500 w-12">제목</span>
+          <code id="pro-title" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm">💎 [추천] 홈페이지+광고+자동화 110만원</code>
+          <button onclick="copyText('pro-title', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-sm text-gray-500 w-12 pt-2">본문</span>
+          <pre id="pro-body" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm whitespace-pre-wrap">문의 왔는데 못 봐서 놓친 적 있으세요?
+🎁 2026 신년 특별 프로모션
+
+✅ 홈페이지 8페이지
+✅ Meta 광고 세팅
+✅ 자동화 3개월
+✅ 알림톡 연동
+
+📞 상담 후 진행됩니다
+🔗 polarad.co.kr</pre>
+          <button onclick="copyText('pro-body', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-yellow-600">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">👑</span>
+        <h2 class="text-xl font-bold text-yellow-400">PREMIUM (220만원)</h2>
+        <span class="bg-yellow-500 text-black text-xs px-2 py-1 rounded">골드</span>
+      </div>
+
+      <div class="bg-gray-900 rounded-lg p-4 mb-4 border border-yellow-600/30">
+        <p class="text-xs text-yellow-500 mb-2">📱 미리보기 3줄</p>
+        <div class="space-y-1 text-sm">
+          <p class="hook-line font-bold">👑 [올인원] 홈페이지+광고+자동화 220만원</p>
+          <p class="hook-line">홈페이지, 광고, 문의관리 따로따로 하기 지치셨죠?</p>
+          <p class="hook-line text-gray-400">🎁 2026 신년 특별 프로모션... <span class="text-blue-400">더보기</span></p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-gray-500 w-12">제목</span>
+          <code id="premium-title" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm">👑 [올인원] 홈페이지+광고+자동화 220만원</code>
+          <button onclick="copyText('premium-title', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-sm text-gray-500 w-12 pt-2">본문</span>
+          <pre id="premium-body" class="flex-1 bg-gray-700 px-4 py-2 rounded text-sm whitespace-pre-wrap">홈페이지, 광고, 문의관리 따로따로 하기 지치셨죠?
+🎁 2026 신년 특별 프로모션
+
+✅ 홈페이지 10페이지
+✅ Meta 광고 세팅
+✅ 자동화 6개월
+✅ 도메인 + 알림톡
+✅ 게시글 자동생성기
+
+📞 상담 후 진행됩니다
+🔗 polarad.co.kr</pre>
+          <button onclick="copyText('premium-body', this)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition">복사</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 이미지 파일 안내 -->
+    <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+      <h3 class="text-lg font-bold mb-3">📁 이미지 파일</h3>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+        <div class="bg-gray-700 p-3 rounded text-center">
+          <div class="text-gray-400">PROMO</div>
+          <div class="text-xs text-gray-500">promo-1080.png</div>
+        </div>
+        <div class="bg-gray-700 p-3 rounded text-center">
+          <div class="text-white">BASIC</div>
+          <div class="text-xs text-gray-500">basic-1080.png</div>
+        </div>
+        <div class="bg-gray-700 p-3 rounded text-center">
+          <div class="text-cyan-400">NORMAL</div>
+          <div class="text-xs text-gray-500">normal-1080.png</div>
+        </div>
+        <div class="bg-gray-700 p-3 rounded text-center">
+          <div class="text-green-400">PRO</div>
+          <div class="text-xs text-gray-500">pro-1080.png</div>
+        </div>
+        <div class="bg-gray-700 p-3 rounded text-center">
+          <div class="text-yellow-400">PREMIUM</div>
+          <div class="text-xs text-gray-500">premium-v9-1080.png</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function copyText(elementId, button) {
+      const element = document.getElementById(elementId);
+      const text = element.innerText || element.textContent;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.innerText;
+        button.innerText = '✓ 복사됨';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+          button.innerText = originalText;
+          button.classList.remove('copied');
+        }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>

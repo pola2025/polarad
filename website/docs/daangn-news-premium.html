@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>당근마켓 소식글 - Premium</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background: #000;
+        }
+
+        .container {
+            width: 720px;
+            height: 720px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                #9a8b70 15%,
+                #c4b8a0 30%,
+                #ddd5c5 45%,
+                #faf7f0 50%,
+                #ddd5c5 55%,
+                #c4b8a0 70%,
+                #9a8b70 85%,
+                transparent 100%
+            );
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 550px;
+            height: 450px;
+            background: radial-gradient(ellipse, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.05) 40%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .recommend-glow {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #9a8b70 0%, #c4b8a0 30%, #ddd5c5 50%, #efe9dc 70%, #faf7f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .tier-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.2) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            border-radius: 50px;
+            position: relative;
+        }
+
+        .recommend-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: #000;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .tier-icon {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: #FBBF24;
+            stroke-width: 2;
+        }
+
+        .tier-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #FBBF24;
+            letter-spacing: 0.05em;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tagline {
+            font-size: 15px;
+            font-weight: 600;
+            color: #F59E0B;
+            letter-spacing: 0.15em;
+            margin-bottom: 14px;
+        }
+
+        .title {
+            font-size: 46px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .title .highlight {
+            background: linear-gradient(135deg, #FBBF24 0%, #FCD34D 50%, #FDE68A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 19px;
+            color: #6B7280;
+            margin-bottom: 28px;
+        }
+
+        .price-box {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .price {
+            font-size: 72px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FBBF24 0%, #FDE68A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .price-unit {
+            font-size: 28px;
+            font-weight: 600;
+            color: #B45309;
+        }
+
+        .price-vat {
+            font-size: 16px;
+            color: #92400E;
+            margin-left: 8px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 24px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-icon.included {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .feature-icon.highlight {
+            background: rgba(245, 158, 11, 0.25);
+        }
+
+        .feature-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        .feature-icon.included svg {
+            stroke: #10B981;
+        }
+
+        .feature-icon.highlight svg {
+            stroke: #FBBF24;
+        }
+
+        .feature-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #E5E7EB;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .feature-text.highlight {
+            color: #FDE68A;
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .badge.new {
+            background: rgba(139, 92, 246, 0.2);
+            color: #A78BFA;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .badge.up {
+            background: rgba(6, 182, 212, 0.2);
+            color: #22D3EE;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .badge.hot {
+            background: rgba(245, 158, 11, 0.25);
+            color: #FBBF24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .cta-text {
+            font-size: 15px;
+            color: #6B7280;
+        }
+
+        .cta-button {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+        }
+
+        .website {
+            font-size: 15px;
+            color: #92400E;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-line"></div>
+        <div class="bg-glow"></div>
+        <div class="recommend-glow"></div>
+
+        <div class="content">
+            <div class="header">
+                <div class="logo">PolaAd</div>
+                <div class="tier-badge">
+                    <span class="recommend-badge">추천</span>
+                    <svg class="tier-icon" viewBox="0 0 24 24">
+                        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
+                    </svg>
+                    <span class="tier-name">PREMIUM</span>
+                </div>
+            </div>
+
+            <div class="main">
+                <div class="tagline">ALL-IN-ONE PACKAGE</div>
+                <h1 class="title">
+                    <span class="highlight">풀 패키지</span>로<br>
+                    완벽하게 시작
+                </h1>
+                <p class="subtitle">온라인 영업 시스템을 완성하고 싶은 분께</p>
+
+                <div class="price-box">
+                    <span class="price">220</span>
+                    <span class="price-unit">만원</span>
+                    <span class="price-vat">VAT 포함</span>
+                </div>
+
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon included">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text">홈페이지 10P <span class="badge up">UP</span></span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon included">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text">Meta 광고 세팅</span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon highlight">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text highlight">자동화 6개월 <span class="badge hot">HOT</span></span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon included">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text">도메인 + 알림 <span class="badge up">UP</span></span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon included">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text">SEO 최적화</span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon highlight">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text highlight">게시글 자동생성기 <span class="badge hot">HOT</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <span class="cta-text">상담 후 진행됩니다</span>
+                <div class="cta-button">상담 신청하기</div>
+                <span class="website">polarad.co.kr</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

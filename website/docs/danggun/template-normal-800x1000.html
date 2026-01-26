@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=800, height=1000">
+  <title>NORMAL 60만원 - 800x1000</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 800px;
+      height: 1000px;
+      background: linear-gradient(180deg, #0a0a0a 0%, #111 50%, #0a0a0a 100%);
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 상단 글로우 - 시안 */
+    .top-glow {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 250px;
+      background: radial-gradient(ellipse, rgba(0,200,200,0.15) 0%, transparent 70%);
+    }
+
+    /* 프로모션 태그 */
+    .promo-tag {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* 메인 컨텐츠 */
+    .main-content {
+      position: absolute;
+      top: 110px;
+      left: 50px;
+      right: 50px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 88px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .title .highlight {
+      background: linear-gradient(135deg, #00d4d4 0%, #00a0a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sub-headline {
+      font-size: 24px;
+      color: #999;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    /* 가격 */
+    .price-section {
+      position: absolute;
+      bottom: 280px;
+      left: 0;
+      right: 0;
+      text-align: center;
+    }
+
+    .price-container {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .price {
+      font-size: 280px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      text-shadow:
+        0 0 10px rgba(0,210,210,0.8),
+        0 0 20px rgba(0,210,210,0.6),
+        0 0 40px rgba(0,180,180,0.4),
+        0 0 80px rgba(0,150,150,0.3);
+      filter: brightness(1.1);
+    }
+
+    .price-unit {
+      font-size: 56px;
+      font-weight: 800;
+      color: #fff;
+      text-shadow:
+        0 0 10px rgba(0,210,210,0.6),
+        0 0 20px rgba(0,180,180,0.4);
+    }
+
+    .price-vat {
+      font-size: 18px;
+      color: #888;
+      margin-left: 8px;
+      align-self: baseline;
+    }
+
+    /* 체크리스트 그리드 */
+    .features {
+      position: absolute;
+      bottom: 100px;
+      left: 50px;
+      right: 50px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .feature.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(145deg, rgba(0,80,80,0.3) 0%, rgba(0,40,40,0.5) 100%);
+      padding: 18px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,200,200,0.35);
+      box-shadow:
+        inset 0 1px 0 rgba(0,255,255,0.1),
+        inset 0 -1px 0 rgba(0,0,0,0.2),
+        0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .feature .check {
+      width: 26px;
+      height: 26px;
+      border: 2px solid #00d4d4;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: linear-gradient(145deg, rgba(0,100,100,0.3) 0%, rgba(0,50,50,0.5) 100%);
+    }
+
+    .feature .check svg {
+      width: 14px;
+      height: 14px;
+      stroke: #00e0e0;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .feature span {
+      font-size: 17px;
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+
+    /* 푸터 */
+    .footer {
+      position: absolute;
+      bottom: 40px;
+      left: 50px;
+      right: 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: #555;
+    }
+
+    .footer-site {
+      font-size: 16px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-glow"></div>
+
+  <div class="promo-tag">🎁 2026 신년 특별 프로모션</div>
+
+  <div class="main-content">
+    <p class="sub-headline">광고 테스트를 시작하는 분</p>
+
+    <h1 class="title">
+      <span class="highlight">랜딩페이지</span>와<br>
+      광고를 함께
+    </h1>
+
+  </div>
+
+  <div class="price-section">
+    <div class="price-container">
+      <span class="price">60</span>
+      <span class="price-unit">만원</span>
+      <span class="price-vat">(VAT 포함)</span>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>랜딩페이지 1P</span>
+    </div>
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>Meta 광고 세팅</span>
+    </div>
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>Meta 자동화 1개월</span>
+    </div>
+    <div class="feature">
+      <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+      <span>도메인 1년 제공</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-logo">PolaAd</span>
+    <span class="footer-site">polarad.co.kr</span>
+  </div>
+</body>
+</html>

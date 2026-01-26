@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>폴라애드 - 웹사이트 제작 안내</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .print-break { page-break-before: always; }
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <div class="max-w-3xl mx-auto py-8 px-4">
+
+        <!-- 헤더 -->
+        <header class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-xl p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">POLARAD</h1>
+                    <p class="text-blue-100 text-sm mt-1">웹사이트 제작 서비스</p>
+                </div>
+                <div class="text-right text-sm text-blue-100">
+                    <p>담당자: 이재호</p>
+                    <p>mkt@polarad.co.kr</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- 본문 -->
+        <main class="bg-white shadow-lg rounded-b-xl">
+
+            <!-- 인사말 -->
+            <div class="p-6 border-b border-slate-100">
+                <p class="text-slate-700 leading-relaxed">
+                    제작 진행에 필요한 부분 안내 드립니다.
+                </p>
+            </div>
+
+            <!-- 필요 정보 섹션 -->
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3">📋</span>
+                    필요 정보 요청
+                </h2>
+
+                <div class="space-y-4">
+
+                    <!-- 항목 1 -->
+                    <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <span class="bg-blue-500 text-white text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center mr-3 mt-0.5">1</span>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">사업자등록증 사본</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 항목 2 -->
+                    <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <span class="bg-blue-500 text-white text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center mr-3 mt-0.5">2</span>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">홈페이지 기입할 정보</h3>
+                                <ul class="mt-2 text-sm text-slate-600 space-y-1">
+                                    <li>• 대표번호</li>
+                                    <li>• 이메일주소</li>
+                                    <li>• 주소 <span class="text-slate-400">(사업자등록증과 같다면 전달 X)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 항목 3 -->
+                    <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <span class="bg-blue-500 text-white text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center mr-3 mt-0.5">3</span>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">해외결제 가능한 신용카드 정보</h3>
+                                <ul class="mt-2 text-sm text-slate-600 space-y-1">
+                                    <li>• Cloudflare 서비스 연결용 <span class="text-green-600 font-medium">(실제 결제 X)</span></li>
+                                    <li>• 카드번호 나온 부분 사진 + CVC 번호</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 항목 4 -->
+                    <div class="bg-amber-50 rounded-lg p-4 border-l-4 border-amber-500">
+                        <div class="flex items-start">
+                            <span class="bg-amber-500 text-white text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center mr-3 mt-0.5">4</span>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">55만원 (VAT 포함) 결제</h3>
+                                <div class="mt-2 bg-white rounded-lg p-3 border border-amber-200">
+                                    <p class="text-sm text-slate-700">
+                                        <span class="font-semibold">우리은행</span> 1005-302-954803<br>
+                                        <span class="text-slate-500">예금주: 폴라애드 이재호</span>
+                                    </p>
+                                </div>
+                                <p class="mt-2 text-sm text-slate-500">
+                                    * 카드결제 필요 시 네이버 예약 결제 링크 안내 예정
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 항목 5 -->
+                    <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <span class="bg-blue-500 text-white text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center mr-3 mt-0.5">5</span>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">후이즈 계정 가입 후 ID/PW</h3>
+                                <div class="mt-2">
+                                    <a href="https://domain.whois.co.kr/" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        🔗 https://domain.whois.co.kr/
+                                    </a>
+                                </div>
+                                <p class="mt-2 text-sm text-slate-500">
+                                    * 초기 이메일 & 문자 인증 필요<br>
+                                    * 도메인은 폴라애드 1년 구매 지원
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 항목 6 -->
+                    <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <span class="bg-blue-500 text-white text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center mr-3 mt-0.5">6</span>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">구글 계정 ID/PW</h3>
+                                <p class="mt-2 text-sm text-slate-500">
+                                    * 초기 스마트폰 알림 번호 선택 인증 필요
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 특이사항 섹션 -->
+            <div class="p-6 bg-slate-50 border-t border-slate-100">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-slate-600 text-white rounded-full flex items-center justify-center text-sm mr-3">📌</span>
+                    특이사항
+                </h2>
+
+                <div class="space-y-3 text-sm text-slate-700">
+
+                    <div class="flex items-start">
+                        <span class="text-blue-500 mr-2">•</span>
+                        <p>이미지 편집 로고 삭제 작업은 <span class="font-semibold">10개 이내 무료</span>, 초과 시 개별 비용<br>
+                        <span class="text-slate-500">(실제 이미지 분량 확인 후 안내 예정)</span></p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 border border-slate-200">
+                        <h4 class="font-semibold text-slate-800 mb-3">📅 일정 안내</h4>
+
+                        <!-- 1월 달력 -->
+                        <div class="mb-4">
+                            <div class="text-center text-sm font-semibold text-slate-700 mb-2">2025년 1월</div>
+                            <div class="grid grid-cols-7 gap-1 text-center text-xs">
+                                <!-- 요일 헤더 -->
+                                <div class="text-red-400 font-medium py-1">일</div>
+                                <div class="text-slate-400 font-medium py-1">월</div>
+                                <div class="text-slate-400 font-medium py-1">화</div>
+                                <div class="text-slate-400 font-medium py-1">수</div>
+                                <div class="text-slate-400 font-medium py-1">목</div>
+                                <div class="text-slate-400 font-medium py-1">금</div>
+                                <div class="text-blue-400 font-medium py-1">토</div>
+
+                                <!-- 첫째 주 (1/1 수요일 시작) -->
+                                <div class="py-1 text-slate-300"></div>
+                                <div class="py-1 text-slate-300"></div>
+                                <div class="py-1 text-slate-300"></div>
+                                <div class="py-1 text-slate-400">1</div>
+                                <div class="py-1 text-slate-400">2</div>
+                                <div class="py-1 text-slate-400">3</div>
+                                <div class="py-1 text-slate-400">4</div>
+
+                                <!-- 둘째 주 -->
+                                <div class="py-1 text-slate-400">5</div>
+                                <div class="py-1 text-slate-400">6</div>
+                                <div class="py-1 text-slate-400">7</div>
+                                <div class="py-1 text-slate-400">8</div>
+                                <div class="py-1 text-slate-400">9</div>
+                                <div class="py-1 text-slate-400">10</div>
+                                <div class="py-1 text-slate-400">11</div>
+
+                                <!-- 셋째 주 (13~16 1차, 16 공통) -->
+                                <div class="py-1 text-slate-400">12</div>
+                                <div class="py-1 bg-blue-500 text-white rounded-l-full font-bold">13</div>
+                                <div class="py-1 bg-blue-400 text-white font-bold">14</div>
+                                <div class="py-1 bg-blue-400 text-white font-bold">15</div>
+                                <div class="py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">16</div>
+                                <div class="py-1 bg-purple-400 text-white font-bold">17</div>
+                                <div class="py-1 bg-purple-400 text-white font-bold">18</div>
+
+                                <!-- 넷째 주 (16~20 2차) -->
+                                <div class="py-1 bg-purple-400 text-white font-bold">19</div>
+                                <div class="py-1 bg-purple-500 text-white rounded-r-full font-bold">20</div>
+                                <div class="py-1 text-slate-400">21</div>
+                                <div class="py-1 text-slate-400">22</div>
+                                <div class="py-1 text-slate-400">23</div>
+                                <div class="py-1 text-slate-400">24</div>
+                                <div class="py-1 text-slate-400">25</div>
+
+                                <!-- 다섯째 주 -->
+                                <div class="py-1 text-slate-400">26</div>
+                                <div class="py-1 text-slate-400">27</div>
+                                <div class="py-1 text-slate-400">28</div>
+                                <div class="py-1 text-slate-400">29</div>
+                                <div class="py-1 text-slate-400">30</div>
+                                <div class="py-1 text-slate-400">31</div>
+                                <div class="py-1 text-slate-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- 범례 -->
+                        <div class="space-y-2 text-sm border-t border-slate-100 pt-3">
+                            <div class="flex items-center">
+                                <span class="w-16 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">13~16</span>
+                                <span class="text-slate-700"><span class="font-medium">1차 화면구성</span> <span class="text-slate-400">(사이트 연결 및 보이는 부분)</span></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-16 h-5 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">16~20</span>
+                                <span class="text-slate-700"><span class="font-medium">2차 기능적용</span> <span class="text-slate-400">(관리자 기능)</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 제작스펙 섹션 -->
+            <div class="p-6 border-t border-slate-100">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3">⚙️</span>
+                    제작 스펙 안내
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="py-3 pr-4 text-slate-500 w-32">페이지 구성</td>
+                                <td class="py-3 text-slate-700">5 Page 이내 (상단 헤더, 푸터, 입력폼 필드 제외, 4개 섹션 1페이지 규정)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4 text-slate-500">사용 기술</td>
+                                <td class="py-3 text-slate-700">Vercel, Cloudflare, Airtable, GitHub</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4 text-slate-500">분석 도구</td>
+                                <td class="py-3 text-slate-700">구글 애널리틱스 설치 / 방문통계 설정 적용<br>
+                                <span class="text-slate-500">네이버 계정 전달 시 네이버 서치어드바이저 설정 가능</span></td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4 text-slate-500">자동접수알림</td>
+                                <td class="py-3 text-slate-700">접수, 리스트 저장, 내부 수신, 고객 안내 기능 설정 가능</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 유지보수 안내 -->
+            <div class="p-6 bg-blue-50 border-t border-blue-100">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3">🔧</span>
+                    유지보수 안내
+                </h2>
+
+                <div class="grid gap-3 md:grid-cols-2">
+                    <div class="bg-white rounded-lg p-4 border border-blue-100">
+                        <p class="text-xs text-blue-600 font-medium mb-1">기타 유지보수</p>
+                        <p class="text-xl font-bold text-slate-800">3.3만원 <span class="text-sm font-normal text-slate-500">(VAT 포함)</span></p>
+                        <p class="text-sm text-slate-500 mt-1">텍스트 수정 / 이미지 교체 등 5개 이내 1건</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border border-blue-100">
+                        <p class="text-xs text-blue-600 font-medium mb-1">페이지 리뉴얼 또는 추가</p>
+                        <p class="text-xl font-bold text-slate-800">22만원 <span class="text-sm font-normal text-slate-500">(VAT 포함)</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주의사항 -->
+            <div class="p-6 border-t border-slate-100">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm mr-3">⚠️</span>
+                    참고사항
+                </h2>
+
+                <div class="space-y-3 text-sm">
+                    <div class="bg-orange-50 rounded-lg p-4 border border-orange-100">
+                        <p class="font-semibold text-orange-800 mb-1">Vercel 트래픽</p>
+                        <p class="text-orange-700">기본 용량 100GB 초과 시 개별 비용 발생<br>
+                        <span class="text-orange-500">(일 트래픽 기준 500~2,000명 이상 매일 방문 시 발생)</span></p>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-4 border border-orange-100">
+                        <p class="font-semibold text-orange-800 mb-1">Cloudflare 이미지 용량</p>
+                        <p class="text-orange-700">10GB 초과 시 개별 비용 발생<br>
+                        <span class="text-orange-500">(일반적인 1080x1200px 크기 기준 약 100KB 압축, 10만 장 이상 시 비용 발생)</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 푸터 -->
+            <footer class="p-6 bg-slate-800 text-white rounded-b-xl text-center text-sm">
+                <p class="font-semibold">POLARAD 폴라애드</p>
+                <p class="text-slate-400 mt-1">폴라애드 이재호 | mkt@polarad.co.kr</p>
+            </footer>
+
+        </main>
+
+    </div>
+</body>
+</html>

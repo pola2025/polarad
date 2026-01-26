@@ -1,0 +1,12 @@
+name = "polarlead"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+account_id = "b520cb8ed3989e8182bdb020ade36495"
+
+[vars]
+ENVIRONMENT = "development"
+
+# KV namespace (구독 상태 관리용)
+# [[kv_namespaces]]
+# binding = "SUBSCRIPTIONS"
+# id = ""

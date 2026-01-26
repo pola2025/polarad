@@ -1,8 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Monitor, Target, FileText, CheckCircle2, XCircle, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Card } from '../ui/Card'
+import { Monitor, Bell, BarChart3, CheckCircle2, XCircle, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { AuroraBackground } from '../ui/AuroraBackground'
 
@@ -20,25 +19,25 @@ export default function SolutionSection() {
 
     const features = [
         {
-            icon: <Monitor className="w-6 h-6 sm:w-8 sm:h-8 text-primary-400" />,
-            title: "Conversion Basecamp",
-            titleKo: "전환 기지",
-            desc: "단순 홈페이지가 아닙니다. 고객을 설득하고 DB를 추출하는 '전환 기지'입니다.",
-            items: ["반응형 웹사이트", "SEO 최적화", "DB 수집 폼 연동"]
+            icon: <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />,
+            title: "Kakao Login",
+            titleKo: "카카오 로그인",
+            desc: "본인 인증된 정확한 연락처만 수집합니다. 스팸 접수를 원천 차단합니다.",
+            items: ["본인 인증 연락처", "스팸 필터링", "진성 고객만 수집"]
         },
         {
-            icon: <Target className="w-6 h-6 sm:w-8 sm:h-8 text-accent-400" />,
-            title: "Lead Magnet Engine",
-            titleKo: "잠재고객 유입",
-            desc: "대표님을 찾고 있는 잠재 고객만을 정밀 타겟팅하여 유입시킵니다.",
-            items: ["Meta(FB/IG) 광고 세팅", "타겟 오디언스 최적화", "광고 소재 세팅 지원"]
+            icon: <Bell className="w-6 h-6 sm:w-8 sm:h-8 text-primary-400" />,
+            title: "Telegram Alert",
+            titleKo: "텔레그램 알림",
+            desc: "새 접수가 들어오면 즉시 텔레그램으로 알림을 받습니다. 빠른 응대가 가능합니다.",
+            items: ["실시간 접수 알림", "고객 정보 즉시 확인", "빠른 응대 가능"]
         },
         {
-            icon: <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-green-400" />,
-            title: "Authority Kit",
-            titleKo: "브랜딩 키트",
-            desc: "미팅 현장에서 신뢰도를 종결짓는 실물 브랜딩 키트입니다.",
-            items: ["고급 명함 200매", "대봉투/소봉투", "회사소개서/계약서 양식"]
+            icon: <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-green-400" />,
+            title: "Dashboard",
+            titleKo: "실시간 대시보드",
+            desc: "접수 현황을 한눈에 파악할 수 있는 전용 대시보드가 제공됩니다.",
+            items: ["접수 목록 관리", "상태 변경 기능", "통계 및 분석"]
         }
     ]
 
@@ -92,8 +91,8 @@ export default function SolutionSection() {
                         viewport={{ once: true }}
                         className="text-3xl lg:text-5xl font-bold mb-6 leading-tight break-keep text-white"
                     >
-                        소모성 비용이 아닌,<br />
-                        <span className="text-primary-400">평생 남는 &lsquo;자산(Asset)&rsquo;</span>을 구축하십시오
+                        월 3만원으로<br />
+                        <span className="text-primary-400">DB 접수 자동화</span>를 시작하세요
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -102,8 +101,8 @@ export default function SolutionSection() {
                         transition={{ delay: 0.2 }}
                         className="text-lg text-gray-400 break-keep text-balance"
                     >
-                        PolaAd 올인원 시스템은 한 번 구축하면 귀하의 소유가 됩니다.<br />
-                        더 이상 대행사에 의존하지 말고, <span className="text-white font-bold">자체 영업 시스템</span>을 가동하세요.
+                        리드 수집 랜딩페이지 + 카카오 로그인 + 텔레그램 알림 + 대시보드까지<br />
+                        <span className="text-white font-bold">소상공인을 위한 DB접수 랜딩 서비스</span>입니다.
                     </motion.p>
                 </div>
 
@@ -218,7 +217,7 @@ export default function SolutionSection() {
                     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-500 to-accent-500"></div>
 
                     {/* 제목 - 그리드 밖으로 이동 */}
-                    <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-8 text-white text-center lg:text-left pt-2">왜 PolarAD 시스템인가?</h3>
+                    <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-8 text-white text-center lg:text-left pt-2">왜 폴라애드인가?</h3>
 
                     {/* 모바일용 컴팩트 비교 테이블 */}
                     <div className="lg:hidden">
@@ -227,56 +226,56 @@ export default function SolutionSection() {
                                 <thead>
                                     <tr className="border-b border-white/10">
                                         <th className="text-left py-2 pl-1 text-gray-400 font-medium w-[30%]">항목</th>
-                                        <th className="text-left py-2 text-primary-400 font-bold w-[35%]">PolarAD</th>
-                                        <th className="text-left py-2 text-gray-500 font-medium w-[35%]">기존 방식</th>
+                                        <th className="text-left py-2 text-primary-400 font-bold w-[35%]">폴라애드</th>
+                                        <th className="text-left py-2 text-gray-500 font-medium w-[35%]">일반 폼</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     <tr>
-                                        <td className="py-3 pl-1 text-gray-300">DB 소유권</td>
+                                        <td className="py-3 pl-1 text-gray-300">스팸 차단</td>
                                         <td className="py-3">
                                             <div className="flex items-center gap-1 text-primary-400">
                                                 <CheckCircle2 className="w-4 h-4" />
-                                                <span className="text-xs font-medium">100% 소유</span>
+                                                <span className="text-xs font-medium">카카오 인증</span>
                                             </div>
                                         </td>
                                         <td className="py-3">
                                             <div className="flex items-center gap-1 text-gray-500">
                                                 <XCircle className="w-4 h-4" />
-                                                <span className="text-xs">공유</span>
+                                                <span className="text-xs">스팸 다수</span>
                                             </div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td className="py-3 pl-1 text-gray-300">타겟팅</td>
+                                        <td className="py-3 pl-1 text-gray-300">알림</td>
                                         <td className="py-3">
                                             <div className="flex items-center gap-1 text-primary-400">
                                                 <CheckCircle2 className="w-4 h-4" />
-                                                <span className="text-xs font-medium">직접 설정</span>
+                                                <span className="text-xs font-medium">실시간 알림</span>
                                             </div>
                                         </td>
                                         <td className="py-3">
                                             <div className="flex items-center gap-1 text-gray-500">
                                                 <XCircle className="w-4 h-4" />
-                                                <span className="text-xs">불투명</span>
+                                                <span className="text-xs">수동 확인</span>
                                             </div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td className="py-3 pl-1 text-gray-300">장기 비용</td>
+                                        <td className="py-3 pl-1 text-gray-300">비용</td>
                                         <td className="py-3">
                                             <div className="flex flex-col items-start gap-0.5">
                                                 <div className="flex items-center gap-1 text-primary-400">
                                                     <CheckCircle2 className="w-4 h-4" />
-                                                    <span className="text-xs font-medium">30만원~</span>
+                                                    <span className="text-xs font-medium">월 3만원</span>
                                                 </div>
-                                                <span className="text-[10px] text-gray-500 pl-5">1회 제작비</span>
+                                                <span className="text-[10px] text-gray-500 pl-5">1년결제 36만원</span>
                                             </div>
                                         </td>
                                         <td className="py-3">
                                             <div className="flex items-center gap-1 text-gray-500">
                                                 <XCircle className="w-4 h-4" />
-                                                <span className="text-xs">수백만원/월</span>
+                                                <span className="text-xs">별도 개발비</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -290,27 +289,27 @@ export default function SolutionSection() {
                         <div>
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between p-4 rounded-xl bg-gray-700/50 border border-white/5">
-                                    <span className="text-gray-300">DB 소유권</span>
+                                    <span className="text-gray-300">스팸 차단</span>
                                     <div className="flex items-center gap-2 font-bold text-primary-400">
                                         <CheckCircle2 className="w-5 h-5" />
-                                        <span>100% 귀하의 소유</span>
+                                        <span>카카오 로그인 인증</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between p-4 rounded-xl bg-gray-700/50 border border-white/5">
-                                    <span className="text-gray-300">타겟팅 정확도</span>
+                                    <span className="text-gray-300">접수 알림</span>
                                     <div className="flex items-center gap-2 font-bold text-primary-400">
                                         <CheckCircle2 className="w-5 h-5" />
-                                        <span>대표님 직접 설정 가능</span>
+                                        <span>텔레그램 실시간 알림</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between p-4 rounded-xl bg-gray-700/50 border border-white/5">
-                                    <span className="text-gray-300">장기 비용</span>
+                                    <span className="text-gray-300">비용</span>
                                     <div className="flex flex-col items-end gap-0.5">
                                         <div className="flex items-center gap-2 font-bold text-primary-400">
                                             <CheckCircle2 className="w-5 h-5" />
-                                            <span>30만원~ (1회 제작비)</span>
+                                            <span>월 3만원 (1년결제 36만원)</span>
                                         </div>
-                                        <span className="text-xs text-gray-500">추가 자동화 월 11만원~</span>
+                                        <span className="text-xs text-gray-500">수정 건당 3만원</span>
                                     </div>
                                 </div>
                             </div>
@@ -318,27 +317,27 @@ export default function SolutionSection() {
 
                         <div className="relative">
                             <div className="absolute inset-0 bg-red-500/5 blur-2xl rounded-full"></div>
-                            <h3 className="text-2xl font-bold mb-8 text-gray-500">기존 방식 (DB 구매)</h3>
+                            <h3 className="text-2xl font-bold mb-8 text-gray-500">일반 폼 빌더</h3>
                             <div className="space-y-6 opacity-70">
                                 <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 border-dashed">
-                                    <span className="text-gray-500">DB 소유권</span>
+                                    <span className="text-gray-500">스팸 차단</span>
                                     <div className="flex items-center gap-2 font-bold text-gray-500">
                                         <XCircle className="w-5 h-5" />
-                                        <span>대행사 소유 (공유)</span>
+                                        <span>스팸 접수 다수</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 border-dashed">
-                                    <span className="text-gray-500">타겟팅 정확도</span>
+                                    <span className="text-gray-500">접수 알림</span>
                                     <div className="flex items-center gap-2 font-bold text-gray-500">
                                         <XCircle className="w-5 h-5" />
-                                        <span>불투명 (랜덤 발송)</span>
+                                        <span>수동으로 확인 필요</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 border-dashed">
-                                    <span className="text-gray-500">장기 비용</span>
+                                    <span className="text-gray-500">비용</span>
                                     <div className="flex items-center gap-2 font-bold text-gray-500">
                                         <XCircle className="w-5 h-5" />
-                                        <span>매월 수백만원 발생</span>
+                                        <span>별도 개발비 필요</span>
                                     </div>
                                 </div>
                             </div>
@@ -348,32 +347,32 @@ export default function SolutionSection() {
                     {/* 비용 안내 */}
                     <div className="mt-10 pt-8 border-t border-white/10">
                         <div className="space-y-4">
-                            {/* 티어 안내 */}
+                            {/* 가격 안내 */}
                             <div className="flex items-start gap-3">
                                 <CheckCircle2 className="w-5 h-5 text-primary-400 mt-0.5 shrink-0" />
                                 <div>
                                     <p className="text-gray-300 text-sm break-keep">
-                                        <span className="text-white font-semibold">필요한 만큼만 선택하는 티어 시스템</span>
+                                        <span className="text-white font-semibold">DB접수 랜딩 서비스 월 3만원</span> (VAT별도, 1년결제 36만원)
                                     </p>
                                     <p className="text-gray-500 text-xs mt-1">
-                                        Basic 30만 → Normal 60만 → Pro 110만 → Premium 220만
+                                        랜딩페이지 + 카카오 로그인 + 텔레그램 알림 + 대시보드
                                     </p>
                                     <p className="text-gray-500 text-xs">
-                                        (VAT 포함 / 추가 자동화 월금액 별도)
+                                        수정 필요 시 건당 3만원 / 1년 후 연장: 월 1만원
                                     </p>
                                 </div>
                             </div>
 
-                            {/* 프로모션 */}
-                            <div className="flex items-start gap-3 p-4 rounded-xl bg-accent-500/10 border border-accent-500/20">
-                                <span className="text-lg">🎁</span>
+                            {/* 타겟 안내 */}
+                            <div className="flex items-start gap-3 p-4 rounded-xl bg-primary-500/10 border border-primary-500/20">
+                                <span className="text-lg">🎯</span>
                                 <div>
-                                    <p className="text-accent-400 font-bold text-sm">1/31까지 선착순 10개 기업</p>
+                                    <p className="text-primary-400 font-bold text-sm">소상공인 맞춤형 솔루션</p>
                                     <p className="text-gray-400 text-sm mt-1 break-keep">
-                                        Premium <span className="text-white font-semibold">165만원</span> + 1년 자동화 무료
+                                        복잡한 설정 없이 <span className="text-white font-semibold">5~7일 내 제작 완료</span>
                                     </p>
                                     <p className="text-gray-500 text-xs">
-                                        (정가 220만원 → 55만원 할인)
+                                        카카오 앱 설정, 텔레그램 연동 모두 대행
                                     </p>
                                 </div>
                             </div>

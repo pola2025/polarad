@@ -257,10 +257,10 @@ export default function ContactPage() {
                 className="text-center mb-8 lg:mb-12"
               >
                 <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold text-gray-900 mb-2 lg:mb-4 break-keep">
-                  상품 선택 & 상담 신청
+                  서비스 안내 & 상담 신청
                 </h2>
                 <p className="text-gray-600 text-sm lg:text-lg max-w-2xl mx-auto break-keep">
-                  원하는 상품을 선택하고 상담을 신청하세요
+                  DB접수 랜딩 서비스로 리드 수집을 자동화하세요
                 </p>
               </motion.div>
 
@@ -286,16 +286,16 @@ export default function ContactPage() {
                       <span className="text-gray-400 group-open:rotate-180 transition-transform text-xs">▼</span>
                     </summary>
                     <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
-                      4가지 티어로 구성됩니다. Basic(30만원): Meta 광고세팅 + 자동화 최초설정, Normal(60만원): 랜딩 1P + Meta 세팅 + 자동화 1개월, Pro(110만원): 홈페이지 5P + 자동화 2개월 + SEO, Premium(220만원): 홈페이지 10P + 자동화 6개월 + 게시글 자동생성기 + SEO. 인쇄물은 추가 옵션입니다.
+                      36만원(VAT 별도) 올인원 패키지입니다. 리드 수집 랜딩페이지 제작 + 1년간 접수 자동화(카카오 로그인, 텔레그램 알림, 실시간 대시보드)가 포함됩니다. 수정이 필요한 경우 건당 3만원입니다.
                     </p>
                   </details>
                   <details className="group">
                     <summary className="flex justify-between items-center gap-2 cursor-pointer text-gray-900 font-medium text-xs lg:text-sm hover:text-primary-600">
-                      <span>현재 프로모션이 있나요?</span>
+                      <span>카카오 로그인이 왜 필요한가요?</span>
                       <span className="text-gray-400 group-open:rotate-180 transition-transform text-xs">▼</span>
                     </summary>
                     <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
-                      1/31까지 선착순 10개 한정 Premium 165만원 + 1년 자동화 무료 프로모션 진행 중입니다.
+                      카카오 로그인을 통해 정확한 연락처와 본인 인증된 정보를 수집할 수 있습니다. 스팸 접수를 방지하고, 진성 고객만 필터링하여 영업 효율을 극대화합니다.
                     </p>
                   </details>
                   <details className="group">
@@ -304,7 +304,7 @@ export default function ContactPage() {
                       <span className="text-gray-400 group-open:rotate-180 transition-transform text-xs">▼</span>
                     </summary>
                     <p className="mt-2 text-xs lg:text-sm text-gray-600 pl-0">
-                      기획서 확정 후 홈페이지 30~45일, 인쇄물 7~10일, 광고 설정 5~7일 소요됩니다.
+                      기획 내용 확정 후 영업일 기준 5~7일 내에 제작 완료됩니다. 랜딩페이지 제작, 카카오 앱 설정, 텔레그램 연동까지 모두 포함됩니다.
                     </p>
                   </details>
                 </div>

@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>폴라애드 - 당근마켓 비즈프로필 이미지</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* 메탈릭 미니멀 컨셉 */
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --bg-surface: #161616;
+
+            /* 화이트 골드 메탈릭 */
+            --metal-dark: #9a8b70;
+            --metal: #c4b8a0;
+            --metal-light: #ddd5c5;
+            --metal-bright: #efe9dc;
+            --metal-shine: #faf7f0;
+
+            /* 텍스트 */
+            --white: #FFFFFF;
+            --gray: #707070;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+            background: #080808;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--white);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-title p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 32px;
+        }
+
+        .image-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #1f1f1f;
+        }
+
+        .section-header {
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .section-header .size-info {
+            font-size: 12px;
+            color: var(--metal-light);
+            font-weight: 500;
+        }
+
+        .image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-surface);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        /* ===================================
+           1. 프로필 이미지 - 메탈릭 미니멀
+           =================================== */
+        .profile-image {
+            width: 360px;
+            height: 360px;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 메탈릭 테두리 */
+        .profile-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(135deg,
+                var(--metal-shine) 0%,
+                var(--metal-dark) 25%,
+                var(--metal-shine) 50%,
+                var(--metal-dark) 75%,
+                var(--metal-shine) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .profile-content {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .profile-logo {
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(180deg,
+                var(--metal-shine) 0%,
+                var(--metal-light) 40%,
+                var(--metal) 60%,
+                var(--metal-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .profile-tagline {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--metal);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .profile-services {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .profile-services span {
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 20px;
+            background: linear-gradient(180deg,
+                rgba(196,184,160,0.25) 0%,
+                rgba(154,139,112,0.15) 50%,
+                rgba(120,108,85,0.1) 100%);
+            border: 1px solid;
+            border-color: rgba(196,184,160,0.4) rgba(154,139,112,0.3) rgba(120,108,85,0.25) rgba(154,139,112,0.3);
+            border-radius: 4px;
+            width: 100%;
+            text-align: center;
+            box-shadow:
+                inset 0 1px 0 rgba(250,247,240,0.3),
+                inset 0 -1px 0 rgba(120,108,85,0.2),
+                0 2px 4px rgba(0,0,0,0.4);
+            /* 골드 메탈릭 텍스트 */
+            color: var(--metal-shine);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+        }
+
+        /* ===================================
+           2. 커버 이미지 16:9 - 메탈릭 미니멀
+           =================================== */
+        .cover-image-16-9 {
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 16/9;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 40px 48px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #1a1a1a;
+        }
+
+        /* 상단 메탈릭 라인 */
+        .cover-image-16-9::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--metal-dark) 20%,
+                var(--metal-light) 50%,
+                var(--metal-dark) 80%,
+                transparent 100%);
+        }
+
+        .cover-content {
+            flex: 1;
+        }
+
+        .cover-logo {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(180deg,
+                var(--metal-shine) 0%,
+                var(--metal-light) 40%,
+                var(--metal) 60%,
+                var(--metal-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .cover-main-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.5;
+        }
+
+        /* ===================================
+           3. 배너 이미지 3:1 - 메탈릭 미니멀
+           =================================== */
+        .cover-image-3-1 {
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 3/1;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 24px 32px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #1a1a1a;
+        }
+
+        .cover-image-3-1::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--metal-dark) 20%,
+                var(--metal-light) 50%,
+                var(--metal-dark) 80%,
+                transparent 100%);
+        }
+
+        .banner-logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(180deg,
+                var(--metal-shine) 0%,
+                var(--metal-light) 40%,
+                var(--metal) 60%,
+                var(--metal-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .banner-divider {
+            width: 1px;
+            height: 32px;
+            background: linear-gradient(180deg, transparent, var(--metal), transparent);
+        }
+
+        .banner-text-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            white-space: nowrap;
+        }
+
+        .banner-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: -0.5px;
+        }
+
+        .banner-sub {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--metal-light);
+        }
+
+        /* ===================================
+           4. 소식글 이미지 4:3 - 메탈릭 미니멀
+           =================================== */
+        .news-image {
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 4/3;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #1a1a1a;
+        }
+
+        .news-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--metal-dark) 20%,
+                var(--metal-light) 50%,
+                var(--metal-dark) 80%,
+                transparent 100%);
+        }
+
+        .news-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--bg-dark);
+            padding: 6px 16px;
+            background: linear-gradient(135deg, var(--metal-light) 0%, var(--metal-shine) 50%, var(--metal-light) 100%);
+            border-radius: 3px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .news-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white);
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .news-highlight {
+            background: linear-gradient(180deg, var(--metal-shine), var(--metal-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .news-desc {
+            font-size: 13px;
+            color: var(--metal);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .news-logo {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--metal-dark);
+            letter-spacing: 1px;
+            margin-top: auto;
+            padding-top: 16px;
+        }
+
+        /* 티어 그리드 스타일 */
+        .news-tier {
+            padding: 30px;
+        }
+
+        .news-header {
+            margin-bottom: 20px;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .tier-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 12px;
+            background: linear-gradient(180deg,
+                rgba(250,247,240,0.08) 0%,
+                rgba(196,184,160,0.04) 50%,
+                rgba(154,139,112,0.02) 100%);
+            border: 1px solid rgba(221,213,197,0.15);
+            border-top-color: rgba(250,247,240,0.25);
+            border-radius: 6px;
+            box-shadow:
+                inset 0 1px 0 rgba(250,247,240,0.1),
+                0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .tier-item.highlight {
+            background: linear-gradient(180deg,
+                rgba(250,247,240,0.15) 0%,
+                rgba(196,184,160,0.08) 50%,
+                rgba(154,139,112,0.04) 100%);
+            border-color: rgba(221,213,197,0.3);
+            border-top-color: rgba(250,247,240,0.4);
+        }
+
+        .tier-name {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--metal);
+            margin-bottom: 6px;
+        }
+
+        .tier-item.highlight .tier-name {
+            color: var(--metal-bright);
+        }
+
+        .tier-price {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(180deg, var(--metal-shine), var(--metal-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .tier-desc {
+            font-size: 9px;
+            color: var(--metal);
+            text-align: center;
+        }
+
+        /* 프로모션 스타일 */
+        .news-promo {
+            padding: 24px;
+            justify-content: flex-start;
+            padding-top: 32px;
+        }
+
+        .promo-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--white);
+            margin: 16px 0 8px;
+        }
+
+        .promo-price {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .price-amount {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(180deg, var(--metal-shine) 0%, var(--metal-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .price-unit {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--metal-light);
+        }
+
+        .price-vat {
+            font-size: 11px;
+            color: var(--metal);
+            margin-left: 8px;
+        }
+
+        .promo-features {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .promo-features span {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--metal-shine);
+            padding: 6px 12px;
+            background: linear-gradient(180deg,
+                rgba(250,247,240,0.12) 0%,
+                rgba(196,184,160,0.08) 50%,
+                rgba(154,139,112,0.05) 100%);
+            border: 1px solid rgba(221,213,197,0.25);
+            border-top-color: rgba(250,247,240,0.35);
+            border-radius: 4px;
+            box-shadow:
+                inset 0 1px 0 rgba(250,247,240,0.15),
+                0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .promo-sub {
+            font-size: 12px;
+            color: var(--metal);
+        }
+
+        /* ===================================
+           실제 사이즈 이미지 (캡처용)
+           =================================== */
+        .actual-size-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .actual-size-section > h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .actual-images {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .actual-image-item {
+            text-align: center;
+        }
+
+        .actual-image-item h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--metal-light);
+            margin-bottom: 16px;
+        }
+
+        /* 실제 720x720 프로필 */
+        .profile-actual {
+            width: 720px;
+            height: 720px;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-actual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(135deg,
+                var(--metal-shine) 0%,
+                var(--metal-dark) 25%,
+                var(--metal-shine) 50%,
+                var(--metal-dark) 75%,
+                var(--metal-shine) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .profile-actual .profile-logo {
+            font-size: 104px;
+        }
+
+        .profile-actual .profile-tagline {
+            font-size: 22px;
+            letter-spacing: 6px;
+            margin-bottom: 40px;
+        }
+
+        .profile-actual .profile-services {
+            gap: 16px;
+            max-width: 400px;
+        }
+
+        .profile-actual .profile-services span {
+            font-size: 28px;
+            padding: 16px 40px;
+            border-radius: 8px;
+        }
+
+        /* 실제 1200x675 커버 */
+        .cover-16-9-actual {
+            width: 1200px;
+            height: 675px;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            padding: 80px 100px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #1a1a1a;
+        }
+
+        .cover-16-9-actual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--metal-dark) 20%,
+                var(--metal-light) 50%,
+                var(--metal-dark) 80%,
+                transparent 100%);
+        }
+
+        .cover-16-9-actual .cover-logo {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .cover-16-9-actual .cover-main-text {
+            font-size: 32px;
+            margin-bottom: 32px;
+        }
+
+        .cover-16-9-actual .cover-tags span {
+            font-size: 22px;
+            padding: 12px 24px;
+            border-radius: 6px;
+        }
+
+        /* 실제 1200x400 배너 */
+        .cover-3-1-actual {
+            width: 1200px;
+            height: 400px;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 48px 60px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #1a1a1a;
+        }
+
+        .cover-3-1-actual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--metal-dark) 20%,
+                var(--metal-light) 50%,
+                var(--metal-dark) 80%,
+                transparent 100%);
+        }
+
+        .cover-3-1-actual .banner-logo {
+            font-size: 56px;
+        }
+
+        .cover-3-1-actual .banner-divider {
+            height: 60px;
+            width: 2px;
+        }
+
+        .cover-3-1-actual .banner-title {
+            font-size: 28px;
+        }
+
+        .cover-3-1-actual .banner-sub {
+            font-size: 18px;
+        }
+
+        /* 실제 1200x900 소식글 */
+        .news-actual {
+            width: 1200px;
+            height: 900px;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #1a1a1a;
+        }
+
+        .news-actual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--metal-dark) 20%,
+                var(--metal-light) 50%,
+                var(--metal-dark) 80%,
+                transparent 100%);
+        }
+
+        .news-actual .news-badge {
+            font-size: 20px;
+            padding: 12px 32px;
+            margin-bottom: 40px;
+            border-radius: 6px;
+        }
+
+        .news-actual .news-title {
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+
+        .news-actual .news-desc {
+            font-size: 26px;
+        }
+
+        .news-actual .news-logo {
+            font-size: 28px;
+            padding-top: 32px;
+        }
+
+        /* 실제 사이즈 프로모션 */
+        .news-actual.news-promo .promo-title {
+            font-size: 40px;
+            margin: 32px 0 16px;
+        }
+
+        .news-actual.news-promo .price-amount {
+            font-size: 96px;
+        }
+
+        .news-actual.news-promo .price-unit {
+            font-size: 40px;
+        }
+
+        .news-actual.news-promo .price-vat {
+            font-size: 22px;
+        }
+
+        .news-actual.news-promo .promo-features {
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .news-actual.news-promo .promo-features span {
+            font-size: 22px;
+            padding: 12px 24px;
+            border-radius: 8px;
+        }
+
+        .news-actual.news-promo .promo-sub {
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-image {
+                width: 280px;
+                height: 280px;
+            }
+
+            .profile-logo {
+                font-size: 40px;
+            }
+        }
+
+        /* 가이드 정보 */
+        .guide-info {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 32px;
+            border: 1px solid #1f1f1f;
+        }
+
+        .guide-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+
+        .guide-info ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px;
+        }
+
+        .guide-info li {
+            font-size: 13px;
+            color: var(--gray);
+            padding: 10px 14px;
+            background: var(--bg-surface);
+            border-radius: 6px;
+        }
+
+        .guide-info li strong {
+            color: var(--metal-light);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-title">
+            <h1>폴라애드 - 당근마켓 비즈프로필 이미지</h1>
+            <p>Metallic Minimal | 아래로 스크롤하면 실제 사이즈 이미지</p>
+        </div>
+
+        <!-- 미리보기 그리드 -->
+        <div class="image-grid">
+            <!-- 프로필 이미지 -->
+            <div class="image-section">
+                <div class="section-header">
+                    <h2>프로필 이미지</h2>
+                    <span class="size-info">720 × 720px</span>
+                </div>
+                <div class="image-wrapper">
+                    <div class="profile-image">
+                        <div class="profile-content">
+                            <div class="profile-logo">PolaAd</div>
+                            <div class="profile-tagline">Online Marketing</div>
+                            <div class="profile-services">
+                                <span>홈페이지 제작</span>
+                                <span>온라인 마케팅</span>
+                                <span>Meta 광고설정</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 커버 이미지 16:9 -->
+            <div class="image-section">
+                <div class="section-header">
+                    <h2>커버 이미지</h2>
+                    <span class="size-info">1200 × 675px (16:9)</span>
+                </div>
+                <div class="image-wrapper">
+                    <div class="cover-image-16-9">
+                        <div class="cover-content">
+                            <div class="cover-logo">PolaAd</div>
+                            <div class="cover-main-text">비즈니스 성장을 위한<br>마케팅 파트너</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 배너 이미지 3:1 -->
+            <div class="image-section">
+                <div class="section-header">
+                    <h2>배너 이미지</h2>
+                    <span class="size-info">1200 × 400px (3:1)</span>
+                </div>
+                <div class="image-wrapper">
+                    <div class="cover-image-3-1">
+                        <div class="banner-logo">PolaAd</div>
+                        <div class="banner-divider"></div>
+                        <div class="banner-text-wrap">
+                            <div class="banner-title">온라인마케팅 대행사</div>
+                            <div class="banner-sub">반응형 홈페이지 / Meta 광고설정 전문</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 소식글 이미지 4:3 -->
+            <div class="image-section">
+                <div class="section-header">
+                    <h2>소식글 이미지</h2>
+                    <span class="size-info">1200 × 900px (4:3)</span>
+                </div>
+                <div class="image-wrapper">
+                    <div class="news-image news-promo">
+                        <span class="news-badge">2026 Promotion</span>
+                        <div class="promo-title">Meta 광고설정</div>
+                        <div class="promo-price">
+                            <span class="price-amount">11</span>
+                            <span class="price-unit">만원</span>
+                            <span class="price-vat">VAT 포함</span>
+                        </div>
+                        <div class="promo-features">
+                            <span>광고관리자 구성</span>
+                            <span>트래픽 광고</span>
+                            <span>DB수집 광고</span>
+                        </div>
+                        <div class="promo-sub">광고설정 및 집행 컨설팅</div>
+                        <span class="news-logo">PolaAd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 가이드 정보 -->
+        <div class="guide-info">
+            <h3>이미지 가이드</h3>
+            <ul>
+                <li><strong>프로필:</strong> 원형 크롭 (중앙 80%)</li>
+                <li><strong>형식:</strong> PNG 권장</li>
+                <li><strong>용량:</strong> 10MB 이하</li>
+                <li><strong>텍스트:</strong> 중앙 배치</li>
+            </ul>
+        </div>
+
+        <!-- 실제 사이즈 이미지 -->
+        <div class="actual-size-section">
+            <h2>실제 사이즈 (캡처용)</h2>
+
+            <div class="actual-images">
+                <div class="actual-image-item">
+                    <h3>프로필 720 × 720px</h3>
+                    <div class="profile-actual">
+                        <div class="profile-content">
+                            <div class="profile-logo">PolaAd</div>
+                            <div class="profile-tagline">Online Marketing</div>
+                            <div class="profile-services">
+                                <span>홈페이지 제작</span>
+                                <span>온라인 마케팅</span>
+                                <span>Meta 광고설정</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actual-image-item">
+                    <h3>커버 1200 × 675px</h3>
+                    <div class="cover-16-9-actual">
+                        <div class="cover-content">
+                            <div class="cover-logo">PolaAd</div>
+                            <div class="cover-main-text">비즈니스 성장을 위한<br>마케팅 파트너</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actual-image-item">
+                    <h3>배너 1200 × 400px</h3>
+                    <div class="cover-3-1-actual">
+                        <div class="banner-logo">PolaAd</div>
+                        <div class="banner-divider"></div>
+                        <div class="banner-text-wrap">
+                            <div class="banner-title">온라인마케팅 대행사</div>
+                            <div class="banner-sub">반응형 홈페이지 / Meta 광고설정 전문</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actual-image-item">
+                    <h3>소식글 1200 × 900px</h3>
+                    <div class="news-actual news-promo">
+                        <span class="news-badge">2026 Promotion</span>
+                        <div class="promo-title">Meta 광고설정</div>
+                        <div class="promo-price">
+                            <span class="price-amount">11</span>
+                            <span class="price-unit">만원</span>
+                            <span class="price-vat">VAT 포함</span>
+                        </div>
+                        <div class="promo-features">
+                            <span>광고관리자 구성</span>
+                            <span>트래픽 광고</span>
+                            <span>DB수집 광고</span>
+                        </div>
+                        <div class="promo-sub">광고설정 및 집행 컨설팅</div>
+                        <span class="news-logo">PolaAd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

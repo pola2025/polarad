@@ -611,7 +611,7 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
       subHeadline: '진성 리드만 받으세요',
     },
     solution: {
-      badge: '✨ 36만원 올인원',
+      badge: '✨ DB접수 랜딩 서비스',
       headline: '월 3만원으로\n1년 자동화',
       subHeadline: '5~7일 만에 제작 완료',
       items: [
@@ -643,7 +643,7 @@ function getDefaultContent(templateType: TemplateType): TemplateData {
       ],
     },
     promo: {
-      badge: '🎁 올인원 패키지',
+      badge: '🎁 DB접수 랜딩 서비스',
       headline: '36만원에\n1년 완전 자동화!',
       subHeadline: '월 3만원이면 충분합니다',
       cta: '5~7일 내 제작 완료',
@@ -748,7 +748,7 @@ B2B 영업 대표님들을 위한 "DB접수 랜딩 서비스"를 제공합니다
 - 30만원, 60만원, 110만원, 220만원 등 기존 가격
 - SEO 최적화, 검색엔진 최적화
 - "광고비", "ROAS", "CPA", "CTR" 등 광고 용어
-- "폴라애드 서비스", "패키지 구성" 등 기존 표현
+- "폴라애드 서비스", "패키지 구성", "올인원 패키지" 등 기존 표현
 
 ⚠️ 캡션에 반드시 포함할 핵심 메시지:
    - "카카오 로그인으로 진성 리드만 수집"
@@ -758,7 +758,7 @@ B2B 영업 대표님들을 위한 "DB접수 랜딩 서비스"를 제공합니다
 
 **[서비스 구성]**:
 
-📌 36만원 올인원 패키지 (VAT 별도)
+📌 DB접수 랜딩 서비스 36만원 (VAT 별도)
    - 월 3만원 / 1년 이용권
    - 맞춤형 랜딩페이지 제작
    - 카카오 로그인 연동 (스팸 차단, 본인인증)

@@ -5,8 +5,6 @@ import { WebSiteSchema } from '@/components/seo/WebSiteSchema'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
-import { FloatingCaseBanner } from '@/components/ui/FloatingCaseBanner'
-import { MobileCaseBanner } from '@/components/ui/MobileCaseBanner'
 import './globals.css'
 
 const GA_MEASUREMENT_ID = 'G-0SK5T8Q0F0'
@@ -147,8 +145,6 @@ export default function RootLayout({
         </main>
         <Footer />
         <MobileBottomNav />
-        <MobileCaseBanner />
-        <FloatingCaseBanner />
       </body>
     </html>
   )

@@ -97,7 +97,7 @@ export default function HeroSection() {
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-accent-400 text-sm font-semibold mb-8 backdrop-blur-sm"
                         >
                             <ShieldCheck className="w-4 h-4" />
-                            <span>상위 1% 컨설팅 법인의 영업 비밀</span>
+                            <span>소상공인을 위한 리드 수집 솔루션</span>
                         </motion.div>
 
                         <motion.h1
@@ -106,8 +106,8 @@ export default function HeroSection() {
                             transition={{ duration: 0.5, delay: 0.1 }}
                             className="text-4xl lg:text-6xl font-bold text-white mb-8 leading-tight tracking-tight break-keep text-balance"
                         >
-                            아직도 <span className="text-red-500">남들이 버린 DB</span>에<br />
-                            전화를 돌리고 계십니까?
+                            접수 폼에 <span className="text-red-500">스팸</span>이<br />
+                            너무 많지 않으세요?
                         </motion.h1>
 
                         <motion.p
@@ -116,8 +116,8 @@ export default function HeroSection() {
                             transition={{ duration: 0.5, delay: 0.2 }}
                             className="text-lg lg:text-xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0 break-keep text-balance"
                         >
-                            누구나 접근 가능한 공용 DB로는 더 이상 승산이 없습니다.<br className="hidden md:block" />
-                            <span className="text-white font-semibold">자체 DB 생산 시스템</span>을 구축하여 시장을 독점하십시오.
+                            카카오 로그인으로 <span className="text-white font-semibold">진성 고객만</span> 필터링하세요.<br className="hidden md:block" />
+                            텔레그램 알림으로 <span className="text-white font-semibold">즉시 응대</span>하세요.
                         </motion.p>
 
                         <motion.div
@@ -127,7 +127,7 @@ export default function HeroSection() {
                             className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start"
                         >
                             <Button variant="primary" size="xl" className="w-full sm:w-auto shadow-xl shadow-primary-900/20 border border-primary-500/50 whitespace-nowrap" href="/contact">
-                                내 기업에 맞는 시스템 진단받기
+                                DB 접수 랜딩 서비스 문의하기
                                 <ArrowRight className="w-5 h-5 ml-2" />
                             </Button>
                             <div className="flex items-center justify-center gap-2 text-sm text-gray-400 sm:pl-4">
@@ -138,7 +138,7 @@ export default function HeroSection() {
                                         </div>
                                     ))}
                                 </div>
-                                <span className="whitespace-nowrap">다른 대표님들은<br />이미 도입중</span>
+                                <span className="whitespace-nowrap"><strong className="text-white">월 3만원</strong> (VAT별도)<br />1년결제 36만원</span>
                             </div>
                         </motion.div>
                     </div>
@@ -244,8 +244,8 @@ export default function HeroSection() {
                                         <Database className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <div className="text-sm font-semibold text-white">신규 DB가 접수되었습니다</div>
-                                        <div className="text-xs text-primary-200">방금 전 • 제조업 • 매출 100억 이상</div>
+                                        <div className="text-sm font-semibold text-white">신규 접수가 들어왔습니다</div>
+                                        <div className="text-xs text-primary-200">방금 전 • 카카오 인증 완료 • 서울시 강남구</div>
                                     </div>
                                 </motion.div>
                             </div>

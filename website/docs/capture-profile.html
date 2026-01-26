@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=720, height=720">
+    <title>프로필 이미지 캡처</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --metal-dark: #9a8b70;
+            --metal: #c4b8a0;
+            --metal-light: #ddd5c5;
+            --metal-bright: #efe9dc;
+            --metal-shine: #faf7f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 720px;
+            height: 720px;
+            overflow: hidden;
+            background: #000000;
+        }
+        body {
+            font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+        }
+        .profile {
+            width: 720px;
+            height: 720px;
+            background: linear-gradient(145deg, #0d0d0d 0%, #000000 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(135deg,
+                var(--metal-shine) 0%,
+                var(--metal-dark) 25%,
+                var(--metal-shine) 50%,
+                var(--metal-dark) 75%,
+                var(--metal-shine) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+        .content {
+            text-align: center;
+            z-index: 1;
+        }
+        .logo {
+            font-size: 104px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(180deg,
+                var(--metal-shine) 0%,
+                var(--metal-light) 40%,
+                var(--metal) 60%,
+                var(--metal-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+        .tagline {
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--metal);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+        .services {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        .services span {
+            font-size: 28px;
+            font-weight: 700;
+            padding: 16px 40px;
+            background: linear-gradient(180deg,
+                rgba(196,184,160,0.25) 0%,
+                rgba(154,139,112,0.15) 50%,
+                rgba(120,108,85,0.1) 100%);
+            border: 1px solid;
+            border-color: rgba(196,184,160,0.4) rgba(154,139,112,0.3) rgba(120,108,85,0.25) rgba(154,139,112,0.3);
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            box-shadow:
+                inset 0 1px 0 rgba(250,247,240,0.3),
+                inset 0 -1px 0 rgba(120,108,85,0.2),
+                0 2px 4px rgba(0,0,0,0.4);
+            color: var(--metal-shine);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile">
+        <div class="content">
+            <div class="logo">PolaAd</div>
+            <div class="tagline">Online Marketing</div>
+            <div class="services">
+                <span>홈페이지 제작</span>
+                <span>온라인 마케팅</span>
+                <span>Meta 광고설정</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

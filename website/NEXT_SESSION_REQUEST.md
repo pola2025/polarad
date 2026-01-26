@@ -2,108 +2,75 @@
 
 ## 복사해서 사용:
 ```
-마케팅소식 이미지 생성 수정 배포 완료 확인 및 테스트
-NEXT_SESSION_REQUEST.md 파일에 상세 컨텍스트 있음
+polamkt Instagram 프롬프트 강화 완료 - 프로덕션 검증 필요
+NEXT_SESSION_REQUEST.md 참고.
 ```
 
 ---
 
-## 이번 세션 완료 작업 (2026-01-02)
+## 이번 세션 완료 작업
 
-### 1. 이미지 생성 실패 원인 분석 ✅
-- **원인**: `image-variation.ts`의 프롬프트가 한글로 작성됨
-- **증상**: Gemini 이미지 생성 API가 한글 프롬프트를 처리하지 못함
-- **검증**: 영어 프롬프트 직접 테스트 시 이미지 생성 성공 확인
+### 1. 드라이런 모드 추가 ✅
+- `?dryrun=true` 파라미터로 Instagram 게시 없이 Gemini 응답 확인
+- 프로덕션: `https://polarad.co.kr/api/cron/instagram-polamkt?dryrun=true`
 
-### 2. 수정 사항 ✅
+### 2. 프롬프트 강화 ✅
+**템플릿 + 캡션 프롬프트에 금지 항목 명시:**
+- Meta 광고, Facebook 광고, Instagram 광고 ❌
+- 홈페이지 제작 (5P, 10P) ❌
+- 4티어 (Basic/Normal/Pro/Premium) ❌
+- 자동 리포팅, 광고 세팅, 광고 대행 ❌
+- 30만/60만/110만/220만원 ❌
+- SEO 최적화, 광고비, ROAS 등 ❌
 
-| 파일 | 변경 내용 |
-|------|----------|
-| `vercel.json` | `maxDuration: 300` 추가 (5분 타임아웃) |
-| `src/lib/image-variation.ts` | VARIATION_POOL 한글 → 영어 번역 |
-| `src/lib/image-variation.ts` | buildImagePrompt 영어 프롬프트로 개선 |
-| `src/app/api/cron/generate-article/route.ts` | getContentYear() 현재 연도로 수정 |
-| `docs/image-generation-stability-prd.md` | v1.1 변경로그 추가 |
+**오직 허용:**
+- DB접수 랜딩 서비스 36만원
+- 카카오 로그인, 텔레그램 알림, 대시보드
+- 월 3만원, 1년 자동화, 5~7일 제작
 
-### 3. 배포 완료 ✅
-- 커밋: `2a7117c` (main 브랜치)
-- Vercel 자동 배포 진행 중
+### 3. 로컬 테스트 결과 ✅
+| 테스트 | 템플릿 | 캡션 길이 | 금지 항목 |
+|--------|--------|-----------|-----------|
+| 1차 | case | 1,732자 | 없음 ✅ |
+| 2차 | feature | 1,645자 | 없음 ✅ |
+
+### 4. 배포 완료 ✅
+- 커밋: b832e1f
+- Vercel 자동 배포
 
 ---
 
-## 다음 세션 필요 작업
+## 다음 세션 작업
 
-### 1. 배포 확인
+### 우선순위 1: 프로덕션 검증
 ```bash
-# Vercel 배포 상태 확인
-vercel ls --prod
+# 프로덕션 드라이런 테스트
+curl "https://polarad.co.kr/api/cron/instagram-polamkt?dryrun=true"
 ```
+- 캡션에 Meta 광고, 4티어 등 금지 항목 없는지 확인
+- 여러 번 실행해서 일관성 검증
 
-### 2. 이미지 재생성 테스트
+### 우선순위 2: 실제 Instagram 게시 테스트
 ```bash
-# regenerate-image API 테스트
-curl -sL --max-time 180 -X POST "https://polarad.co.kr/api/regenerate-image" \
-  -H "Content-Type: application/json" \
-  -d '{"slug":"instagram-account-2026","title":"Instagram 브랜드 계정 운영: 2026년 성공 노하우"}'
+# force=true로 실제 게시 테스트
+curl "https://polarad.co.kr/api/cron/instagram-polamkt?force=true"
 ```
-
-### 3. 결과 확인
-- 성공 시: `{"success":true,"path":"https://..."}` 반환
-- Airtable에서 thumbnailUrl 업데이트 확인
 
 ---
 
-## 핵심 수정 내용 요약
+## 관련 파일
 
-### 한글 → 영어 프롬프트 변경 예시
-
-**변경 전:**
-```typescript
-people: ['30대 한국인 여성 마케터 1명', ...]
-```
-
-**변경 후:**
-```typescript
-people: ['one female marketing professional in her 30s', ...]
-```
-
-### buildImagePrompt 개선
-
-```typescript
-export function buildImagePrompt(title: string, variation: VariationCombo): string {
-  return `Create a photorealistic 1200x630 professional stock photo.
-
-Subject: ${variation.people}
-Setting: ${variation.location}
-Action: ${variation.activity}
-Camera: ${variation.angle}
-Mood: ${variation.mood}
-Props: ${variation.props}
-
-Style requirements:
-- Professional business/marketing context
-- Modern, clean, bright environment
-- Natural lighting, high quality photography
-- NO text, letters, numbers, watermarks, logos
-- Photorealistic stock photo style
-- Landscape orientation (1200x630)`;
-}
-```
+- `src/app/api/cron/instagram-polamkt/route.ts` - 드라이런 모드 추가
+- `src/lib/instagram-content-generator.ts` - 프롬프트 강화
 
 ---
 
 ## 프로젝트 정보
-
-- 경로: `F:\polasales\website`
+- 경로: F:\polasales\website
 - GitHub: pola2025/polarad
-- Vercel: polarad.co.kr
-- 환경변수: `.env.local`
+- 프로덕션: https://polarad.co.kr
 
 ---
 
-## 관련 문서
-
-- PRD: `docs/image-generation-stability-prd.md` (v1.1)
-- 이미지 베리에이션: `src/lib/image-variation.ts`
-- 글 생성 API: `src/app/api/cron/generate-article/route.ts`
-- 이미지 재생성 API: `src/app/api/regenerate-image/route.ts`
+**작성일**: 2026-01-26
+**상태**: 🟢 완료 - 프로덕션 검증 필요

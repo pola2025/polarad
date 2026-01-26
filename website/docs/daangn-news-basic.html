@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>당근마켓 소식글 - Basic</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background: #000;
+        }
+
+        .container {
+            width: 720px;
+            height: 720px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                #9a8b70 20%,
+                #c4b8a0 35%,
+                #ddd5c5 50%,
+                #c4b8a0 65%,
+                #9a8b70 80%,
+                transparent 100%
+            );
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(107, 114, 128, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #9a8b70 0%, #c4b8a0 30%, #ddd5c5 50%, #efe9dc 70%, #faf7f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .tier-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.3) 0%, rgba(55, 65, 81, 0.2) 100%);
+            border: 1px solid rgba(107, 114, 128, 0.4);
+            border-radius: 50px;
+        }
+
+        .tier-icon {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: #9CA3AF;
+            stroke-width: 2;
+        }
+
+        .tier-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #9CA3AF;
+            letter-spacing: 0.05em;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tagline {
+            font-size: 15px;
+            font-weight: 600;
+            color: #6B7280;
+            letter-spacing: 0.15em;
+            margin-bottom: 14px;
+        }
+
+        .title {
+            font-size: 46px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .title .highlight {
+            background: linear-gradient(135deg, #9CA3AF 0%, #D1D5DB 50%, #E5E7EB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 19px;
+            color: #6B7280;
+            margin-bottom: 28px;
+        }
+
+        .price-box {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .price {
+            font-size: 72px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .price-unit {
+            font-size: 28px;
+            font-weight: 600;
+            color: #6B7280;
+        }
+
+        .price-vat {
+            font-size: 16px;
+            color: #4B5563;
+            margin-left: 8px;
+        }
+
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .feature-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #10B981;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        .feature-text {
+            font-size: 20px;
+            font-weight: 500;
+            color: #E5E7EB;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(107, 114, 128, 0.2);
+        }
+
+        .cta-text {
+            font-size: 15px;
+            color: #6B7280;
+        }
+
+        .cta-button {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.4) 0%, rgba(55, 65, 81, 0.3) 100%);
+            border: 1px solid rgba(107, 114, 128, 0.5);
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #D1D5DB;
+            letter-spacing: 0.02em;
+        }
+
+        .website {
+            font-size: 15px;
+            color: #4B5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-line"></div>
+        <div class="bg-glow"></div>
+
+        <div class="content">
+            <div class="header">
+                <div class="logo">PolaAd</div>
+                <div class="tier-badge">
+                    <svg class="tier-icon" viewBox="0 0 24 24">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span class="tier-name">BASIC</span>
+                </div>
+            </div>
+
+            <div class="main">
+                <div class="tagline">META ADS SETUP</div>
+                <h1 class="title">
+                    <span class="highlight">광고만</span> 빠르게<br>
+                    시작하고 싶다면
+                </h1>
+                <p class="subtitle">홈페이지 없이 Meta 광고 세팅만 필요한 분께</p>
+
+                <div class="price-box">
+                    <span class="price">30</span>
+                    <span class="price-unit">만원</span>
+                    <span class="price-vat">VAT 포함</span>
+                </div>
+
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text">Meta 광고 세팅 (Facebook/Instagram)</span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span class="feature-text">Meta 자동화 최초 설정</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <span class="cta-text">상담 후 진행됩니다</span>
+                <div class="cta-button">상담 신청하기</div>
+                <span class="website">polarad.co.kr</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

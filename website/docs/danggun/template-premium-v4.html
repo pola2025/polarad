@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1080">
+  <title>PREMIUM 상품</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 1080px;
+      height: 1080px;
+      background: linear-gradient(180deg, #0d0d0d 0%, #141414 50%, #0d0d0d 100%);
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ★ 황금색 상단 Glow 효과 */
+    .top-glow {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(255,180,80,0.25) 0%, rgba(255,150,50,0.1) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* 좌측 상단 로고 */
+    .logo {
+      position: absolute;
+      top: 50px;
+      left: 60px;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* ★ 뱃지 - 타이틀 바로 위 */
+    .top-badge {
+      position: absolute;
+      top: 220px;
+      left: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      background: transparent;
+      border: 2px solid #d4a574;
+      color: #d4a574;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 1px;
+    }
+
+    .badge .icon {
+      font-size: 18px;
+    }
+
+    .recommend-tag {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff6b35;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ★ Safe Zone (270~810px) - 2:1 미리보기 영역 */
+    .safe-zone {
+      position: absolute;
+      top: 270px;
+      left: 0;
+      right: 0;
+      height: 540px;
+      padding: 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .safe-zone-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .safe-zone-right {
+      flex: 0 0 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-left: 40px;
+    }
+
+    .category {
+      font-size: 14px;
+      color: #d4a574;
+      font-weight: 600;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .title .highlight {
+      background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    .price-container {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .price {
+      font-size: 100px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffd700 0%, #ff9500 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .price-unit {
+      font-size: 38px;
+      font-weight: 700;
+      color: #d4a574;
+    }
+
+    .price-vat {
+      font-size: 16px;
+      color: #555;
+      margin-left: 10px;
+    }
+
+    /* 오른쪽 체크리스트 (safe zone 내) */
+    .safe-features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .safe-feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 18px;
+      color: #ccc;
+      background: rgba(255,255,255,0.03);
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(212,165,116,0.2);
+    }
+
+    .safe-feature .check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #d4a574;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .safe-feature .check svg {
+      width: 14px;
+      height: 14px;
+      stroke: #d4a574;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .safe-feature .tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    .safe-feature .tag.hot {
+      background: #d4a574;
+      color: #1a1a1a;
+    }
+
+    .safe-feature .tag.up {
+      background: #10b981;
+      color: white;
+    }
+
+    /* 하단 영역 - 추가 혜택 카드 (810~1080px) */
+    .bottom-zone {
+      position: absolute;
+      top: 810px;
+      left: 0;
+      right: 0;
+      padding: 40px 60px;
+    }
+
+    .features {
+      display: flex;
+      gap: 24px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 18px;
+      color: #ccc;
+      background: rgba(255,255,255,0.03);
+      padding: 18px 32px;
+      border-radius: 12px;
+      border: 1px solid rgba(212,165,116,0.2);
+    }
+
+    .feature .check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #d4a574;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .feature .check svg {
+      width: 14px;
+      height: 14px;
+      stroke: #d4a574;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .feature .tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+
+    .tag.hot {
+      background: #d4a574;
+      color: #1a1a1a;
+    }
+
+    .tag.up {
+      background: #10b981;
+      color: white;
+    }
+
+    /* ★ 하단 푸터 + 버튼 */
+    .footer {
+      position: absolute;
+      bottom: 40px;
+      left: 60px;
+      right: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-text {
+      color: #555;
+      font-size: 14px;
+    }
+
+    .cta-button {
+      background: transparent;
+      border: 2px solid #d4a574;
+      color: #d4a574;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .footer-site {
+      color: #d4a574;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 황금색 상단 Glow -->
+  <div class="top-glow"></div>
+
+  <!-- 좌측 상단 로고 -->
+  <div class="logo">PolaAd</div>
+
+  <!-- 우측 상단 뱃지 -->
+  <div class="top-badge">
+    <div class="badge">
+      <span class="icon">👑</span>
+      <span>PREMIUM</span>
+    </div>
+    <div class="recommend-tag">추천</div>
+  </div>
+
+  <!-- ★ Safe Zone (2:1 미리보기 영역) - 좌우 분할 -->
+  <div class="safe-zone">
+    <div class="safe-zone-left">
+      <div class="category">ALL-IN-ONE PACKAGE</div>
+      <h1 class="title">
+        <span class="highlight">풀 패키지</span>로<br>
+        완벽하게 시작
+      </h1>
+      <p class="subtitle">온라인 영업 시스템을 완성하고 싶은 분께</p>
+      <div class="price-container">
+        <span class="price">220</span>
+        <span class="price-unit">만원</span>
+        <span class="price-vat">VAT 포함</span>
+      </div>
+    </div>
+    <div class="safe-zone-right">
+      <div class="safe-features">
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>홈페이지 10P</span>
+          <span class="tag up">UP</span>
+        </div>
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>Meta 광고 세팅</span>
+        </div>
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>자동화 6개월</span>
+          <span class="tag hot">HOT</span>
+        </div>
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>SEO 최적화</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 - 추가 혜택 (중복 제거) -->
+  <div class="bottom-zone">
+    <div class="features">
+      <div class="feature">
+        <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <span>도메인 + 알림톡</span>
+        <span class="tag up">UP</span>
+      </div>
+      <div class="feature">
+        <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <span>게시글 자동생성기</span>
+        <span class="tag hot">HOT</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <div class="footer">
+    <span class="footer-text">상담 후 진행됩니다</span>
+    <button class="cta-button">상담 신청하기</button>
+    <span class="footer-site">polarad.co.kr</span>
+  </div>
+</body>
+</html>

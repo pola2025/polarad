@@ -2,12 +2,11 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, Briefcase, FolderOpen, Building2, MessageSquare } from 'lucide-react'
+import { Home, Briefcase, Building2, MessageSquare } from 'lucide-react'
 
 const navItems = [
   { href: '/', label: '홈', icon: Home },
   { href: '/service', label: '서비스', icon: Briefcase },
-  { href: '/portfolio', label: '포트폴리오', icon: FolderOpen },
   { href: '/about', label: '회사소개', icon: Building2 },
   { href: '/contact', label: '상담신청', icon: MessageSquare },
 ]

@@ -10,7 +10,6 @@ export function Header() {
   const navLinks = [
     { href: '/', label: '홈' },
     { href: '/service', label: '서비스' },
-    { href: '/portfolio', label: '포트폴리오' },
     { href: '/about', label: '회사소개' },
     { href: '/contact', label: '상담신청' },
     { href: '/marketing-news', label: '마케팅 소식' },

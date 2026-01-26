@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1080">
+  <title>BASIC 상품</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1080px;
+      height: 1080px;
+      background: linear-gradient(180deg, #0d0d0d 0%, #141414 50%, #0d0d0d 100%);
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo {
+      position: absolute;
+      top: 50px;
+      left: 60px;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .top-badge {
+      position: absolute;
+      top: 220px;
+      left: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      background: transparent;
+      border: 2px solid #ffffff;
+      color: #ffffff;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 1px;
+    }
+
+    .badge .icon { font-size: 18px; }
+
+    .safe-zone {
+      position: absolute;
+      top: 270px;
+      left: 0;
+      right: 0;
+      height: 540px;
+      padding: 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .safe-zone-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .safe-zone-right {
+      flex: 0 0 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-left: 40px;
+    }
+
+    .category {
+      font-size: 14px;
+      color: #cccccc;
+      font-weight: 600;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .title .highlight {
+      background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    .price-container {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .price {
+      font-size: 100px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .price-unit {
+      font-size: 38px;
+      font-weight: 700;
+      color: #cccccc;
+    }
+
+    .price-vat {
+      font-size: 16px;
+      color: #555;
+      margin-left: 10px;
+    }
+
+    .safe-features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .safe-feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 18px;
+      color: #ccc;
+      background: rgba(255,255,255,0.03);
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .safe-feature .check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .safe-feature .check svg {
+      width: 14px;
+      height: 14px;
+      stroke: #ffffff;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .safe-feature .tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    .safe-feature .tag.hot { background: #ffffff; color: #1a1a1a; }
+    .safe-feature .tag.up { background: #10b981; color: white; }
+
+    .bottom-zone {
+      position: absolute;
+      top: 810px;
+      left: 0;
+      right: 0;
+      padding: 40px 60px;
+    }
+
+    .features {
+      display: flex;
+      gap: 24px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 18px;
+      color: #ccc;
+      background: rgba(255,255,255,0.03);
+      padding: 18px 32px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .feature .check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .feature .check svg {
+      width: 14px;
+      height: 14px;
+      stroke: #ffffff;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .feature .tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+
+    .tag.hot { background: #ffffff; color: #1a1a1a; }
+    .tag.up { background: #10b981; color: white; }
+
+    .footer {
+      position: absolute;
+      bottom: 40px;
+      left: 60px;
+      right: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-text { color: #555; font-size: 14px; }
+
+    .cta-button {
+      background: transparent;
+      border: 2px solid #ffffff;
+      color: #ffffff;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .footer-site { color: #cccccc; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="logo">PolaAd</div>
+
+  <div class="top-badge">
+    <div class="badge">
+      <span class="icon">📄</span>
+      <span>BASIC</span>
+    </div>
+  </div>
+
+  <div class="safe-zone">
+    <div class="safe-zone-left">
+      <div class="category">BASIC PACKAGE</div>
+      <h1 class="title">
+        <span class="highlight">기본에</span><br>
+        충실하게
+      </h1>
+      <p class="subtitle">심플하고 깔끔한 홈페이지가 필요한 분께</p>
+      <div class="price-container">
+        <span class="price">30</span>
+        <span class="price-unit">만원</span>
+        <span class="price-vat">VAT 포함</span>
+      </div>
+    </div>
+    <div class="safe-zone-right">
+      <div class="safe-features">
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>홈페이지 5P</span>
+        </div>
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>SEO 최적화</span>
+        </div>
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>모바일 반응형</span>
+        </div>
+        <div class="safe-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <span>무료 수정 2회</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-zone">
+    <div class="features">
+      <div class="feature">
+        <div class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <span>도메인 연결</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">상담 후 진행됩니다</span>
+    <button class="cta-button">상담 신청하기</button>
+    <span class="footer-site">polarad.co.kr</span>
+  </div>
+</body>
+</html>
