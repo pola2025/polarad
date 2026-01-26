@@ -240,9 +240,9 @@ function getBaseStyles(): string {
 
 function generateIntroTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
-    { text: '홈페이지' },
-    { text: 'Meta 광고' },
-    { text: '인쇄물' },
+    { icon: '💬', text: '카카오 로그인' },
+    { icon: '🔔', text: '텔레그램 알림' },
+    { icon: '📊', text: '대시보드' },
   ];
 
   return `<!DOCTYPE html>
@@ -385,9 +385,9 @@ function generateIntroTemplate(data: TemplateData, baseStyles: string, theme: Th
 
 function generateProblemTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
-    { text: '공유 DB로', highlight: '경쟁만 치열' },
-    { text: '', highlight: '미팅 성사율 5% 미만' },
-    { text: '매월', highlight: '수백만 원 DB 비용' },
+    { text: '가짜 번호로', highlight: '연락 안 됨' },
+    { text: '', highlight: '반복 접수로 중복 DB' },
+    { text: '접수 알림이', highlight: '늦어서 놓침' },
   ];
 
   return `<!DOCTYPE html>
@@ -537,9 +537,10 @@ function generateProblemTemplate(data: TemplateData, baseStyles: string, theme: 
 
 function generateSolutionTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
-    { icon: '🎯', text: 'Conversion Basecamp', highlight: '고객을 설득하고 DB를 추출하는 전환 기지' },
-    { icon: '🧲', text: 'Lead Magnet Engine', highlight: '잠재 고객을 정밀 타겟팅하여 유입' },
-    { icon: '🏆', text: 'Authority Kit', highlight: '미팅 현장에서 신뢰도를 높이는 브랜딩 키트' },
+    { icon: '📱', text: '랜딩페이지 제작', highlight: '맞춤형 디자인으로 전환율 극대화' },
+    { icon: '💬', text: '카카오 로그인', highlight: '스팸 차단, 본인인증된 정보만 수집' },
+    { icon: '🔔', text: '텔레그램 알림', highlight: '접수 즉시 실시간 알림' },
+    { icon: '📊', text: '관리 대시보드', highlight: '접수 현황 한눈에 파악' },
   ];
 
   return `<!DOCTYPE html>
@@ -675,9 +676,9 @@ function generateSolutionTemplate(data: TemplateData, baseStyles: string, theme:
 
 function generateFeatureTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
+    { icon: '💬', text: '카카오 로그인' },
+    { icon: '🚫', text: '스팸 차단' },
     { icon: '🔔', text: '실시간 알림' },
-    { icon: '📂', text: '자동 분류' },
-    { icon: '💾', text: 'DB 관리' },
   ];
 
   return `<!DOCTYPE html>
@@ -793,9 +794,9 @@ function generateFeatureTemplate(data: TemplateData, baseStyles: string, theme: 
 
 function generateStatsTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const stats = data.stats || [
-    { label: '총 지출', value: '₩2.8M', change: '예산 대비 94%' },
-    { label: 'DB 수집', value: '127건', change: '▲ 23% vs 지난주' },
-    { label: 'DB당 단가', value: '₩22K', change: '▼ 12% 개선' },
+    { label: '스팸 차단율', value: '98%', change: '카카오 로그인' },
+    { label: '연락 성공률', value: '92%', change: '본인인증 효과' },
+    { label: '월 비용', value: '3만원', change: '1년 36만원' },
   ];
 
   return `<!DOCTYPE html>
@@ -1100,9 +1101,9 @@ function generatePromoTemplate(data: TemplateData, baseStyles: string, theme: Th
 
 function generateServiceTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
-    { icon: '📱', text: '반응형 웹', highlight: 'PC, 모바일 모두 최적화' },
-    { icon: '🔍', text: 'SEO 최적화', highlight: '검색엔진 상위 노출' },
-    { icon: '📋', text: 'DB 폼 연동', highlight: '고객 문의 자동 수집' },
+    { icon: '📱', text: '랜딩페이지', highlight: '맞춤형 디자인 제작' },
+    { icon: '💬', text: '카카오 로그인', highlight: '본인인증 기반 수집' },
+    { icon: '🔔', text: '텔레그램 알림', highlight: '접수 즉시 알림' },
   ];
 
   return `<!DOCTYPE html>
@@ -1231,9 +1232,9 @@ function generateServiceTemplate(data: TemplateData, baseStyles: string, theme: 
 
 function generateCaseTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const stats = data.stats || [
-    { label: '광고비', value: '₩150만원', change: '월 예산' },
-    { label: 'DB 수집', value: '127건', change: '월 평균' },
-    { label: '미팅 전환', value: '32%', change: '업계 2배' },
+    { label: '총 접수', value: '127건', change: '월 평균' },
+    { label: '스팸 차단', value: '98%', change: '카카오 로그인' },
+    { label: '연락 성공', value: '92%', change: '본인인증 효과' },
   ];
 
   return `<!DOCTYPE html>
@@ -1442,10 +1443,10 @@ function generateCaseTemplate(data: TemplateData, baseStyles: string, theme: The
 
 function generateCtaTemplate(data: TemplateData, baseStyles: string, theme: ThemeType, bgPattern: string): string {
   const items = data.items || [
-    { icon: '🖥️', text: '홈페이지' },
-    { icon: '📱', text: 'Meta 광고' },
-    { icon: '📊', text: '자동 리포트' },
-    { icon: '🔔', text: '실시간 알림' },
+    { icon: '📱', text: '랜딩페이지' },
+    { icon: '💬', text: '카카오 로그인' },
+    { icon: '🔔', text: '텔레그램 알림' },
+    { icon: '📊', text: '대시보드' },
   ];
 
   return `<!DOCTYPE html>
