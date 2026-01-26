@@ -5,14 +5,14 @@
  * 1. Gemini로 컨텐츠 생성
  * 2. HTML 템플릿 적용
  * 3. 이미지 캡쳐 (외부 서비스 또는 html2canvas)
- * 4. Cloudinary 업로드
+ * 4. R2 업로드 (WebP 압축)
  * 5. Instagram 게시
  */
 
 import { NextResponse } from 'next/server';
 import { generateInstagramContent } from '@/lib/instagram-content-generator';
 import { generateTemplateHtml } from '@/lib/instagram-templates';
-import { uploadToCloudinary } from '@/lib/cloudinary';
+import { uploadInstagramImageToR2, isR2Configured } from '@/lib/r2-storage';
 import { logErrorToSlack, logSuccessToSlack } from '@/lib/slack-logger';
 import { captureHtmlWithSatori } from '@/lib/satori-capture';
 
@@ -21,7 +21,7 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = '-1003280236380';
 
 // 단계별 추적을 위한 타입
-type CronStep = 'init' | 'gemini' | 'template' | 'capture' | 'cloudinary' | 'instagram' | 'complete';
+type CronStep = 'init' | 'gemini' | 'template' | 'capture' | 'r2' | 'instagram' | 'complete';
 
 // 타임아웃이 있는 fetch 래퍼
 async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 30000): Promise<Response> {
@@ -54,7 +54,7 @@ function getEnvStatus(): Record<string, string> {
     SATORI: '✅ (자체 구현)',
     HCTI_BACKUP: process.env.HCTI_API_USER_ID && process.env.HCTI_API_KEY ? '✅' : '❌',
     SCREENSHOTONE_BACKUP: process.env.SCREENSHOTONE_API_KEY ? '✅' : '❌',
-    CLOUDINARY: process.env.CLOUDINARY_CLOUD_NAME ? '✅' : '❌',
+    R2: isR2Configured() ? '✅' : '❌',
     INSTAGRAM_TOKEN: INSTAGRAM_ACCESS_TOKEN ? '✅' : '❌',
     TELEGRAM: TELEGRAM_BOT_TOKEN ? '✅' : '❌',
   };
@@ -84,7 +84,7 @@ async function sendTelegramNotification(
     gemini: 'Gemini 콘텐츠 생성',
     template: 'HTML 템플릿 적용',
     capture: '이미지 캡처 (Satori)',
-    cloudinary: 'Cloudinary 업로드',
+    r2: 'R2 업로드 (WebP)',
     instagram: 'Instagram 게시',
     complete: '완료',
   };
@@ -422,7 +422,7 @@ export async function GET(request: Request) {
     console.log(`  - SATORI (자체 캡처): ✅ 내장됨 (메인)`);
     console.log(`  - HCTI (백업 1): ${process.env.HCTI_API_USER_ID && process.env.HCTI_API_KEY ? '✅ 설정됨' : '❌ 없음'}`);
     console.log(`  - SCREENSHOTONE (백업 2): ${process.env.SCREENSHOTONE_API_KEY ? '✅ 설정됨' : '❌ 없음'}`);
-    console.log(`  - CLOUDINARY_CLOUD_NAME: ${process.env.CLOUDINARY_CLOUD_NAME ? '✅ 설정됨' : '❌ 없음'}`);
+    console.log(`  - R2: ${isR2Configured() ? '✅ 설정됨' : '❌ 없음'}`);
     console.log(`  - POLAMKT_INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN ? '✅ 설정됨 (' + INSTAGRAM_ACCESS_TOKEN.slice(0, 10) + '...)' : '❌ 없음'}`);
     console.log(`  - TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN ? '✅ 설정됨' : '❌ 없음'}`);
 
@@ -450,22 +450,21 @@ export async function GET(request: Request) {
     }
     console.log(`✅ 이미지 캡쳐 완료 (${(imageBuffer.length / 1024).toFixed(1)}KB)`);
 
-    // 4. Cloudinary 업로드
-    trackStep('cloudinary');
-    console.log('☁️ Cloudinary 업로드 중...');
+    // 4. R2 업로드 (WebP 압축)
+    trackStep('r2');
+    console.log('☁️ R2 업로드 중 (WebP 압축)...');
     const timestamp = Date.now();
     const publicId = `polamkt-${content.templateType}-${timestamp}`;
 
-    const uploadResult = await uploadToCloudinary(
-      `data:image/png;base64,${imageBuffer.toString('base64')}`,
-      'instagram/polamkt',
+    const uploadResult = await uploadInstagramImageToR2(
+      imageBuffer,
       publicId
     );
 
     if (!uploadResult.success || !uploadResult.url) {
-      throw new Error(`Cloudinary 업로드 실패: ${uploadResult.error}`);
+      throw new Error(`R2 업로드 실패: ${uploadResult.error}`);
     }
-    console.log(`✅ Cloudinary 업로드 완료: ${uploadResult.url}`);
+    console.log(`✅ R2 업로드 완료: ${uploadResult.url}`);
 
     // 5. 캡션 + 해시태그 조합 (Instagram 2,200자 제한 적용)
     const INSTAGRAM_CAPTION_LIMIT = 2200;
@@ -530,7 +529,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       templateType: content.templateType,
-      cloudinaryUrl: uploadResult.url,
+      r2Url: uploadResult.url,
       instagram: {
         postId: publishResult.postId,
         permalink: publishResult.permalink,
@@ -545,7 +544,7 @@ export async function GET(request: Request) {
     stepDurations['total'] = totalDuration;
 
     // 마지막 성공 단계 계산
-    const stepOrder: CronStep[] = ['init', 'gemini', 'template', 'capture', 'cloudinary', 'instagram', 'complete'];
+    const stepOrder: CronStep[] = ['init', 'gemini', 'template', 'capture', 'r2', 'instagram', 'complete'];
     const failedIndex = stepOrder.indexOf(currentStep);
     const lastSuccessStep = failedIndex > 0 ? stepOrder[failedIndex - 1] : 'init';
 
