@@ -40,6 +40,7 @@ import {
   type CategoryKey as V2CategoryKey,
 } from '@/lib/prompt-templates/v2-content-builder';
 import { getUnusedTopic } from '@/lib/marketing-news/topic-archive';
+import { generateUniqueVariation, buildImagePrompt, saveUsedCombo } from '@/lib/image-variation';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -1074,40 +1075,9 @@ async function updateAirtableThumbnail(recordId: string, thumbnailUrl: string): 
   }
 }
 
-// 이미지 프롬프트 정의 (3단계 폴백)
-const IMAGE_PROMPTS = [
-  // 1차: 한국인, 한국 배경의 사무실 이미지
-  `Create a professional photograph of a modern Korean office environment.
-Scene: Open-plan office in Seoul with large windows showing city view.
-People: 2-3 Korean business professionals (mixed gender) working at desks with laptops.
-Style: Natural lighting, warm and professional atmosphere.
-Details: Modern furniture, plants, coffee cups, professional attire.
-Camera: Wide angle shot, eye level perspective.
-Quality: High resolution, photorealistic, no text or watermarks.
-Format: 1200x630 pixels, landscape orientation.`,
+// IMAGE_PROMPTS 제거됨 → image-variation.ts의 generateUniqueVariation() + buildImagePrompt() 사용
 
-  // 2차: 한국인 업무 보는 모습 이미지
-  `Create a professional photograph of Korean professionals at work.
-Scene: Close-up of Korean business person analyzing data on laptop screen.
-People: 1-2 Korean professionals in smart casual attire, focused expression.
-Style: Soft natural lighting, shallow depth of field.
-Details: Modern laptop, notebook, pen, coffee mug on desk.
-Camera: Medium shot, slightly elevated angle.
-Quality: High resolution, photorealistic, no text or watermarks.
-Format: 1200x630 pixels, landscape orientation.`,
-
-  // 3차: 한국 도심의 빌딩 많은 지역 풍경
-  `Create a stunning cityscape photograph of Seoul's business district.
-Scene: Panoramic view of Gangnam, Yeouido, or Jongno area with modern skyscrapers.
-Time: Golden hour or blue hour lighting.
-Style: Professional architectural photography, vibrant but natural colors.
-Details: Glass and steel buildings, busy streets below, clear sky.
-Camera: Wide angle, elevated perspective showing city depth.
-Quality: High resolution, photorealistic, no text or watermarks.
-Format: 1200x630 pixels, landscape orientation.`
-];
-
-// 썸네일 생성 (단순화된 3단계 폴백)
+// 썸네일 생성 (베리에이션 시스템 + 3단계 폴백)
 async function generateThumbnail(title: string, slug: string): Promise<{ path: string }> {
   const API_TIMEOUT = 40000;
 
@@ -1120,12 +1090,20 @@ async function generateThumbnail(title: string, slug: string): Promise<{ path: s
   const timestamp = Date.now();
   let lastError = '';
 
-  // 3단계 폴백 시도
-  for (let step = 0; step < IMAGE_PROMPTS.length; step++) {
-    const prompt = IMAGE_PROMPTS[step];
-    const stepNames = ['한국 사무실', '한국인 업무', '서울 도심'];
+  // 3단계 폴백: 각 단계마다 다른 베리에이션 사용
+  for (let step = 0; step < 3; step++) {
+    let variation;
+    try {
+      variation = await generateUniqueVariation();
+    } catch (e) {
+      console.error(`[이미지] 베리에이션 생성 실패:`, e);
+      lastError = 'VARIATION_ERROR';
+      continue;
+    }
 
-    console.log(`🖼️ 이미지 생성 시도 ${step + 1}/3 (${stepNames[step]})`);
+    const prompt = buildImagePrompt(title, variation);
+    console.log(`🖼️ 이미지 생성 시도 ${step + 1}/3 — ${variation.activity.slice(0, 40)}...`);
+    console.log(`📍 ${variation.location.slice(0, 80)}...`);
 
     // 각 단계에서 2회씩 시도
     for (let retry = 0; retry < 2; retry++) {
@@ -1184,15 +1162,33 @@ async function generateThumbnail(title: string, slug: string): Promise<{ path: s
 
         if (imageData?.inlineData?.data) {
           const imageBuffer = Buffer.from(imageData.inlineData.data, 'base64');
-          const webpBuffer = await sharp(imageBuffer)
+
+          // 반복 압축: 30KB 이하까지 quality 단계적 하향
+          let quality = 75;
+          let webpBuffer = await sharp(imageBuffer)
             .resize(1200, 630, { fit: 'cover' })
-            .webp({ quality: 80 })
+            .webp({ quality })
             .toBuffer();
 
+          while (webpBuffer.length > 30 * 1024 && quality > 20) {
+            quality -= 15;
+            webpBuffer = await sharp(imageBuffer)
+              .resize(1200, 630, { fit: 'cover' })
+              .webp({ quality })
+              .toBuffer();
+          }
+
           const filename = `${slug}-${timestamp}.webp`;
-          console.log(`☁️ R2 업로드 중: ${filename}`);
+          console.log(`☁️ R2 업로드: ${filename} (${(webpBuffer.length / 1024).toFixed(1)}KB, q=${quality})`);
           const r2Url = await uploadImageToR2(webpBuffer, filename, 'marketing-news');
-          console.log(`✅ 이미지 생성 성공 (${stepNames[step]})`);
+          console.log(`✅ 이미지 생성 성공`);
+
+          // 사용 기록 저장 (실패해도 이미지 생성은 유효)
+          try {
+            await saveUsedCombo(variation);
+          } catch (e) {
+            console.warn('[이미지] 사용 기록 저장 실패 (무시):', e);
+          }
 
           return { path: r2Url };
         } else {

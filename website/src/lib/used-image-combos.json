@@ -118,5 +118,101 @@
     "angle": "어깨 너머로 화면이 보이게 촬영",
     "mood": "집중하는 진지한 분위기",
     "props": "포스트잇과 화이트보드"
+  },
+  {
+    "people": "a man in his 30s wearing a neat sweater",
+    "location": "a conference room with floor-to-ceiling glass windows",
+    "activity": "discussing marketing strategy on a whiteboard",
+    "angle": "shot from the front",
+    "mood": "professional business atmosphere",
+    "props": "MacBook and iPad"
+  },
+  {
+    "people": "one female marketing professional in her 30s",
+    "location": "a high-rise office with city skyline view",
+    "activity": "taking a photo of food with a smartphone",
+    "angle": "shot from a slight side angle (45 degrees)",
+    "mood": "warm and cozy atmosphere",
+    "props": "post-it notes and whiteboard"
+  },
+  {
+    "people": "a woman in her late 20s in yoga wear",
+    "location": "a bright yoga studio with wooden floor and large mirrors",
+    "activity": "stretching on a yoga mat",
+    "angle": "wide shot capturing the full studio space",
+    "mood": "peaceful and healthy atmosphere",
+    "props": "yoga mat, water bottle, and a towel"
+  },
+  {
+    "people": "a woman in her 30s in a neat blouse",
+    "location": "a quiet library reading area with soft desk lamp",
+    "activity": "writing notes in a journal while referencing a book",
+    "angle": "over-the-shoulder shot showing the journal",
+    "mood": "calm and studious atmosphere",
+    "props": "a journal, pen, open reference book, and a laptop nearby"
+  },
+  {
+    "people": "a woman in her 30s in a white blouse and sunglasses",
+    "location": "a park bench under a large tree with dappled sunlight",
+    "activity": "reading a book while sitting on the bench",
+    "angle": "medium shot from a slight side angle",
+    "mood": "calm and serene atmosphere",
+    "props": "a paperback book, tote bag, and a tumbler"
+  },
+  {
+    "people": "two friends in their 20s-30s in casual attire",
+    "location": "a traditional Korean market food stall with warm lighting",
+    "activity": "sharing street food and smiling",
+    "angle": "medium shot from the front",
+    "mood": "lively and fun atmosphere",
+    "props": "street food skewers, paper cups, and a busy market backdrop"
+  },
+  {
+    "people": "a woman in her late 20s in loungewear",
+    "location": "a bathroom with a large bathtub and candles",
+    "activity": "lighting a candle beside the bathtub",
+    "angle": "medium shot capturing the bath area",
+    "mood": "relaxing self-care spa atmosphere",
+    "props": "candles, bath salts, and a fluffy robe"
+  },
+  {
+    "people": "a woman in her late 20s in a comfortable hoodie",
+    "location": "a sunlit apartment living room with indoor plants and a sofa, in a detached house in Jeju Island with a garden",
+    "activity": "sitting on the sofa scrolling through a tablet",
+    "angle": "slightly elevated angle looking down at the sofa area",
+    "mood": "relaxed weekend morning atmosphere",
+    "props": "tablet, a blanket, and a mug of tea on a side table"
+  },
+  {
+    "people": "a man in his 30s in a flannel shirt",
+    "location": "a home workshop with woodworking tools, at an art residency in Ganghwa Island, with rural inspiration",
+    "activity": "sanding a handmade wooden cutting board",
+    "angle": "medium shot showing the workbench",
+    "mood": "focused and handcrafted atmosphere",
+    "props": "sandpaper, a wooden board, chisels, and sawdust"
+  },
+  {
+    "people": "a woman in her 20s in gym attire",
+    "location": "a modern gym with weight machines and mirrors, at Jamsil Sports Complex area, Seoul, with the Olympic stadium",
+    "activity": "lifting light dumbbells with proper form",
+    "angle": "medium shot from a slight side angle",
+    "mood": "energetic and empowering gym atmosphere",
+    "props": "dumbbells, gym mirror, and a towel on shoulder"
+  },
+  {
+    "people": "a man in his early 30s in a hoodie",
+    "location": "a convenience store entrance at night with fluorescent light, in Seongsu-dong at night, Seoul, with trendy warehouse bars",
+    "activity": "standing outside eating ramyeon from a cup",
+    "angle": "medium shot from a slight angle",
+    "mood": "casual and nostalgic late-night atmosphere",
+    "props": "cup ramyeon, chopsticks, and convenience store glow"
+  },
+  {
+    "people": "a woman in her 20s in a trendy oversized jacket",
+    "location": "a bright fashion boutique with neatly arranged clothes, at Starfield COEX Mall in Gangnam, Seoul, a massive underground mall",
+    "activity": "browsing through a clothing rack",
+    "angle": "medium shot from a slight side angle",
+    "mood": "stylish and modern atmosphere",
+    "props": "clothing rack, a small shopping bag, and a mirror"
   }
 ]
