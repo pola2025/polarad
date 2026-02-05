@@ -458,6 +458,7 @@ ${mandatoryKeywordNote}
     'threads': `Meta 쓰레드(Threads) 관련 블로그 주제를 1개 제안하세요.
 ${mandatoryKeywordNote}
 **[중요 제외 사항]**: 틱톡(TikTok) 관련 내용은 절대 포함하지 마세요. Meta 쓰레드만 다룹니다.
+**[중요 시점]**: ${CURRENT_YEAR}년 현재 기준 최신 정보를 다룹니다. 쓰레드는 이미 MAU 4억+의 주류 플랫폼이므로 "시작하기" 같은 초보 가이드보다 실전 활용/최신 기능 중심으로 작성합니다.
 
 **[SEO 키워드 전략 - 필수 적용]**:
 - 네이버/구글에서 실제 검색량이 높은 롱테일 키워드 타겟팅
@@ -465,18 +466,24 @@ ${mandatoryKeywordNote}
 - 검색 의도 반영: 정보형("~방법", "~하는 법"), 비교형("~vs~"), 리스트형("~가지")
 
 **주제 범위 (아래 중 하나 선택)**:
-1. 쓰레드 시작하기: 가입 방법, 프로필 설정, 인스타그램 연동
-2. 쓰레드 성장: 팔로워 늘리기, 인게이지먼트 높이기, 알고리즘 이해
-3. 쓰레드 콘텐츠: 글쓰기 팁, 바이럴 콘텐츠, 해시태그 전략
-4. 쓰레드 vs 트위터(X): 기능 비교, 장단점, 선택 가이드
-5. 쓰레드 비즈니스 활용: 브랜드 마케팅, 고객 소통, 트래픽 유도
+1. 쓰레드 광고: ${CURRENT_YEAR} 글로벌 확대된 Threads 광고 활용법, 광고 설정, 타겟팅, 성과 측정
+2. 쓰레드 알고리즘 ${CURRENT_YEAR}: Reply Depth 기반 노출, 해시태그 비권장 대응, 시리즈(연재) 활용
+3. 쓰레드 DM/커뮤니티: DM 마케팅 전략, 그룹 채팅(50명), 커뮤니티 기능 활용
+4. 쓰레드 자동화/API: API 자동 발행, 웹훅 알림, 인사이트 분석, 폴(투표) 활용
+5. 쓰레드 검색 노출: 키워드 검색 최적화, "From: username" 검색, 클릭 메트릭 활용
+6. 쓰레드 크로스 플랫폼: 인스타 스토리 크로스포스팅, 독립 계정 운영, 프로필 링크(5개) 전략
+7. 쓰레드 콘텐츠 전략: Ghost Posts(24시간 자동삭제), 스포일러 태그, GIF 활용, 투표 인게이지먼트
+8. 쓰레드 비즈니스 성장: 브랜드 계정 운영, 팔로워 늘리기, 인게이지먼트 극대화
 
 **검색 최적화 제목 예시**:
-- "쓰레드 팔로워 늘리는 법 ${CURRENT_YEAR} 완벽 가이드"
-- "쓰레드 시작하기 - 가입부터 첫 게시물까지"
-- "쓰레드 vs 트위터 비교 ${CURRENT_YEAR} (어떤 걸 선택할까)"
-- "쓰레드 알고리즘 작동 원리와 노출 늘리는 법"
-- "쓰레드 마케팅 전략 5가지 - 비즈니스 활용법"`,
+- "쓰레드 광고 시작하기 ${CURRENT_YEAR} 완벽 가이드 (설정부터 성과 분석까지)"
+- "쓰레드 알고리즘 ${CURRENT_YEAR} - Reply Depth로 노출 늘리는 법"
+- "쓰레드 DM 마케팅 전략 - 고객과 직접 소통하는 방법"
+- "쓰레드 API 자동화 가이드 - 자동 발행부터 인사이트 분석까지"
+- "쓰레드 검색 노출 최적화 ${CURRENT_YEAR} (키워드 전략)"
+- "인스타그램↔쓰레드 크로스포스팅 완벽 가이드"
+- "쓰레드 투표(Polls) 활용법 - 인게이지먼트 3배 높이는 전략"
+- "쓰레드 vs X(트위터) ${CURRENT_YEAR} 최신 비교 (광고·DM·검색)"`,
 
     'faq': `Meta 플랫폼(페이스북, 인스타그램, 쓰레드) 또는 Meta 광고 사용 중 겪는 문제 해결 관련 블로그 주제를 1개 제안하세요.
 ${mandatoryKeywordNote}
@@ -650,7 +657,7 @@ function validateTopic(topic: string, category: CategoryKey): { isValid: boolean
   const requiredKeywords: Record<CategoryKey, string[]> = {
     'meta-ads': ['메타', 'meta', '페이스북', 'facebook', '인스타그램', 'instagram', '광고', '마케팅', '쓰레드', 'threads'],
     'instagram-reels': ['인스타그램', 'instagram', '릴스', 'reels', '영상', '콘텐츠', '알고리즘'],
-    'threads': ['쓰레드', 'threads', '메타', 'meta', '팔로워', '콘텐츠', 'sns'],
+    'threads': ['쓰레드', 'threads', '메타', 'meta', '팔로워', '콘텐츠', 'sns', '광고', 'dm', '알고리즘', '검색', 'api'],
     'faq': ['메타', 'meta', '페이스북', 'facebook', '인스타그램', 'instagram', '광고', '계정', '차단', '복구', '오류', '문제', '쓰레드', 'threads'],
     'ai-tips': ['ai', '인공지능', 'chatgpt', 'claude', 'gemini', 'mcp', 'cursor', '자동화', '생산성', '플러그인'],
     'ai-news': ['ai', '인공지능', 'chatgpt', 'claude', 'gemini', 'gpt', 'openai', 'anthropic', 'google', '출시', '업데이트', '발표', 'llama', 'mistral'],
@@ -787,7 +794,7 @@ function getDefaultSEOKeywords(title: string, category: string) {
   const categoryKeywords: Record<string, string[]> = {
     'meta-ads': ['메타 광고', '페이스북 광고', '인스타그램 광고', 'Meta Ads', '광고 최적화'],
     'instagram-reels': ['인스타그램 릴스', '릴스 마케팅', '숏폼 콘텐츠', 'Reels', '릴스 알고리즘'],
-    'threads': ['쓰레드', 'Threads', '메타 쓰레드', '텍스트 SNS', '쓰레드 마케팅'],
+    'threads': ['쓰레드', 'Threads', '메타 쓰레드', '쓰레드 광고', '쓰레드 마케팅', '쓰레드 DM', '쓰레드 알고리즘'],
     'faq': ['마케팅 FAQ', '광고 문제 해결', '트러블슈팅', '광고 오류', '해결 방법'],
     'ai-tips': ['AI 활용', '인공지능 팁', 'AI 도구', '업무 자동화', 'AI 생산성'],
     'ai-news': ['AI 뉴스', '인공지능 최신', 'AI 트렌드', 'AI 업데이트', '기술 동향'],
