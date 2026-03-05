@@ -12,7 +12,18 @@ import {
   CalendarDays,
   AlertTriangle,
   ChevronRight,
-  Expand,
+  BarChart3,
+  MousePointerClick,
+  Eye,
+  TrendingUp,
+  Instagram,
+  Globe,
+  MessageCircle,
+  ArrowRight,
+  X,
+  Sparkles,
+  RefreshCw,
+  Zap,
 } from "lucide-react";
 
 const sampleSites = [
@@ -38,13 +49,11 @@ const sampleSites = [
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
-
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
   return (
     <button
       onClick={handleCopy}
@@ -66,8 +75,304 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+/* 당근마켓 광고 대시보드 목업 */
+function DaangnAdMockup() {
+  return (
+    <div className="mt-6 rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+      {/* 당근 헤더 */}
+      <div
+        className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100"
+        style={{ background: "#FF6F0F" }}
+      >
+        <div className="w-5 h-5 rounded bg-white/30 flex items-center justify-center text-white text-[10px] font-bold">
+          당
+        </div>
+        <span className="text-xs font-semibold" style={{ color: "#fff" }}>
+          당근 광고 관리
+        </span>
+        <span
+          className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-medium"
+          style={{ background: "rgba(255,255,255,0.25)", color: "#fff" }}
+        >
+          전문가모드
+        </span>
+      </div>
+      {/* 대시보드 KPI */}
+      <div className="grid grid-cols-4 gap-0 border-b border-gray-100">
+        {[
+          {
+            label: "노출수",
+            value: "12,847",
+            icon: Eye,
+            color: "#3b82f6",
+            change: "+23%",
+          },
+          {
+            label: "클릭수",
+            value: "486",
+            icon: MousePointerClick,
+            color: "#8b5cf6",
+            change: "+18%",
+          },
+          {
+            label: "CTR",
+            value: "3.78%",
+            icon: TrendingUp,
+            color: "#10b981",
+            change: "+0.5%",
+          },
+          {
+            label: "소진액",
+            value: "48,600원",
+            icon: BarChart3,
+            color: "#f59e0b",
+            change: "",
+          },
+        ].map((kpi, i) => (
+          <div
+            key={i}
+            className="p-3 sm:p-4 text-center border-r last:border-r-0 border-gray-50"
+          >
+            <kpi.icon
+              className="w-4 h-4 mx-auto mb-1 opacity-60"
+              style={{ color: kpi.color }}
+            />
+            <div className="text-[11px] text-gray-400">{kpi.label}</div>
+            <div className="text-sm sm:text-base font-bold text-gray-800">
+              {kpi.value}
+            </div>
+            {kpi.change && (
+              <div className="text-[10px] font-medium text-emerald-500">
+                {kpi.change}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      {/* 캠페인 리스트 */}
+      <div className="p-3 sm:p-4">
+        <div className="text-[11px] font-semibold text-gray-500 mb-2">
+          진행중인 캠페인
+        </div>
+        {[
+          {
+            name: "지역 타겟 광고",
+            status: "진행중",
+            budget: "일 5,000원",
+            reach: "2.1km",
+          },
+          {
+            name: "피드 광고 A안",
+            status: "진행중",
+            budget: "일 3,000원",
+            reach: "3.0km",
+          },
+        ].map((camp, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between py-2 border-b last:border-b-0 border-gray-50 gap-2"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">
+                {camp.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <span className="text-[10px] sm:text-xs text-gray-400">
+                {camp.budget}
+              </span>
+              <span
+                className="text-[10px] px-1.5 py-0.5 rounded bg-orange-50 font-medium"
+                style={{ color: "#FF6F0F" }}
+              >
+                {camp.reach}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* 홈페이지 리뉴얼 비포/애프터 시각화 */
+function RenewalVisual() {
+  return (
+    <div className="mt-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+      {/* Before: 아임웹 */}
+      <div className="flex-1 w-full rounded-xl border-2 border-dashed border-red-200 bg-red-50/50 p-4 relative">
+        <div className="absolute -top-2.5 left-3 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600">
+          BEFORE
+        </div>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 rounded bg-gray-300 flex items-center justify-center text-[8px] font-bold text-white">
+            iW
+          </div>
+          <span className="text-xs font-medium text-gray-500">아임웹</span>
+        </div>
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-[11px]">
+            <span className="text-gray-400">월 비용</span>
+            <span className="font-semibold text-red-500 line-through">
+              매월 결제
+            </span>
+          </div>
+          <div className="flex justify-between text-[11px]">
+            <span className="text-gray-400">커스텀</span>
+            <span className="text-red-400">제한적</span>
+          </div>
+          <div className="flex justify-between text-[11px]">
+            <span className="text-gray-400">속도</span>
+            <span className="text-red-400">보통</span>
+          </div>
+        </div>
+      </div>
+
+      <ArrowRight className="w-5 h-5 text-blue-400 flex-shrink-0 rotate-90 sm:rotate-0" />
+
+      {/* After: 자체개발 */}
+      <div className="flex-1 w-full rounded-xl border-2 border-blue-200 bg-blue-50/50 p-4 relative">
+        <div className="absolute -top-2.5 left-3 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-600">
+          AFTER
+        </div>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center">
+            <Zap className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="text-xs font-medium text-blue-700">자체개발</span>
+        </div>
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-[11px]">
+            <span className="text-gray-400">월 비용</span>
+            <span className="font-semibold text-blue-600">도메인만</span>
+          </div>
+          <div className="flex justify-between text-[11px]">
+            <span className="text-gray-400">커스텀</span>
+            <span className="text-blue-600">100% 자유</span>
+          </div>
+          <div className="flex justify-between text-[11px]">
+            <span className="text-gray-400">속도</span>
+            <span className="text-blue-600">초고속</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 게시글 자동화 시각화 */
+function AutoPostVisual() {
+  return (
+    <div className="mt-6 space-y-3">
+      {/* 자동화 플로우 */}
+      <div className="flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-4 rounded-lg bg-violet-50 border border-violet-100">
+        <Sparkles className="w-4 h-4 text-violet-500" />
+        <span className="text-[11px] sm:text-xs font-medium text-violet-600">
+          AI 콘텐츠 생성
+        </span>
+        <ArrowRight className="w-3 h-3 text-violet-300" />
+        <RefreshCw className="w-4 h-4 text-violet-500" />
+        <span className="text-[11px] sm:text-xs font-medium text-violet-600">
+          자동 스케줄링
+        </span>
+        <ArrowRight className="w-3 h-3 text-violet-300" />
+        <Globe className="w-4 h-4 text-violet-500" />
+        <span className="text-[11px] sm:text-xs font-medium text-violet-600">
+          3채널 배포
+        </span>
+      </div>
+
+      {/* 채널별 콘텐츠 미리보기 */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        {/* 홈페이지 블로그 */}
+        <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border-b border-gray-100">
+            <Globe className="w-3 h-3 text-gray-500" />
+            <span className="text-[10px] font-medium text-gray-500">
+              홈페이지
+            </span>
+          </div>
+          <div className="p-2.5">
+            <div className="w-full aspect-[16/10] rounded bg-gradient-to-br from-blue-100 to-blue-50 mb-2 flex items-center justify-center">
+              <div className="w-8 h-6 rounded bg-blue-200/60" />
+            </div>
+            <div className="space-y-1">
+              <div className="h-2 bg-gray-200 rounded w-full" />
+              <div className="h-2 bg-gray-100 rounded w-4/5" />
+              <div className="h-2 bg-gray-100 rounded w-3/5" />
+            </div>
+          </div>
+        </div>
+
+        {/* 인스타그램 */}
+        <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1.5 border-b border-gray-100"
+            style={{
+              background:
+                "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
+              opacity: 0.1,
+              position: "absolute",
+              inset: 0,
+            }}
+          />
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border-b border-gray-100 relative">
+            <Instagram className="w-3 h-3 text-pink-500" />
+            <span className="text-[10px] font-medium text-gray-500">
+              인스타그램
+            </span>
+          </div>
+          <div className="p-2.5">
+            <div className="w-full aspect-square rounded bg-gradient-to-br from-pink-100 to-purple-50 mb-2 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-pink-200/60" />
+            </div>
+            <div className="flex items-center gap-1 mb-1">
+              <div className="w-2 h-2 rounded-full bg-red-300" />
+              <div className="w-2 h-2 rounded-full bg-gray-200" />
+            </div>
+            <div className="h-2 bg-gray-100 rounded w-full" />
+          </div>
+        </div>
+
+        {/* 쓰레드 */}
+        <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border-b border-gray-100">
+            <MessageCircle className="w-3 h-3 text-gray-700" />
+            <span className="text-[10px] font-medium text-gray-500">
+              쓰레드
+            </span>
+          </div>
+          <div className="p-2.5">
+            <div className="flex items-start gap-2 mb-2">
+              <div className="w-5 h-5 rounded-full bg-gray-200 flex-shrink-0" />
+              <div className="space-y-1 flex-1">
+                <div className="h-2 bg-gray-200 rounded w-16" />
+                <div className="h-2 bg-gray-100 rounded w-full" />
+                <div className="h-2 bg-gray-100 rounded w-4/5" />
+              </div>
+            </div>
+            <div className="flex items-center gap-3 pt-1 border-t border-gray-50">
+              <div className="w-3 h-3 rounded-full bg-gray-100" />
+              <div className="w-3 h-3 rounded-full bg-gray-100" />
+              <div className="w-3 h-3 rounded-full bg-gray-100" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-center">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-violet-500 font-medium bg-violet-50 rounded-full px-3 py-1">
+          <RefreshCw className="w-3 h-3" />
+          매일 오전 9시 자동 발행
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function ProposalPage() {
-  const [expandedSite, setExpandedSite] = useState<string | null>(null);
+  const [selectedSite, setSelectedSite] = useState<string | null>(null);
 
   return (
     <div
@@ -146,12 +451,16 @@ export default function ProposalPage() {
               </li>
             ))}
           </ul>
+          <DaangnAdMockup />
         </div>
 
         {/* 서비스 2: 홈페이지 리뉴얼 */}
         <div className="bg-white rounded-2xl border-2 border-blue-100 shadow-sm hover:shadow-md transition-shadow p-5 sm:p-8 relative">
           <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-            <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold bg-blue-600 text-white">
+            <span
+              className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold bg-blue-600"
+              style={{ color: "#fff" }}
+            >
               핵심
             </span>
           </div>
@@ -168,7 +477,7 @@ export default function ProposalPage() {
               </h2>
             </div>
           </div>
-          <ul className="space-y-2.5 sm:space-y-3 mb-5">
+          <ul className="space-y-2.5 sm:space-y-3 mb-1">
             {[
               "아임웹 → 자체개발 홈페이지로 전환",
               "아임웹 월 비용 지출 없음 (비용 절감)",
@@ -183,7 +492,8 @@ export default function ProposalPage() {
               </li>
             ))}
           </ul>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 sm:p-4">
+          <RenewalVisual />
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 sm:p-4 mt-5">
             <p className="text-xs sm:text-sm text-amber-800">
               <strong className="text-amber-900">도메인 안내:</strong>{" "}
               후이즈(whois.co.kr)에서 신규 구매하거나, 기존 보유 도메인이 있는
@@ -226,6 +536,7 @@ export default function ProposalPage() {
               </li>
             ))}
           </ul>
+          <AutoPostVisual />
         </div>
 
         {/* 비용 */}
@@ -369,46 +680,60 @@ export default function ProposalPage() {
             홈페이지 스타일 시안
           </h2>
           <p className="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6">
-            원하시는 스타일을 선택해 주세요. 클릭하면 새 창에서 실제 사이트를
-            확인할 수 있습니다.
+            원하시는 스타일을 선택해 주세요. 카드를 클릭하면 미리보기가
+            확대됩니다.
           </p>
 
-          {/* 시안 그리드 - 썸네일 미리보기 */}
+          {/* 시안 그리드 - 축소 iframe 썸네일 */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {sampleSites.map((site) => (
-              <a
+              <button
                 key={site.url}
-                href={site.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative rounded-xl border-2 border-gray-200 overflow-hidden
-                  transition-all duration-200 hover:border-blue-400 hover:shadow-lg block"
+                onClick={() =>
+                  setSelectedSite(selectedSite === site.url ? null : site.url)
+                }
+                className={`group relative rounded-xl border-2 overflow-hidden transition-all duration-200 text-left
+                  ${
+                    selectedSite === site.url
+                      ? "border-blue-600 shadow-lg ring-2 ring-blue-200"
+                      : "border-gray-200 hover:border-blue-300 hover:shadow-md"
+                  }`}
               >
-                {/* 썸네일 미리보기 이미지 */}
+                {/* 축소된 iframe 미리보기 */}
                 <div className="aspect-[4/3] relative overflow-hidden bg-gray-50">
-                  <img
-                    src={`https://image.thum.io/get/width/600/crop/450/${site.url}`}
-                    alt={`${site.name} 미리보기`}
-                    className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = "flex";
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      width: "400%",
+                      height: "400%",
+                      transform: "scale(0.25)",
+                      transformOrigin: "top left",
                     }}
-                  />
-                  {/* 이미지 로딩 실패 시 폴백 */}
-                  <div className="absolute inset-0 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-50 hidden">
-                    <Monitor className="w-8 h-8 text-gray-300" />
+                  >
+                    <iframe
+                      src={site.url}
+                      className="w-full h-full border-0"
+                      title={`${site.name} 미리보기`}
+                      loading="lazy"
+                      tabIndex={-1}
+                      style={{ pointerEvents: "none" }}
+                    />
                   </div>
-                  {/* 호버 오버레이 */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1.5 bg-white/90 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-800">
+                  {/* 클릭 오버레이 */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center z-10">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1.5 bg-white/90 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-800 shadow-sm">
                       <ExternalLink className="w-3.5 h-3.5" />
-                      <span>사이트 보기</span>
+                      <span>미리보기</span>
                     </div>
                   </div>
+                  {selectedSite === site.url && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center z-10">
+                      <Check
+                        className="w-3.5 h-3.5"
+                        style={{ color: "#fff" }}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="p-2.5 sm:p-3 border-t border-gray-100">
                   <div className="font-semibold text-xs sm:text-sm text-gray-800">
@@ -418,9 +743,45 @@ export default function ProposalPage() {
                     {site.desc}
                   </div>
                 </div>
-              </a>
+              </button>
             ))}
           </div>
+
+          {/* 선택된 시안 확대 미리보기 */}
+          {selectedSite && (
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm sm:text-base text-gray-700">
+                  {sampleSites.find((s) => s.url === selectedSite)?.name}{" "}
+                  미리보기
+                </h3>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={selectedSite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    새 탭에서 보기
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <button
+                    onClick={() => setSelectedSite(null)}
+                    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                  >
+                    <X className="w-4 h-4 text-gray-400" />
+                  </button>
+                </div>
+              </div>
+              <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-inner">
+                <iframe
+                  src={selectedSite}
+                  className="w-full h-[500px] sm:h-[600px] md:h-[700px]"
+                  title="홈페이지 시안 미리보기"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 푸터 */}
