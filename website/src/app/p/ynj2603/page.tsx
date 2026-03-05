@@ -28,23 +28,23 @@ import {
 
 const sampleSites = [
   {
-    name: "스타일 A",
-    url: "https://financialhealing.imweb.me/",
-    desc: "심플 블루 톤",
+    name: "스타일 1",
+    url: "https://www.jnipartners.co.kr",
+    desc: "프리미엄 컨설팅",
   },
+  { name: "스타일 2", url: "https://bizen.co.kr/", desc: "모던 비즈니스" },
+  { name: "스타일 3", url: "https://jmbiz.imweb.me/", desc: "클래식 전문가" },
   {
-    name: "스타일 B",
-    url: "https://primeroad.imweb.me/",
-    desc: "프리미엄 다크",
+    name: "스타일 4",
+    url: "https://ksupport-center.imweb.me/",
+    desc: "신뢰감 센터",
   },
+  { name: "스타일 5", url: "https://www.wiztion.com/", desc: "파이낸스 블루" },
   {
-    name: "스타일 C",
-    url: "https://ynjbiz.imweb.me/",
-    desc: "클래식 비즈니스",
+    name: "스타일 6",
+    url: "https://www.k-eai.kr/index.html",
+    desc: "기업인증 전문",
   },
-  { name: "스타일 D", url: "https://mjgood.imweb.me/", desc: "모던 클린" },
-  { name: "스타일 E", url: "https://jmbiz.imweb.me/", desc: "컨설팅 전문" },
-  { name: "스타일 F", url: "https://ganaanbiz.imweb.me/", desc: "신뢰감 그린" },
 ];
 
 function CopyButton({ text }: { text: string }) {
