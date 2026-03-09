@@ -195,16 +195,16 @@ export default function ServicePage() {
             </ScrollReveal>
 
             {/* 모바일: 좌우 스크롤, md+: 2x2 그리드 */}
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4 pb-2 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:mx-0 md:px-0 md:pb-0">
+            <div className="flex items-stretch gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4 pb-2 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:mx-0 md:px-0 md:pb-0">
               {layerSections.map((section, i) => {
                 const Icon = section.icon;
                 return (
                   <ScrollReveal
                     key={section.layer}
                     delay={i * 0.08}
-                    className="md:h-full"
+                    className="h-full"
                   >
-                    <div className="min-w-[280px] snap-start bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-5 sm:p-6 md:min-w-0 md:h-full">
+                    <div className="min-w-[280px] snap-start bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-5 sm:p-6 md:min-w-0 h-full">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 rounded-lg bg-[#c9a962]/10 flex items-center justify-center">
                           <Icon className="w-5 h-5 text-[#c9a962]" />
