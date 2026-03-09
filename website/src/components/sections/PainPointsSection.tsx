@@ -33,15 +33,9 @@ export default function PainPointsSection() {
           className="text-center mb-8"
         >
           <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white mb-4 break-keep">
-            <span className="sm:hidden">
-              지금 이렇게 하고 계시다면,{" "}
-              <span className="text-[#c9a962]">돈을 버리고 계신 겁니다</span>
-            </span>
-            <span className="hidden sm:inline">
-              지금 이렇게 하고 계시다면,
-              <br />
-              <span className="text-[#c9a962]">돈을 버리고 계신 겁니다</span>
-            </span>
+            지금 이렇게 하고 계시다면,
+            <br />
+            <span className="text-[#c9a962]">돈을 버리고 계신 겁니다</span>
           </h2>
         </motion.div>
 

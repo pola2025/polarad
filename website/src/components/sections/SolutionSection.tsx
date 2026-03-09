@@ -7,9 +7,15 @@ const comparisons = [
   {
     item: "홈페이지 제작",
     old: "300~500만원 초기비용",
-    ours: "월 22만원 (도메인만 별도)",
+    ours: "월 22만원",
+    oursSub: "도메인만 별도",
   },
-  { item: "광고 대행", old: "월 100만원+", ours: "포함 (Meta 직접 운영)" },
+  {
+    item: "광고 대행",
+    old: "월 100만원+",
+    ours: "포함",
+    oursSub: "Meta 직접 운영",
+  },
   { item: "문의 수집", old: "수동 (엑셀/카톡)", ours: "자동 저장 + 즉시 알림" },
   { item: "성과 보고", old: "없음 or 형식적", ours: "월간 리포트 자동 발송" },
   { item: "6개월 후", old: "해지하면 끝", ours: "홈페이지 영구 소유" },
@@ -64,6 +70,11 @@ export default function SolutionSection() {
                       <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                       {row.ours}
                     </div>
+                    {row.oursSub && (
+                      <div className="text-[10px] text-[#888] mt-0.5 text-right">
+                        ({row.oursSub})
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -98,7 +109,14 @@ export default function SolutionSection() {
                 </div>
                 <div className="p-4 text-sm text-[#c9a962] text-center flex items-center justify-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  {row.ours}
+                  <span>
+                    {row.ours}
+                    {row.oursSub && (
+                      <span className="text-xs text-[#888] ml-1">
+                        ({row.oursSub})
+                      </span>
+                    )}
+                  </span>
                 </div>
               </motion.div>
             ))}

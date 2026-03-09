@@ -43,7 +43,7 @@ export default function ServiceOverviewSection() {
           <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4 break-keep">
             월 22만원에 <span className="text-[#c9a962]">전부 포함</span>입니다
           </h2>
-          <p className="text-[#999] text-base lg:text-lg max-w-xl mx-auto">
+          <p className="text-[#999] text-sm sm:text-base lg:text-lg max-w-xl mx-auto break-keep">
             홈페이지 + 광고 + DB수집 + 분석. 도메인 비용만 내면 끝.
           </p>
         </motion.div>
