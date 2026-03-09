@@ -1,61 +1,83 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
+
+const faqs = [
+  {
+    q: "정확히 무엇이 포함되나요?",
+    a: "반응형 홈페이지 제작, Meta 광고 운영, DB 자동 수집(문의 폼 + 텔레그램 알림), GA4 설치, Google/Naver 검색 등록, 월간 성과 리포트가 모두 포함됩니다.",
+  },
+  {
+    q: "6개월 약정 후에는 어떻게 되나요?",
+    a: "홈페이지는 영구 소유입니다. 광고 운영만 중단되며, 재구독 시 월 15만원에 광고 운영만 이어갈 수 있습니다.",
+  },
+  {
+    q: "환불 정책은 어떻게 되나요?",
+    a: "1개월차 30%, 2~3개월차 20%, 4개월차 15% 환불. 5개월차부터는 환불 불가합니다.",
+  },
+  {
+    q: "우리 업종에도 맞나요?",
+    a: "인테리어, 건축, 학원, 컨설팅, 법률, 웨딩, 부동산, 이사, 생활전문 등 서비스업 전반에 적용 가능합니다. 데모 페이지에서 업종별 진행 예시를 확인해보세요.",
+  },
+  {
+    q: "제작 기간은 얼마나 걸리나요?",
+    a: "기획 내용 확정 후 영업일 기준 5~7일 내에 홈페이지 제작, 광고 세팅, 자동화 연동까지 모두 완료됩니다.",
+  },
+  {
+    q: "카드 결제가 가능한가요?",
+    a: "네, 카드 결제 가능합니다. 6개월분 일시불 결제이며, 카드 할부는 결제 시 선택하실 수 있습니다.",
+  },
+];
 
 export default function FAQSection() {
-  const faqs = [
-    {
-      question: '상품 구성은 어떻게 되나요?',
-      answer: '36만원(VAT 별도) 올인원 패키지입니다. 리드 수집 랜딩페이지 제작 + 1년간 접수 자동화(카카오 로그인, 텔레그램 알림, 실시간 대시보드)가 포함됩니다. 수정이 필요한 경우 건당 3만원(VAT 별도)입니다.'
-    },
-    {
-      question: '카카오 로그인이 왜 필요한가요?',
-      answer: '카카오 로그인을 통해 정확한 연락처와 본인 인증된 정보를 수집할 수 있습니다. 스팸 접수를 방지하고, 진성 고객만 필터링하여 영업 효율을 극대화합니다.'
-    },
-    {
-      question: '제작 기간은 얼마나 걸리나요?',
-      answer: '기획 내용 확정 후 영업일 기준 5~7일 내에 제작 완료됩니다. 랜딩페이지 제작, 카카오 앱 설정, 텔레그램 연동까지 모두 포함됩니다.'
-    },
-    {
-      question: '1년 이후에는 어떻게 되나요?',
-      answer: '1년 후 자동화 서비스 연장을 원하시면 월 1만원(VAT 별도)에 유지 가능합니다. 연장하지 않으셔도 랜딩페이지는 계속 사용 가능합니다.'
-    },
-    {
-      question: '환불이 가능한가요?',
-      answer: '서비스 제작 시작 전에는 전액 환불이 가능합니다. 제작 시작 후에는 단순 변심으로 인한 환불이 불가합니다.'
-    },
-  ]
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <section className="py-12 sm:py-20 bg-white">
-      <div className="container">
-        <div className="max-w-3xl mx-auto space-y-8 sm:space-y-12">
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-3 sm:mb-4">자주 묻는 질문</h2>
-            <p className="text-sm sm:text-base text-neutral-600">궁금한 점이 있으신가요?</p>
-          </div>
+    <section className="py-20 lg:py-28 bg-[#222]">
+      <div className="container px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4">
+            자주 묻는 질문
+          </h2>
+        </motion.div>
 
-          <div className="space-y-3 sm:space-y-4">
-            {faqs.map((faq, index) => (
-              <div key={index} className="border border-neutral-200 rounded-xl overflow-hidden">
-                <details className="group">
-                  <summary className="flex justify-between items-center gap-3 p-4 sm:p-6 cursor-pointer list-none bg-white hover:bg-neutral-50 transition-colors">
-                    <span className="font-bold text-sm sm:text-lg text-neutral-900 text-left whitespace-nowrap">{faq.question}</span>
-                    <ChevronDown className="w-4 sm:w-5 h-4 sm:h-5 text-neutral-400 transition-transform group-open:rotate-180 shrink-0" />
-                  </summary>
-                  <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0 text-sm sm:text-base text-neutral-600 bg-white leading-relaxed border-t border-neutral-100 mt-[-1px]">
-                    <div className="pt-3 sm:pt-4 break-keep">
-                      {faq.answer}
-                    </div>
-                  </div>
-                </details>
-              </div>
-            ))}
-          </div>
+        <div className="max-w-3xl mx-auto space-y-3">
+          {faqs.map((faq, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-[#2a2a2a] border border-white/[0.06] rounded-xl overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenIdx(openIdx === i ? null : i)}
+                className="w-full flex items-center justify-between p-5 text-left"
+              >
+                <span className="text-white font-medium text-sm lg:text-base">
+                  {faq.q}
+                </span>
+                <ChevronDown
+                  className={`w-5 h-5 text-[#888] transition-transform ${openIdx === i ? "rotate-180" : ""}`}
+                />
+              </button>
+              {openIdx === i && (
+                <div className="px-5 pb-5 text-sm text-[#888] leading-relaxed">
+                  {faq.a}
+                </div>
+              )}
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

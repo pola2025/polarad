@@ -20,7 +20,6 @@ import {
   Globe,
   MessageCircle,
   ArrowRight,
-  X,
   Sparkles,
   RefreshCw,
   Zap,
@@ -31,19 +30,37 @@ const sampleSites = [
     name: "스타일 1",
     url: "https://www.jnipartners.co.kr",
     desc: "프리미엄 컨설팅",
+    img: "/images/style-previews/style1.png",
   },
-  { name: "스타일 2", url: "https://bizen.co.kr/", desc: "모던 비즈니스" },
-  { name: "스타일 3", url: "https://jmbiz.imweb.me/", desc: "클래식 전문가" },
+  {
+    name: "스타일 2",
+    url: "https://bizen.co.kr/",
+    desc: "모던 비즈니스",
+    img: "/images/style-previews/style2.png",
+  },
+  {
+    name: "스타일 3",
+    url: "https://jmbiz.imweb.me/",
+    desc: "클래식 전문가",
+    img: "/images/style-previews/style3.png",
+  },
   {
     name: "스타일 4",
     url: "https://ksupport-center.imweb.me/",
     desc: "신뢰감 센터",
+    img: "/images/style-previews/style4.png",
   },
-  { name: "스타일 5", url: "https://www.wiztion.com/", desc: "파이낸스 블루" },
+  {
+    name: "스타일 5",
+    url: "https://www.wiztion.com/",
+    desc: "파이낸스 블루",
+    img: "/images/style-previews/style5.png",
+  },
   {
     name: "스타일 6",
     url: "https://www.k-eai.kr/index.html",
     desc: "기업인증 전문",
+    img: "/images/style-previews/style6.png",
   },
 ];
 
@@ -538,8 +555,6 @@ function AutoPostVisual() {
 }
 
 export default function ProposalPage() {
-  const [selectedSite, setSelectedSite] = useState<string | null>(null);
-
   return (
     <div
       className="min-h-screen bg-gradient-to-b from-slate-50 to-white"
@@ -856,35 +871,18 @@ export default function ProposalPage() {
               <button
                 key={site.url}
                 onClick={() =>
-                  setSelectedSite(selectedSite === site.url ? null : site.url)
+                  window.open(site.url, "_blank", "noopener,noreferrer")
                 }
-                className={`group relative rounded-xl border-2 overflow-hidden transition-all duration-200 text-left
-                  ${
-                    selectedSite === site.url
-                      ? "border-blue-600 shadow-lg ring-2 ring-blue-200"
-                      : "border-gray-200 hover:border-blue-300 hover:shadow-md"
-                  }`}
+                className="group relative rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-md overflow-hidden transition-all duration-200 text-left"
               >
-                {/* 축소된 iframe 미리보기 */}
+                {/* 스크린샷 이미지 미리보기 */}
                 <div className="aspect-[4/3] relative overflow-hidden bg-gray-50">
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      width: "400%",
-                      height: "400%",
-                      transform: "scale(0.25)",
-                      transformOrigin: "top left",
-                    }}
-                  >
-                    <iframe
-                      src={site.url}
-                      className="w-full h-full border-0"
-                      title={`${site.name} 미리보기`}
-                      loading="lazy"
-                      tabIndex={-1}
-                      style={{ pointerEvents: "none" }}
-                    />
-                  </div>
+                  <img
+                    src={site.img}
+                    alt={`${site.name} 미리보기`}
+                    className="absolute inset-0 w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
                   {/* 클릭 오버레이 */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center z-10">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1.5 bg-white/90 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-800 shadow-sm">
@@ -892,14 +890,6 @@ export default function ProposalPage() {
                       <span>미리보기</span>
                     </div>
                   </div>
-                  {selectedSite === site.url && (
-                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center z-10">
-                      <Check
-                        className="w-3.5 h-3.5"
-                        style={{ color: "#fff" }}
-                      />
-                    </div>
-                  )}
                 </div>
                 <div className="p-2.5 sm:p-3 border-t border-gray-100">
                   <div className="font-semibold text-xs sm:text-sm text-gray-800">
@@ -912,42 +902,6 @@ export default function ProposalPage() {
               </button>
             ))}
           </div>
-
-          {/* 선택된 시안 확대 미리보기 */}
-          {selectedSite && (
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm sm:text-base text-gray-700">
-                  {sampleSites.find((s) => s.url === selectedSite)?.name}{" "}
-                  미리보기
-                </h3>
-                <div className="flex items-center gap-2">
-                  <a
-                    href={selectedSite}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    새 탭에서 보기
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                  <button
-                    onClick={() => setSelectedSite(null)}
-                    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    <X className="w-4 h-4 text-gray-400" />
-                  </button>
-                </div>
-              </div>
-              <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-inner">
-                <iframe
-                  src={selectedSite}
-                  className="w-full h-[500px] sm:h-[600px] md:h-[700px]"
-                  title="홈페이지 시안 미리보기"
-                />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* 푸터 */}
