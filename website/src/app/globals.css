@@ -10,11 +10,6 @@
  */
 
 /* ==========================================
-   Pretendard Font Import
-   ========================================== */
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
-
-/* ==========================================
    CSS Variables
    ========================================== */
 :root {
@@ -174,7 +169,7 @@ strong {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
 }
 
 @media (min-width: 768px) {
@@ -190,12 +185,12 @@ strong {
 }
 
 section {
-  padding: var(--space-20) 0;
+  padding: var(--space-12) 0;
 }
 
 @media (min-width: 768px) {
   section {
-    padding: var(--space-24) 0;
+    padding: var(--space-20) 0;
   }
 }
 
@@ -567,6 +562,14 @@ section {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ==========================================
+   Mobile Safe Area
+   ========================================== */
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* ==========================================

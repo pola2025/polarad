@@ -44,7 +44,7 @@ export function Footer() {
 
   return (
     <>
-      <footer className="bg-[#111111] border-t border-white/[0.06] py-10 sm:py-16 px-4">
+      <footer className="bg-[#111111] border-t border-white/[0.06] py-8 sm:py-16 px-4 pb-20 md:pb-16">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-12">
             <div className="col-span-2 md:col-span-1 space-y-3 sm:space-y-4">

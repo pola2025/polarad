@@ -35,20 +35,20 @@ export default function FAQSection() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <section className="py-20 lg:py-28 bg-[#222]">
-      <div className="container px-4">
+    <section className="py-12 lg:py-24 bg-[#222]">
+      <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4">
             자주 묻는 질문
           </h2>
         </motion.div>
 
-        <div className="max-w-3xl mx-auto space-y-3">
+        <div className="max-w-3xl mx-auto space-y-2 sm:space-y-3">
           {faqs.map((faq, i) => (
             <motion.div
               key={i}
@@ -60,7 +60,8 @@ export default function FAQSection() {
             >
               <button
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className="w-full flex items-center justify-between p-5 text-left"
+                aria-expanded={openIdx === i}
+                className="w-full flex items-center justify-between px-4 py-3.5 sm:p-5 text-left"
               >
                 <span className="text-white font-medium text-sm lg:text-base">
                   {faq.q}
@@ -70,7 +71,7 @@ export default function FAQSection() {
                 />
               </button>
               {openIdx === i && (
-                <div className="px-5 pb-5 text-sm text-[#888] leading-relaxed">
+                <div className="px-4 pb-3.5 sm:px-5 sm:pb-5 text-sm text-[#999] leading-relaxed">
                   {faq.a}
                 </div>
               )}

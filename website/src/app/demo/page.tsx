@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function DemoPage() {
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white -mt-[60px] md:-mt-[60px] lg:-mt-[68px] pt-[60px] md:pt-[60px] lg:pt-[68px]">
+    <div className="min-h-screen bg-[#1a1a1a] text-white -mt-[60px] md:-mt-[60px] lg:-mt-[64px] pt-[60px] md:pt-[60px] lg:pt-[64px]">
       {/* Hero */}
       <DemoHero />
 
@@ -49,7 +49,7 @@ export default function DemoPage() {
                   dangerouslySetInnerHTML={{ __html: industry.icon }}
                 />
                 <h3 className="text-xl font-semibold mb-2">{industry.name}</h3>
-                <p className="text-sm text-[#888] leading-relaxed">
+                <p className="text-sm text-[#999] leading-relaxed">
                   {industry.desc}
                 </p>
                 <span className="inline-block mt-4 px-3 py-1 rounded text-xs tracking-wide bg-[rgba(201,169,98,0.1)] text-[#c9a962] border border-[rgba(201,169,98,0.2)]">
@@ -64,7 +64,7 @@ export default function DemoPage() {
       {/* Bottom CTA */}
       <section className="py-16 text-center bg-gradient-to-b from-[#1a1a1a] to-[#222]">
         <h2 className="text-2xl font-bold mb-2">우리 업종도 가능할까?</h2>
-        <p className="text-sm text-[#888] mb-8">
+        <p className="text-sm text-[#999] mb-8">
           어떤 업종이든 POLAAD가 맞춤 솔루션을 제공합니다
         </p>
         <Link

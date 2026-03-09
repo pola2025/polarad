@@ -11,7 +11,7 @@ import FAQSection from "@/components/sections/FAQSection";
 
 export const metadata: Metadata = {
   title:
-    "소상공인 리드 자동화 구독 | 홈페이지+광고+DB수집 월 22만원 - 폴라애드",
+    "소상공인 DB 수집 자동화 구독 | 홈페이지+광고+DB수집 월 22만원 - 폴라애드",
   description:
     "홈페이지 따로, 광고 따로, DB 따로? 이제 그만하세요. 홈페이지 제작+Meta 광고+DB 자동 수집 올인원 월 22만원. 6개월 약정 후 홈페이지 영구 소유.",
   keywords: [

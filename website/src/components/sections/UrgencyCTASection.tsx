@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Shield } from "lucide-react";
+import { ArrowRight, Shield, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 const fears = [
@@ -32,15 +33,17 @@ const fears = [
 ];
 
 export default function UrgencyCTASection() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
   return (
-    <section className="py-20 lg:py-28 bg-[#1a1a1a]">
-      <div className="container px-4">
+    <section className="py-12 lg:py-24 bg-[#1a1a1a]">
+      <div className="container">
         {/* Risk removal */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#c9a962]/10 border border-[#c9a962]/20 text-[#c9a962] text-sm font-semibold mb-6">
             <Shield className="w-4 h-4" />
@@ -52,22 +55,58 @@ export default function UrgencyCTASection() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto mb-16">
-          {fears.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-5"
-            >
-              <div className="text-sm text-[#888] mb-2">
-                &ldquo;{item.q}&rdquo;
-              </div>
-              <div className="text-white font-medium">{item.a}</div>
-            </motion.div>
-          ))}
+        {/* Mobile: accordion / sm+: 2-col grid */}
+        <div className="max-w-3xl mx-auto mb-10">
+          {/* Mobile accordion */}
+          <div className="sm:hidden flex flex-col gap-2">
+            {fears.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="bg-[#2a2a2a] border border-white/[0.06] rounded-lg overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenIdx(openIdx === i ? null : i)}
+                  aria-expanded={openIdx === i}
+                  className="w-full flex items-center justify-between px-3.5 py-3 text-left"
+                >
+                  <span className="text-sm text-[#999]">
+                    &ldquo;{item.q}&rdquo;
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-[#888] shrink-0 ml-2 transition-transform ${openIdx === i ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {openIdx === i && (
+                  <div className="px-3.5 pb-3 text-sm text-white font-medium">
+                    {item.a}
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* sm+: 2-col grid with full content */}
+          <div className="hidden sm:grid sm:grid-cols-2 gap-4">
+            {fears.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-5"
+              >
+                <div className="text-sm text-[#999] mb-2">
+                  &ldquo;{item.q}&rdquo;
+                </div>
+                <div className="text-white font-medium">{item.a}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* CTA */}
@@ -77,15 +116,15 @@ export default function UrgencyCTASection() {
           viewport={{ once: true }}
           className="text-center"
         >
-          <h3 className="text-xl lg:text-2xl font-bold text-white mb-3">
+          <h3 className="text-lg lg:text-2xl font-bold text-white mb-2">
             우리 가게, 온라인에서 보이고 있나요?
           </h3>
-          <p className="text-[#888] mb-8">
+          <p className="text-sm text-[#999] mb-5">
             30초 간편 진단으로 놓치고 있는 고객 수를 확인하세요
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-br from-[#c9a962] to-[#b08d3e] text-[#1a1a1a] font-bold text-lg hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(201,169,98,0.4)] transition-all"
+            className="inline-flex items-center gap-2 w-full justify-center sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-br from-[#c9a962] to-[#b08d3e] text-[#1a1a1a] font-bold text-base hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(201,169,98,0.4)] transition-all"
           >
             무료 간편 진단 받기
             <ArrowRight className="w-5 h-5" />

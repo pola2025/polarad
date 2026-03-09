@@ -32,23 +32,23 @@ const services = [
 
 export default function ServiceOverviewSection() {
   return (
-    <section className="py-20 lg:py-28 bg-[#222]">
-      <div className="container px-4">
+    <section className="py-12 lg:py-24 bg-[#222]">
+      <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
           <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4 break-keep">
             월 22만원에 <span className="text-[#c9a962]">전부 포함</span>입니다
           </h2>
-          <p className="text-[#888] text-base lg:text-lg max-w-xl mx-auto">
+          <p className="text-[#999] text-base lg:text-lg max-w-xl mx-auto">
             홈페이지 + 광고 + DB수집 + 분석. 도메인 비용만 내면 끝.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4 pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:overflow-visible sm:mx-auto sm:px-0 sm:pb-0 max-w-5xl">
           {services.map((svc, i) => {
             const Icon = svc.icon;
             return (
@@ -58,9 +58,9 @@ export default function ServiceOverviewSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-6 hover:border-[rgba(201,169,98,0.3)] transition-all"
+                className="min-w-[260px] snap-start bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-5 hover:border-[rgba(201,169,98,0.3)] transition-all sm:min-w-0 sm:p-6"
               >
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-3 sm:mb-4">
                   <div className="w-12 h-12 rounded-lg bg-[#c9a962]/10 flex items-center justify-center">
                     <Icon className="w-6 h-6 text-[#c9a962]" />
                   </div>
@@ -71,7 +71,7 @@ export default function ServiceOverviewSection() {
                 <h3 className="text-lg font-semibold text-white mb-2">
                   {svc.title}
                 </h3>
-                <p className="text-sm text-[#888] leading-relaxed">
+                <p className="text-sm text-[#999] leading-relaxed">
                   {svc.desc}
                 </p>
               </motion.div>

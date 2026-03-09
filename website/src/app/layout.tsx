@@ -150,7 +150,7 @@ export default function RootLayout({
         </Script>
 
         <Header />
-        <main className="min-h-screen pt-[60px] md:pt-[60px] lg:pt-[68px] pb-16 md:pb-0">
+        <main className="min-h-screen pt-[60px] md:pt-[60px] lg:pt-[64px] pb-16 md:pb-0">
           {children}
         </main>
         <Footer />

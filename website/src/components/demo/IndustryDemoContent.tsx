@@ -14,7 +14,7 @@ function StepProgress({ activeStep }: { activeStep: number }) {
   ];
 
   return (
-    <div className="fixed top-[60px] md:top-[60px] lg:top-[68px] left-0 right-0 z-40 bg-[rgba(26,26,26,0.95)] backdrop-blur-sm border-b border-[rgba(201,169,98,0.1)] flex justify-center h-11">
+    <div className="fixed top-[60px] md:top-[60px] lg:top-[64px] left-0 right-0 z-40 bg-[rgba(26,26,26,0.95)] backdrop-blur-sm border-b border-[rgba(201,169,98,0.1)] flex justify-center h-11">
       {steps.map((step) => (
         <a
           key={step.id}
@@ -66,11 +66,11 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
     .replace(/height="24"/g, 'height="48"');
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-[#e0e0e0] -mt-[60px] md:-mt-[60px] lg:-mt-[68px] pt-[60px] md:pt-[60px] lg:pt-[68px]">
+    <div className="min-h-screen bg-[#1a1a1a] text-[#e0e0e0] -mt-[60px] md:-mt-[60px] lg:-mt-[64px] pt-[60px] md:pt-[60px] lg:pt-[64px]">
       <StepProgress activeStep={activeStep} />
 
       {/* Hero */}
-      <section className="relative min-h-[70vh] flex items-center justify-center pt-[100px] pb-[60px] px-6 overflow-hidden">
+      <section className="relative min-h-[50vh] md:min-h-[70vh] flex items-center justify-center pt-[80px] pb-[40px] md:pt-[100px] md:pb-[60px] px-5 overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={data.image}
@@ -104,9 +104,10 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
         ref={(el) => {
           sectionsRef.current[0] = el;
         }}
-        className="min-h-[80vh] py-20 px-6 flex flex-col items-center justify-center"
+        className="py-12 md:py-20 px-5 flex flex-col items-center"
+        style={{ scrollMarginTop: "120px" }}
       >
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center gap-2 text-[#c9a962] text-[13px] font-bold tracking-widest uppercase mb-3">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[rgba(201,169,98,0.15)] border border-[rgba(201,169,98,0.4)] text-[13px] font-extrabold">
               1
@@ -134,7 +135,7 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
             </div>
           </div>
           <div className="relative">
-            <div className="relative h-[280px]">
+            <div className="relative h-[200px] md:h-[280px]">
               <Image
                 src={data.image}
                 alt={data.name}
@@ -142,7 +143,7 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
                 className="object-cover brightness-[0.7]"
               />
             </div>
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-black/20 to-black/50">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-6 bg-gradient-to-b from-black/20 to-black/50">
               <span className="px-3.5 py-1 rounded-2xl bg-[rgba(201,169,98,0.2)] border border-[rgba(201,169,98,0.4)] text-[#c9a962] text-[11px] font-semibold mb-3">
                 {data.badge}
               </span>
@@ -154,7 +155,7 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
               </button>
             </div>
           </div>
-          <div className="p-6 flex flex-col gap-2.5">
+          <div className="p-4 md:p-6 flex flex-col gap-2">
             <div className="px-3.5 py-2.5 rounded-md bg-[#333] border border-[#444] text-[#888] text-[13px]">
               이름
             </div>
@@ -177,9 +178,10 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
         ref={(el) => {
           sectionsRef.current[1] = el;
         }}
-        className="min-h-[80vh] py-20 px-6 flex flex-col items-center justify-center"
+        className="py-12 md:py-20 px-5 flex flex-col items-center"
+        style={{ scrollMarginTop: "120px" }}
       >
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center gap-2 text-[#c9a962] text-[13px] font-bold tracking-widest uppercase mb-3">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[rgba(201,169,98,0.15)] border border-[rgba(201,169,98,0.4)] text-[13px] font-extrabold">
               2
@@ -195,7 +197,7 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
         </div>
 
         {/* Phone Mockup */}
-        <div className="w-[320px] rounded-[36px] overflow-hidden bg-[#2a2a2a] border-[3px] border-[#444] shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+        <div className="w-full max-w-[320px] rounded-[36px] overflow-hidden bg-[#2a2a2a] border-[3px] border-[#444] shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
           <div className="h-7 bg-[#2a2a2a] flex items-center justify-center">
             <div className="w-[100px] h-1.5 rounded-full bg-[#444]" />
           </div>
@@ -211,8 +213,13 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
                 <div className="text-[10px] text-[#999]">Sponsored</div>
               </div>
             </div>
-            <div className="relative h-[280px]">
-              <Image src={data.image} alt="ad" fill className="object-cover" />
+            <div className="relative h-[220px] md:h-[280px]">
+              <Image
+                src={data.image}
+                alt={`${data.name} 광고 예시`}
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="flex gap-3.5 px-3.5 py-2.5 text-xl">
               <span>&hearts;</span>
@@ -239,9 +246,10 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
         ref={(el) => {
           sectionsRef.current[2] = el;
         }}
-        className="min-h-[80vh] py-20 px-6 flex flex-col items-center justify-center"
+        className="py-12 md:py-20 px-5 flex flex-col items-center"
+        style={{ scrollMarginTop: "120px" }}
       >
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center gap-2 text-[#c9a962] text-[13px] font-bold tracking-widest uppercase mb-3">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[rgba(201,169,98,0.15)] border border-[rgba(201,169,98,0.4)] text-[13px] font-extrabold">
               3
@@ -292,13 +300,13 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-[520px] mt-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full max-w-[520px] mt-6 md:mt-8">
           {data.stats.map((stat, i) => (
             <div
               key={i}
-              className="bg-[#2a2a2a] border border-[#3a3a3a] rounded-xl py-5 px-3 text-center hover:border-[rgba(201,169,98,0.4)] transition-colors"
+              className="bg-[#2a2a2a] border border-[#3a3a3a] rounded-xl py-3.5 md:py-5 px-3 text-center hover:border-[rgba(201,169,98,0.4)] transition-colors"
             >
-              <div className="text-[28px] font-extrabold text-[#c9a962]">
+              <div className="text-xl md:text-[28px] font-extrabold text-[#c9a962]">
                 {stat.value}
               </div>
               <div className="text-[11px] text-[#888] mt-1 font-medium">
@@ -315,9 +323,10 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
         ref={(el) => {
           sectionsRef.current[3] = el;
         }}
-        className="min-h-[80vh] py-20 px-6 flex flex-col items-center justify-center"
+        className="py-12 md:py-20 px-5 flex flex-col items-center"
+        style={{ scrollMarginTop: "120px" }}
       >
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center gap-2 text-[#c9a962] text-[13px] font-bold tracking-widest uppercase mb-3">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[rgba(201,169,98,0.15)] border border-[rgba(201,169,98,0.4)] text-[13px] font-extrabold">
               4
@@ -334,7 +343,7 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
 
         {/* Report Card */}
         <div className="w-full max-w-[480px] rounded-xl overflow-hidden bg-[#2a2a2a] border border-[#3a3a3a] shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-[#3a3a3a]">
+          <div className="flex items-center justify-between px-4 md:px-6 py-4 md:py-5 border-b border-[#3a3a3a]">
             <div className="text-base font-bold text-white">
               {data.name} 월간 리포트
             </div>
@@ -342,11 +351,11 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
               2026년 3월
             </span>
           </div>
-          <div className="px-6 py-2">
+          <div className="px-4 md:px-6 py-1">
             {data.report.map((row, i) => (
               <div
                 key={i}
-                className="flex justify-between items-center py-3.5 border-b border-[#333] last:border-none"
+                className="flex justify-between items-center py-2.5 md:py-3.5 border-b border-[#333] last:border-none"
               >
                 <span
                   className={`text-sm ${
@@ -392,11 +401,6 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
           무료 상담 신청
         </Link>
       </section>
-
-      {/* Footer */}
-      <footer className="py-6 text-center border-t border-[#2a2a2a] text-[11px] text-[#555]">
-        &copy; 2026 POLAAD. All rights reserved.
-      </footer>
     </div>
   );
 }

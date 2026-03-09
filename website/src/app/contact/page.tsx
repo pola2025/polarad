@@ -372,13 +372,13 @@ export default function ContactPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSelect(opt.value)}
-                          className={`relative rounded-xl p-4 border text-left transition-all hover:border-[#c9a962]/40 ${
+                          className={`relative rounded-xl p-3 sm:p-4 border text-left transition-all hover:border-[#c9a962]/40 ${
                             selected
                               ? "bg-[#c9a962]/10 border-[#c9a962]/40"
                               : "bg-[#333] border-white/[0.06]"
                           }`}
                         >
-                          <Icon className="w-6 h-6 text-[#c9a962] mb-2" />
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#c9a962] mb-2" />
                           <div className="text-sm font-semibold text-white">
                             {opt.title}
                           </div>
