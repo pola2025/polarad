@@ -1,259 +1,234 @@
-'use client'
+"use client";
 
-import { useRef, useEffect, useState } from 'react'
-import { Button } from '../ui/Button'
-import { ArrowRight, TrendingUp, Users, Database, ShieldCheck } from 'lucide-react'
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, useInView } from 'framer-motion'
-import { AuroraBackground } from '../ui/AuroraBackground'
-import { FloatingLines } from '../ui/FloatingLines'
-
-// 카운팅 애니메이션 컴포넌트
-function CountUp({ end, suffix = '', duration = 2 }: { end: number; suffix?: string; duration?: number }) {
-    const [count, setCount] = useState(0)
-    const ref = useRef(null)
-    const isInView = useInView(ref, { once: true })
-
-    useEffect(() => {
-        if (!isInView) return
-
-        let startTime: number
-        const animate = (currentTime: number) => {
-            if (!startTime) startTime = currentTime
-            const progress = Math.min((currentTime - startTime) / (duration * 1000), 1)
-            const easeOut = 1 - Math.pow(1 - progress, 3)
-            setCount(Math.floor(easeOut * end))
-
-            if (progress < 1) {
-                requestAnimationFrame(animate)
-            }
-        }
-        requestAnimationFrame(animate)
-    }, [isInView, end, duration])
-
-    return <span ref={ref}>{count}{suffix}</span>
-}
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { HeroProcessAnimation } from "@/components/ui/HeroProcessAnimation";
 
 export default function HeroSection() {
-    const ref = useRef(null)
-    const { scrollY } = useScroll()
+  const playerRef = useRef<{ destroy?: () => void } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
 
-    // Parallax for background
-    const y1 = useTransform(scrollY, [0, 500], [0, 200])
-    const y2 = useTransform(scrollY, [0, 500], [0, -150])
+  // Replay animation every 21s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimKey((k) => k + 1);
+    }, 21500);
+    return () => clearInterval(interval);
+  }, []);
 
-    // 3D Tilt Effect
-    const mouseX = useMotionValue(0)
-    const mouseY = useMotionValue(0)
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const { left, top, width, height } = e.currentTarget.getBoundingClientRect()
-        const x = (e.clientX - left) / width - 0.5
-        const y = (e.clientY - top) / height - 0.5
-        mouseX.set(x)
-        mouseY.set(y)
+  useEffect(() => {
+    if (!(window as any).YT) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
     }
 
-    const handleMouseLeave = () => {
-        mouseX.set(0)
-        mouseY.set(0)
+    const initPlayer = () => {
+      playerRef.current = new (window as any).YT.Player("hero-yt-player", {
+        videoId: "2vpiuiedbXk",
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          controls: 0,
+          showinfo: 0,
+          rel: 0,
+          loop: 1,
+          playlist: "2vpiuiedbXk",
+          playsinline: 1,
+          modestbranding: 1,
+          iv_load_policy: 3,
+          disablekb: 1,
+          fs: 0,
+          cc_load_policy: 0,
+        },
+        events: {
+          onReady: (e: any) => {
+            e.target.playVideo();
+            setIsReady(true);
+          },
+          onStateChange: (e: any) => {
+            if (e.data === (window as any).YT.PlayerState.ENDED) {
+              e.target.playVideo();
+            }
+          },
+        },
+      });
+    };
+
+    if ((window as any).YT && (window as any).YT.Player) {
+      initPlayer();
+    } else {
+      (window as any).onYouTubeIframeAPIReady = initPlayer;
     }
 
-    const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [15, -15]), { stiffness: 150, damping: 20 })
-    const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), { stiffness: 150, damping: 20 })
-    const brightness = useSpring(useTransform(mouseY, [-0.5, 0.5], [1.2, 0.8]), { stiffness: 150, damping: 20 })
+    return () => {
+      if (playerRef.current?.destroy) {
+        playerRef.current.destroy();
+      }
+    };
+  }, []);
 
-    return (
-        <section ref={ref} className="relative min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-7rem)] pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gray-950 text-white perspective-1000 -mt-24 md:-mt-28">
-            {/* Aurora Background Effect */}
-            <AuroraBackground color="mixed" intensity="medium" />
+  return (
+    <section className="relative min-h-[100vh] overflow-hidden bg-[#0a0a0a] text-white -mt-[60px] md:-mt-[60px] lg:-mt-[64px] pt-[60px] md:pt-[60px] lg:pt-[64px]">
+      {/* YouTube Video Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div
+          ref={containerRef}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            width: "max(100vw, 177.78vh)",
+            height: "max(100vh, 56.25vw)",
+          }}
+        >
+          <div id="hero-yt-player" className="w-full h-full" />
+        </div>
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+      </div>
 
-            {/* Floating Lines Effect */}
-            <FloatingLines 
-                linesGradient={['#E945F5', '#2F4BC0', '#E945F5']}
-                animationSpeed={1}
-                interactive={true}
-                bendRadius={5}
-                bendStrength={-0.5}
-                mouseDamping={0.05}
-                parallax={true}
-                parallaxStrength={0.2}
-                className="z-[1]"
+      {/* Gold radial glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(201,169,98,0.08)_0%,transparent_70%)] pointer-events-none z-[1]" />
+
+      {/* 2-Column Hero Grid */}
+      <div className="container relative z-10 min-h-[calc(100vh-64px)] flex items-center px-4 lg:px-8 py-16 lg:py-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center w-full">
+          {/* Left: Text Content */}
+          <div
+            className="text-left"
+            style={{ textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#c9a962]/10 border border-[#c9a962]/20 text-[#c9a962] text-sm font-semibold mb-6"
+            >
+              구독형 영업 인프라
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-3xl sm:text-4xl lg:text-[clamp(36px,5vw,56px)] font-bold text-white mb-4 leading-[1.5] tracking-[-1px] break-keep"
+            >
+              <span className="block">본업에만 집중하세요.</span>
+              <span className="block mt-6">
+                고객은{" "}
+                <span className="text-[#c9a962]">저희가 데려옵니다.</span>
+              </span>
+            </motion.h1>
+
+            {/* Gold line divider */}
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: 48 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="h-[2px] bg-[#c9a962] mb-5"
             />
 
-            {/* Grid Pattern Overlay */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]"></div>
-            </div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-base lg:text-[17px] text-[#ccc] mb-8 leading-[1.85] max-w-[560px] break-keep"
+            >
+              홈페이지 따로, 광고 따로, DB 따로? 이제 그만하세요.
+              <br />세 업체에 나눠 맡기던 걸,{" "}
+              <span className="text-white font-semibold">
+                하나로 끝내드립니다.
+              </span>
+            </motion.p>
 
-            <div className="container relative z-10">
-                <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-
-                    {/* Left Content - The Wake Up Call */}
-                    <div className="flex-1 text-center lg:text-left">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-accent-400 text-sm font-semibold mb-8 backdrop-blur-sm"
-                        >
-                            <ShieldCheck className="w-4 h-4" />
-                            <span>소상공인을 위한 리드 수집 솔루션</span>
-                        </motion.div>
-
-                        <motion.h1
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.1 }}
-                            className="text-4xl lg:text-6xl font-bold text-white mb-8 leading-tight tracking-tight break-keep text-balance"
-                        >
-                            접수 폼에 <span className="text-red-500">스팸</span>이<br />
-                            너무 많지 않으세요?
-                        </motion.h1>
-
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.2 }}
-                            className="text-lg lg:text-xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0 break-keep text-balance"
-                        >
-                            카카오 로그인으로 <span className="text-white font-semibold">진성 고객만</span> 필터링하세요.<br className="hidden md:block" />
-                            텔레그램 알림으로 <span className="text-white font-semibold">즉시 응대</span>하세요.
-                        </motion.p>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.3 }}
-                            className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start"
-                        >
-                            <Button variant="primary" size="xl" className="w-full sm:w-auto shadow-xl shadow-primary-900/20 border border-primary-500/50 whitespace-nowrap" href="/contact">
-                                DB 접수 랜딩 서비스 문의하기
-                                <ArrowRight className="w-5 h-5 ml-2" />
-                            </Button>
-                            <div className="flex items-center justify-center gap-2 text-sm text-gray-400 sm:pl-4">
-                                <div className="flex -space-x-2">
-                                    {[1, 2].map((i) => (
-                                        <div key={i} className="w-8 h-8 rounded-full bg-gray-700 border-2 border-gray-950 flex items-center justify-center text-xs text-white">
-                                            <Users className="w-4 h-4" />
-                                        </div>
-                                    ))}
-                                </div>
-                                <span className="whitespace-nowrap"><strong className="text-white">월 3만원</strong> (VAT별도)<br />1년결제 36만원</span>
-                            </div>
-                        </motion.div>
-                    </div>
-
-                    {/* Right Visual - The Result (Dashboard) */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.7, delay: 0.4 }}
-                        className="flex-1 w-full max-w-[600px] lg:max-w-none relative perspective-1000"
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseLeave}
-                        style={{ perspective: 1000 }}
-                    >
-                        <motion.div
-                            style={{
-                                rotateX,
-                                rotateY,
-                                filter: useMotionTemplate`brightness(${brightness})`
-                            }}
-                            className="relative bg-dark-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden group transform-style-3d"
-                        >
-                            {/* Glow Effect on Hover */}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-primary-500/10 to-accent-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-
-                            {/* Dashboard Header */}
-                            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-dark-800/50 backdrop-blur-md">
-                                <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
-                                    <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
-                                </div>
-                                <div className="text-xs text-gray-400 font-mono">PolaAd_Sales_System_v2.0</div>
-                            </div>
-
-                            {/* Dashboard Content */}
-                            <div className="p-6 lg:p-8 space-y-6">
-                                {/* Stats Row */}
-                                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                                    <div className="bg-dark-800/50 rounded-xl p-3 sm:p-4 border border-white/5">
-                                        <div className="text-gray-300 text-xs sm:text-sm mb-1">금일 유입 DB</div>
-                                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white flex items-end gap-1 sm:gap-2">
-                                            <CountUp end={42} suffix="건" duration={1.5} />
-                                            <span className="text-[10px] sm:text-xs text-green-400 font-medium mb-0.5 sm:mb-1 flex items-center">
-                                                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> +12%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="bg-dark-800/50 rounded-xl p-3 sm:p-4 border border-white/5">
-                                        <div className="text-gray-300 text-xs sm:text-sm mb-1">미팅 성사율</div>
-                                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white flex items-end gap-1 sm:gap-2">
-                                            <CountUp end={38} suffix="%" duration={1.5} />
-                                            <span className="text-[10px] sm:text-xs text-green-400 font-medium mb-0.5 sm:mb-1 flex items-center">
-                                                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> +5.4%
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Graph Visual (Simplified) */}
-                                <div className="bg-dark-800/30 rounded-xl p-4 border border-white/5 h-48 relative flex items-end justify-between gap-2">
-                                    {/* Bars */}
-                                    {[30, 45, 35, 55, 48, 62, 75].map((height, i) => (
-                                        <motion.div
-                                            key={i}
-                                            initial={{ height: 0 }}
-                                            animate={{ height: `${height}%` }}
-                                            transition={{ duration: 1, delay: 0.5 + (i * 0.1) }}
-                                            className="w-full bg-primary-900/30 rounded-t-sm relative group overflow-hidden"
-                                        >
-                                            <div className="absolute bottom-0 left-0 w-full bg-primary-500 transition-all duration-1000 ease-out" style={{ height: '100%', opacity: 0.6 + (i * 0.05) }}></div>
-                                            {/* Tooltip */}
-                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-dark-950 text-[10px] font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                                                {height * 2} Leads
-                                            </div>
-                                        </motion.div>
-                                    ))}
-
-                                    {/* Trend Line Overlay */}
-                                    <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" preserveAspectRatio="none">
-                                        <motion.path
-                                            initial={{ pathLength: 0 }}
-                                            animate={{ pathLength: 1 }}
-                                            transition={{ duration: 1.5, delay: 1 }}
-                                            d="M0 140 C 50 130, 100 110, 150 120 S 250 80, 300 90 S 400 50, 500 20"
-                                            fill="none"
-                                            stroke="#3b82f6"
-                                            strokeWidth="3"
-                                            strokeLinecap="round"
-                                            className="drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                                        />
-                                    </svg>
-                                </div>
-
-                                {/* Incoming Lead Notification */}
-                                <motion.div
-                                    initial={{ x: 20, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ duration: 0.5, delay: 2 }}
-                                    className="flex items-center gap-4 bg-primary-900/20 border border-primary-500/30 rounded-lg p-3"
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400">
-                                        <Database className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm font-semibold text-white">신규 접수가 들어왔습니다</div>
-                                        <div className="text-xs text-primary-200">방금 전 • 카카오 인증 완료 • 서울시 강남구</div>
-                                    </div>
-                                </motion.div>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-
+            {/* Value Props - 3 cards */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="grid grid-cols-3 gap-3 mb-8"
+            >
+              {[
+                {
+                  icon: "M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6",
+                  title: "홈페이지 제작",
+                  desc: "맞춤 디자인",
+                },
+                {
+                  icon: "M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z",
+                  title: "광고 세팅",
+                  desc: "Meta 광고 소재까지",
+                },
+                {
+                  icon: "M18 20V10M12 20V4M6 20v-6",
+                  title: "DB 관리",
+                  desc: "실시간 알림",
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white/[0.04] border border-white/[0.08] rounded-md p-4 text-center hover:border-[#c9a962]/30 hover:-translate-y-0.5 transition-all"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#c9a962"
+                    strokeWidth="1.5"
+                    className="mx-auto mb-2"
+                  >
+                    <path d={item.icon} />
+                  </svg>
+                  <div className="text-[15px] font-bold text-white mb-1">
+                    {item.title}
+                  </div>
+                  <div className="text-[13px] text-[#999]">{item.desc}</div>
+                  <span className="inline-block mt-2 px-2 py-0.5 text-[11px] font-semibold text-[#c9a962] bg-[#c9a962]/[0.08] border border-[#c9a962]/20 rounded-full">
+                    ✓ 구독 포함
+                  </span>
                 </div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-4 items-start"
+            >
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-br from-[#c9a962] to-[#b08d3e] text-[#1a1a1a] font-bold text-base hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(201,169,98,0.4)] transition-all"
+              >
+                간편 진단 받기
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link
+                href="/demo"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-all"
+              >
+                업종별 데모 보기
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right: Process Animation */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="hidden lg:block"
+          >
+            <div className="max-w-[560px] ml-auto">
+              <HeroProcessAnimation key={animKey} />
             </div>
-        </section>
-    )
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
 }
