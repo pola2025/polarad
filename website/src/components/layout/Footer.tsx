@@ -61,11 +61,11 @@ export function Footer() {
               <h4 className="font-semibold text-white text-sm sm:text-base">
                 회사
               </h4>
-              <ul className="space-y-1.5 sm:space-y-2">
+              <ul className="space-y-0.5 sm:space-y-2">
                 <li>
                   <Link
                     href="/service"
-                    className="text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
+                    className="inline-block py-1.5 text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
                   >
                     서비스
                   </Link>
@@ -73,7 +73,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/demo"
-                    className="text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
+                    className="inline-block py-1.5 text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
                   >
                     데모
                   </Link>
@@ -84,11 +84,11 @@ export function Footer() {
               <h4 className="font-semibold text-white text-sm sm:text-base">
                 지원
               </h4>
-              <ul className="space-y-1.5 sm:space-y-2">
+              <ul className="space-y-0.5 sm:space-y-2">
                 <li>
                   <Link
                     href="/contact"
-                    className="text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
+                    className="inline-block py-1.5 text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
                   >
                     상담신청
                   </Link>
@@ -96,7 +96,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/marketing-news"
-                    className="text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
+                    className="inline-block py-1.5 text-gray-500 hover:text-[#c9a962] transition-colors text-xs sm:text-sm"
                   >
                     마케팅 소식
                   </Link>

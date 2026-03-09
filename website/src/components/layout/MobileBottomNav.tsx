@@ -34,10 +34,10 @@ export function MobileBottomNav() {
               }`}
             >
               <Icon
-                className={`w-5 h-5 mb-1 ${isActive ? "stroke-[2.5]" : ""}`}
+                className={`w-6 h-6 mb-1 ${isActive ? "stroke-[2.5]" : ""}`}
               />
               <span
-                className={`text-[10px] ${isActive ? "font-semibold" : "font-medium"}`}
+                className={`text-[11px] ${isActive ? "font-semibold" : "font-medium"}`}
               >
                 {item.label}
               </span>

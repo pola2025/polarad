@@ -35,13 +35,13 @@ export default function FAQSection() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <section className="py-12 lg:py-24 bg-[#222]">
+    <section className="py-8 lg:py-24 bg-[#222]">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-8"
+          className="text-center mb-5 sm:mb-8"
         >
           <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4">
             자주 묻는 질문

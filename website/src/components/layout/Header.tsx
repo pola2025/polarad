@@ -81,7 +81,7 @@ export function Header() {
           {/* Mobile: 마케팅소식 링크 */}
           <Link
             href="/marketing-news"
-            className="md:hidden text-[#c9a962] text-sm font-medium px-3 py-1.5 rounded-lg bg-[#c9a962]/10 border border-[#c9a962]/20 hover:bg-[#c9a962]/20 transition-colors"
+            className="md:hidden text-[#c9a962] text-sm font-medium px-3 py-2.5 min-h-[44px] flex items-center rounded-lg bg-[#c9a962]/10 border border-[#c9a962]/20 hover:bg-[#c9a962]/20 transition-colors"
           >
             마케팅소식
           </Link>

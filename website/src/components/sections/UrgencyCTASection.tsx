@@ -36,7 +36,7 @@ export default function UrgencyCTASection() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <section className="py-12 lg:py-24 bg-[#1a1a1a]">
+    <section className="py-8 lg:py-24 bg-[#1a1a1a]">
       <div className="container">
         {/* Risk removal */}
         <motion.div

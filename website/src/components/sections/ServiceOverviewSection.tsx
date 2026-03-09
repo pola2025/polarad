@@ -32,7 +32,7 @@ const services = [
 
 export default function ServiceOverviewSection() {
   return (
-    <section className="py-12 lg:py-24 bg-[#222]">
+    <section className="py-8 lg:py-24 bg-[#222]">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

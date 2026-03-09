@@ -24,7 +24,7 @@ const painPoints = [
 
 export default function PainPointsSection() {
   return (
-    <section className="py-12 lg:py-24 bg-[#1a1a1a]">
+    <section className="py-8 lg:py-24 bg-[#1a1a1a]">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
