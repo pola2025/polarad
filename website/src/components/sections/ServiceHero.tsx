@@ -17,7 +17,7 @@ export function ServiceHero() {
         <p className="text-[#888] text-base lg:text-lg max-w-xl mx-auto">
           접수만 필요하면 5만원, 광고까지 맡기면 22만원,
           <br className="hidden sm:block" />
-          전담 매니저가 필요하면 55만원.
+          콘텐츠 배포까지 매일 하면 55만원.
         </p>
       </div>
     </section>
