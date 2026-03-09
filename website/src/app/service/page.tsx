@@ -5,6 +5,7 @@ import { FAQSchema } from "@/components/seo/FAQSchema";
 import { ServiceSchema } from "@/components/seo/ServiceSchema";
 import { ServiceHero } from "@/components/sections/ServiceHero";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { TierCarousel } from "@/components/service/TierCarousel";
 import {
   CheckCircle2,
   ArrowRight,
@@ -171,71 +172,10 @@ export default function ServicePage() {
       {/* Hero */}
       <ServiceHero />
 
-      {/* Pricing Cards — #2 모바일 좌우 슬라이드 */}
+      {/* Pricing Cards — 모바일 좌우 슬라이드 + 버튼 */}
       <section className="py-10 lg:py-24 bg-[#1a1a1a]">
         <div className="container px-4">
-          <ScrollReveal>
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4 pb-2 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:mx-auto md:px-0 md:pb-0 max-w-5xl">
-              {tiers.map((tier, i) => (
-                <ScrollReveal key={tier.name} delay={i * 0.08}>
-                  <div
-                    className={`min-w-[280px] snap-start relative rounded-xl p-6 lg:p-8 border transition-all md:min-w-0 ${
-                      tier.highlight
-                        ? "bg-gradient-to-b from-[#c9a962]/10 to-[#2a2a2a] border-[#c9a962]/40 shadow-[0_0_40px_rgba(201,169,98,0.1)]"
-                        : "bg-[#2a2a2a] border-white/[0.06]"
-                    }`}
-                  >
-                    {tier.highlight && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-br from-[#c9a962] to-[#b08d3e] text-[#1a1a1a] text-xs font-bold">
-                        추천
-                      </div>
-                    )}
-                    <h3 className="text-lg font-semibold text-white mb-1">
-                      {tier.name}
-                    </h3>
-                    <p className="text-sm text-[#888] mb-4">{tier.desc}</p>
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold text-white">
-                        {tier.price}
-                      </span>
-                      <span className="text-[#888] ml-1">{tier.unit}</span>
-                      <div className="text-xs text-[#666] mt-1">
-                        VAT 포함 · 6개월 약정
-                      </div>
-                    </div>
-
-                    <Link
-                      href="/contact"
-                      className={`block w-full text-center py-3 rounded-lg font-semibold text-sm transition-all mb-6 ${
-                        tier.highlight
-                          ? "bg-gradient-to-br from-[#c9a962] to-[#b08d3e] text-[#1a1a1a] hover:shadow-[0_4px_20px_rgba(201,169,98,0.3)]"
-                          : "border border-white/10 text-white hover:bg-white/5"
-                      }`}
-                    >
-                      상담 신청
-                    </Link>
-
-                    <div className="space-y-2.5">
-                      {tier.features.map((f) => (
-                        <div key={f} className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="w-4 h-4 text-[#c9a962] shrink-0 mt-0.5" />
-                          <span className="text-gray-300">{f}</span>
-                        </div>
-                      ))}
-                      {tier.notIncluded.map((f) => (
-                        <div key={f} className="flex items-start gap-2 text-sm">
-                          <span className="w-4 h-4 shrink-0 mt-0.5 text-center text-[#555]">
-                            -
-                          </span>
-                          <span className="text-[#555]">{f}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </ScrollReveal>
+          <TierCarousel tiers={tiers} />
         </div>
       </section>
 
@@ -259,8 +199,12 @@ export default function ServicePage() {
               {layerSections.map((section, i) => {
                 const Icon = section.icon;
                 return (
-                  <ScrollReveal key={section.layer} delay={i * 0.08}>
-                    <div className="min-w-[280px] snap-start bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-5 sm:p-6 md:min-w-0">
+                  <ScrollReveal
+                    key={section.layer}
+                    delay={i * 0.08}
+                    className="md:h-full"
+                  >
+                    <div className="min-w-[280px] snap-start bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-5 sm:p-6 md:min-w-0 md:h-full">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 rounded-lg bg-[#c9a962]/10 flex items-center justify-center">
                           <Icon className="w-5 h-5 text-[#c9a962]" />

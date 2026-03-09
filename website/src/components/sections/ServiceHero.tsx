@@ -14,9 +14,9 @@ export function ServiceHero() {
           우리 업종에 맞는 <span className="text-[#c9a962]">플랜</span>을
           선택하세요
         </h1>
-        <p className="text-[#888] text-base lg:text-lg max-w-xl mx-auto">
+        <p className="text-[#888] text-sm sm:text-base lg:text-lg max-w-xl mx-auto break-keep">
           접수만 필요하면 5만원, 광고까지 맡기면 22만원,
-          <br className="hidden sm:block" />
+          <br />
           콘텐츠 배포까지 매일 하면 55만원.
         </p>
       </div>
