@@ -199,7 +199,10 @@ export default function ContactPage() {
     company: "",
     name: "",
     phone: "",
+    emailId: "",
+    emailDomain: "naver.com",
   });
+  const [customDomain, setCustomDomain] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -228,6 +231,9 @@ export default function ContactPage() {
 
     setIsSubmitting(true);
     const rec = getRecommendation(answers);
+    const email = formData.emailId
+      ? `${formData.emailId}@${formData.emailDomain}`
+      : "";
     try {
       const response = await fetch(
         "https://pola-homepage.mkt9834.workers.dev/",
@@ -238,6 +244,7 @@ export default function ContactPage() {
             name: formData.name,
             phone: formData.phone,
             company: formData.company,
+            email,
             message: `[위저드] 업종: ${answers[0]} / 현황: ${answers[1]} / 예산: ${answers[2]} / 고민: ${answers[3]} → ${rec.tier}`,
             privacyAgreed,
           }),
@@ -426,7 +433,7 @@ export default function ContactPage() {
                           </p>
                         </div>
 
-                        <p className="text-sm text-[#888] text-center mb-6">
+                        <p className="text-xs sm:text-sm text-[#888] text-center mb-6">
                           간편 진단 리포트를 받으시려면 연락처를 남겨주세요.
                         </p>
 
@@ -475,6 +482,74 @@ export default function ContactPage() {
                               placeholder="연락처 (휴대폰)"
                               className="w-full px-4 py-3 bg-[#333] border border-white/[0.06] rounded-lg text-white placeholder-[#555] text-sm focus:outline-none focus:border-[#c9a962]/50"
                             />
+                          </div>
+                          <div>
+                            <div className="flex gap-1.5 items-center">
+                              <input
+                                type="text"
+                                value={formData.emailId}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    emailId: e.target.value.replace(
+                                      /[@\s]/g,
+                                      "",
+                                    ),
+                                  })
+                                }
+                                placeholder="이메일 아이디"
+                                className="flex-1 min-w-0 px-3 py-3 bg-[#333] border border-white/[0.06] rounded-lg text-white placeholder-[#555] text-sm focus:outline-none focus:border-[#c9a962]/50"
+                              />
+                              <span className="text-[#666] text-sm shrink-0">
+                                @
+                              </span>
+                              {customDomain ? (
+                                <input
+                                  type="text"
+                                  value={formData.emailDomain}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      emailDomain: e.target.value.replace(
+                                        /\s/g,
+                                        "",
+                                      ),
+                                    })
+                                  }
+                                  placeholder="도메인 입력"
+                                  className="flex-1 min-w-0 px-3 py-3 bg-[#333] border border-white/[0.06] rounded-lg text-white placeholder-[#555] text-sm focus:outline-none focus:border-[#c9a962]/50"
+                                />
+                              ) : (
+                                <select
+                                  value={formData.emailDomain}
+                                  onChange={(e) => {
+                                    if (e.target.value === "__custom__") {
+                                      setCustomDomain(true);
+                                      setFormData({
+                                        ...formData,
+                                        emailDomain: "",
+                                      });
+                                    } else {
+                                      setFormData({
+                                        ...formData,
+                                        emailDomain: e.target.value,
+                                      });
+                                    }
+                                  }}
+                                  className="flex-1 min-w-0 px-2 py-3 bg-[#333] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#c9a962]/50 appearance-none"
+                                >
+                                  <option value="naver.com">naver.com</option>
+                                  <option value="gmail.com">gmail.com</option>
+                                  <option value="daum.net">daum.net</option>
+                                  <option value="hanmail.net">
+                                    hanmail.net
+                                  </option>
+                                  <option value="kakao.com">kakao.com</option>
+                                  <option value="nate.com">nate.com</option>
+                                  <option value="__custom__">직접 입력</option>
+                                </select>
+                              )}
+                            </div>
                           </div>
 
                           <label className="flex items-start gap-2 cursor-pointer">
