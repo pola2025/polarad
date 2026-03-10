@@ -114,7 +114,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-[clamp(36px,5vw,56px)] font-bold text-white mb-4 leading-[1.5] tracking-[-1px] break-keep"
+              className="text-3xl sm:text-4xl lg:text-[clamp(36px,5vw,56px)] font-bold text-white mb-4 leading-[1.8] tracking-[-0.5px] break-keep"
             >
               <span className="block">본업에만 집중하세요.</span>
               <span className="block mt-6">
