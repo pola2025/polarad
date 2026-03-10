@@ -1,17 +1,14 @@
 /**
  * Vercel Cron Job: polarad Instagram Q&A 배너 자동 게시
- * 스케줄: 월/수/금 오전 12시 (UTC) = KST 오전 9시
+ * 스케줄: 월/수/금 12:00 KST
  *
  * 1. Airtable에서 현재 배너 인덱스 조회
- * 2. HTML 템플릿으로 배너 이미지 생성 (Satori)
- * 3. R2 업로드
- * 4. Instagram Graph API로 게시
- * 5. Airtable 인덱스 업데이트
+ * 2. R2에 미리 업로드된 배너 이미지 URL 사용
+ * 3. Instagram Graph API로 게시
+ * 4. Airtable 인덱스 업데이트
  */
 
 import { NextResponse } from "next/server";
-import { captureHtmlWithSatori } from "@/lib/satori-capture";
-import { uploadInstagramImageToR2 } from "@/lib/r2-storage";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -26,9 +23,9 @@ const GRAPH_API_BASE = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
 const AIRTABLE_KEY = "instagram_polarad_banner_index";
 const BANNER_COUNT = 24;
 
-// 배너 이미지는 public/images/instagram/bg/에 복사되어 있어야 함
-// 절대 URL은 런타임에 VERCEL_URL 또는 NEXT_PUBLIC_SITE_URL 기반으로 구성
-const BG_BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://polarad.co.kr";
+// R2에 미리 업로드된 배너 이미지 URL 베이스
+const R2_BANNER_BASE =
+  "https://pub-c873926e91684ac7a7f53f44d4cc5b9f.r2.dev/instagram/polarad/qa-banners";
 
 // ─────────────────────────────────────────────
 // 배너 데이터 (24개)
@@ -918,133 +915,6 @@ async function setBannerIndex(newIndex: number): Promise<void> {
 }
 
 // ─────────────────────────────────────────────
-// HTML 템플릿 생성
-// ─────────────────────────────────────────────
-function buildBannerHtml(banner: Banner): string {
-  const bgUrl = `${BG_BASE}/images/instagram/bg/${banner.img}`;
-
-  // Convert \n to <br> for multi-line text rendering in satori-html
-  const qHtml = banner.q.replace(/\n/g, "<br>");
-  const aHtml = banner.a.replace(/\n/g, "<br>");
-
-  return `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    width: 1080px;
-    height: 1080px;
-    overflow: hidden;
-    font-family: 'Pretendard', sans-serif;
-    position: relative;
-    background: #111;
-  }
-  .bg {
-    position: absolute;
-    inset: 0;
-    background-image: url('${bgUrl}');
-    background-size: cover;
-    background-position: center;
-  }
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(0,0,0,0.45) 0%,
-      rgba(0,0,0,0.20) 40%,
-      rgba(0,0,0,0.80) 100%
-    );
-  }
-  .safe {
-    position: absolute;
-    inset: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  /* Q box - glassmorphism */
-  .q-box {
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.22);
-    border-radius: 20px;
-    padding: 28px 36px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  .q-label {
-    font-size: 52px;
-    font-weight: 800;
-    color: #c9a962;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-  .q-text {
-    font-size: 48px;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1.3;
-  }
-  /* A area - hero text */
-  .a-area {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .a-divider {
-    width: 56px;
-    height: 4px;
-    background: #c9a962;
-    border-radius: 2px;
-    margin-bottom: 4px;
-  }
-  .a-text {
-    font-size: 74px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.2;
-    text-shadow: 0 1px 3px rgba(0,0,0,1), 0 4px 16px rgba(0,0,0,0.5);
-  }
-  .a-sub {
-    font-size: 26px;
-    font-weight: 600;
-    color: #c9a962;
-    letter-spacing: 0.02em;
-  }
-  .handle {
-    font-size: 22px;
-    font-weight: 400;
-    color: rgba(255,255,255,0.65);
-    text-align: right;
-    margin-top: 8px;
-  }
-</style>
-</head>
-<body>
-  <div class="bg"></div>
-  <div class="overlay"></div>
-  <div class="safe">
-    <div class="q-box">
-      <div class="q-label">Q.</div>
-      <div class="q-text">${qHtml}</div>
-    </div>
-    <div class="a-area">
-      <div class="a-divider"></div>
-      <div class="a-text">${aHtml}</div>
-      <div class="a-sub">${banner.sub}</div>
-      <div class="handle">@polaad.kr</div>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-// ─────────────────────────────────────────────
 // Instagram Graph API
 // ─────────────────────────────────────────────
 async function waitForContainer(containerId: string): Promise<void> {
@@ -1175,39 +1045,18 @@ export async function GET(request: Request) {
       `배너 #${bannerIndex + 1}/${BANNER_COUNT}: ${banner.q.replace(/\n/g, " ")}`,
     );
 
-    // 2. HTML 생성 및 이미지 캡처
-    console.log("Satori 이미지 캡처 시작...");
-    const html = buildBannerHtml(banner);
-    const imageBuffer = await captureHtmlWithSatori(html, 1080, 1080);
+    // 2. R2에 미리 업로드된 배너 이미지 URL
+    const bannerNum = String(bannerIndex + 1).padStart(2, "0");
+    const imageUrl = `${R2_BANNER_BASE}/banner-${bannerNum}.png`;
+    console.log(`배너 이미지: ${imageUrl}`);
 
-    if (!imageBuffer) {
-      throw new Error("이미지 캡처 실패");
-    }
-    console.log(
-      `이미지 캡처 완료: ${(imageBuffer.length / 1024).toFixed(1)}KB`,
-    );
-
-    // 3. R2 업로드
-    const timestamp = Date.now();
-    const publicId = `polarad-qa-${String(bannerIndex + 1).padStart(2, "0")}-${timestamp}`;
-    console.log(`R2 업로드: ${publicId}`);
-
-    const uploadResult = await uploadInstagramImageToR2(imageBuffer, publicId);
-    if (!uploadResult.success || !uploadResult.url) {
-      throw new Error(`R2 업로드 실패: ${uploadResult.error}`);
-    }
-    console.log(`R2 업로드 완료: ${uploadResult.url}`);
-
-    // 4. Instagram 게시
+    // 3. Instagram 게시
     if (!INSTAGRAM_ACCESS_TOKEN) {
       throw new Error("POLARAD_INSTAGRAM_ACCESS_TOKEN 미설정");
     }
 
     console.log("Instagram 게시 중...");
-    const { postId, permalink } = await publishToInstagram(
-      uploadResult.url,
-      caption,
-    );
+    const { postId, permalink } = await publishToInstagram(imageUrl, caption);
     console.log(`Instagram 게시 완료: ${permalink || postId}`);
 
     // 5. Airtable 인덱스 업데이트 (다음 배너)
@@ -1231,7 +1080,7 @@ export async function GET(request: Request) {
       success: true,
       bannerIndex: bannerIndex + 1,
       q: banner.q,
-      r2Url: uploadResult.url,
+      r2Url: imageUrl,
       instagram: { postId, permalink },
       nextBannerIndex: nextIndex + 1,
       duration,
