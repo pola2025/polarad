@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { industries } from "@/lib/demo-data";
 import { DemoHero } from "@/components/sections/DemoHero";
+import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
 
 export const metadata: Metadata = {
   title: "업종별 마케팅 데모",
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
     description:
       "인테리어, 건축, 교육, 컨설팅 등 9개 업종별 맞춤 마케팅 솔루션 데모",
     url: "https://polarad.co.kr/demo",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "폴라애드",
   },
   alternates: {
     canonical: "https://polarad.co.kr/demo",
@@ -22,6 +26,12 @@ export const metadata: Metadata = {
 export default function DemoPage() {
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white -mt-[60px] md:-mt-[60px] lg:-mt-[64px] pt-[60px] md:pt-[60px] lg:pt-[64px]">
+      <BreadcrumbSchema
+        items={[
+          { name: "홈", url: "https://polarad.co.kr" },
+          { name: "업종별 데모", url: "https://polarad.co.kr/demo" },
+        ]}
+      />
       {/* Hero */}
       <DemoHero />
 

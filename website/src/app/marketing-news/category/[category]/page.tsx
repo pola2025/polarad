@@ -8,7 +8,7 @@ import {
 } from "@/lib/marketing-news";
 import { ArticleCard, CategoryFilter } from "@/components/marketing-news";
 import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
-import { FAQPageSchema } from "@/components/seo/FAQPageSchema";
+import { FAQSchema } from "@/components/seo/FAQSchema";
 
 interface PageProps {
   params: Promise<{ category: string }>;
@@ -82,7 +82,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
       {/* FAQ 카테고리인 경우 FAQPage 스키마 추가 */}
       {categoryKey === "faq" && articles.length > 0 && (
-        <FAQPageSchema
+        <FAQSchema
           faqs={articles.map((article) => ({
             question: article.title,
             answer: article.description,

@@ -13,15 +13,6 @@ export function WebSiteSchema() {
       name: "폴라애드",
       url: "https://polarad.co.kr",
     },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate:
-          "https://polarad.co.kr/marketing-news?q={search_term_string}",
-      },
-      "query-input": "required name=search_term_string",
-    },
     mainEntity: {
       "@type": "ItemList",
       itemListElement: [
