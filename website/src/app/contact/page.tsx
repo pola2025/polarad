@@ -245,7 +245,7 @@ export default function ContactPage() {
             phone: formData.phone,
             company: formData.company,
             email,
-            message: `[위저드] 업종: ${answers[0]} / 현황: ${answers[1]} / 예산: ${answers[2]} / 고민: ${answers[3]} → ${rec.tier}`,
+            message: `[위저드 진단결과] ${rec.tier}\n업종: ${answers[0]}\n현황: ${answers[1]}\n예산: ${answers[2]}\n고민: ${answers[3]}`,
             privacyAgreed,
           }),
         },
