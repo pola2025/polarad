@@ -121,6 +121,14 @@ export default function SolutionSection() {
               </motion.div>
             ))}
           </div>
+
+          <p className="text-[#555] text-xs leading-relaxed mt-6 text-center max-w-2xl mx-auto px-2">
+            기존 마케팅 대행은 홈페이지 제작에 300~500만원, 광고 대행에 월
+            100만원 이상이 들지만, 폴라애드 구독은 홈페이지 제작부터 Meta 광고
+            운영, DB 자동 수집, 월간 성과 리포트까지 월 22만원에 모두
+            포함됩니다. 6개월 약정 완료 후에는 홈페이지를 영구 소유할 수 있어,
+            기존 대행사처럼 해지하면 모든 것이 사라지는 구조와 다릅니다.
+          </p>
         </div>
       </div>
     </section>

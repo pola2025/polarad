@@ -80,11 +80,13 @@ export default function UrgencyCTASection() {
                     className={`w-4 h-4 text-[#888] shrink-0 ml-2 transition-transform ${openIdx === i ? "rotate-180" : ""}`}
                   />
                 </button>
-                {openIdx === i && (
-                  <div className="px-3.5 pb-3 text-sm text-white font-medium">
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${openIdx === i ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
+                >
+                  <p className="px-3.5 pb-3 text-sm text-white font-medium">
                     {item.a}
-                  </div>
-                )}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>

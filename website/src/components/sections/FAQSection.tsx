@@ -70,11 +70,13 @@ export default function FAQSection() {
                   className={`w-5 h-5 text-[#888] transition-transform ${openIdx === i ? "rotate-180" : ""}`}
                 />
               </button>
-              {openIdx === i && (
-                <div className="px-4 pb-3.5 sm:px-5 sm:pb-5 text-sm text-[#999] leading-relaxed">
+              <div
+                className={`overflow-hidden transition-all duration-300 ${openIdx === i ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
+              >
+                <p className="px-4 pb-3.5 sm:px-5 sm:pb-5 text-sm text-[#999] leading-relaxed">
                   {faq.a}
-                </div>
-              )}
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>

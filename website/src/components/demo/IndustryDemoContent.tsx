@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { IndustryDemo } from "@/lib/demo-data";
+import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
 
 function StepProgress({ activeStep }: { activeStep: number }) {
   const steps = [
@@ -67,6 +68,16 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-[#e0e0e0] -mt-[60px] md:-mt-[60px] lg:-mt-[64px] pt-[60px] md:pt-[60px] lg:pt-[64px]">
+      <BreadcrumbSchema
+        items={[
+          { name: "홈", url: "https://polarad.co.kr" },
+          { name: "데모", url: "https://polarad.co.kr/demo" },
+          {
+            name: `${data.name} 데모`,
+            url: `https://polarad.co.kr/demo/${data.slug}`,
+          },
+        ]}
+      />
       <StepProgress activeStep={activeStep} />
 
       {/* Hero */}
@@ -93,10 +104,19 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
             {data.heroTitle}
           </h1>
           <p className="text-[15px] text-[#999]">
-            POLAAD가 {data.name} 업종에 제공하는 올인원 마케팅 솔루션
+            폴라애드가 {data.name} 업종에 제공하는 올인원 마케팅 솔루션
           </p>
         </div>
       </section>
+
+      {/* Long Description */}
+      {data.longDesc && (
+        <article className="max-w-3xl mx-auto px-5 md:px-10 py-12 text-center">
+          <p className="text-[#aaa] text-sm md:text-base leading-relaxed">
+            {data.longDesc}
+          </p>
+        </article>
+      )}
 
       {/* Step 1: Homepage */}
       <section
@@ -277,7 +297,9 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
               </svg>
             </div>
             <div>
-              <div className="text-sm font-bold text-white">POLAAD DB 알림</div>
+              <div className="text-sm font-bold text-white">
+                폴라애드 DB 알림
+              </div>
               <div className="text-[11px] text-[#6a8fa8]">{data.url}</div>
             </div>
           </div>
@@ -380,11 +402,73 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
           </div>
           <div className="px-6 py-4 bg-[rgba(201,169,98,0.05)] border-t border-[rgba(201,169,98,0.15)] text-center">
             <span className="text-xs text-[#c9a962] font-semibold">
-              POLAAD - {data.name} 마케팅 파트너
+              폴라애드 - {data.name} 마케팅 파트너
             </span>
           </div>
         </div>
       </section>
+
+      {/* Why 폴라애드 */}
+      {(data.challenges || data.benefits) && (
+        <section className="max-w-4xl mx-auto px-5 md:px-10 py-16">
+          <h2 className="text-xl md:text-2xl font-semibold text-white text-center mb-10">
+            {data.name} 업종이 폴라애드를 선택하는 이유
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-10">
+            {data.challenges && (
+              <div>
+                <h3 className="text-sm uppercase tracking-widest text-[#666] mb-4">
+                  현재 어려움
+                </h3>
+                <ul className="space-y-3">
+                  {data.challenges.map((c: string, i: number) => (
+                    <li
+                      key={i}
+                      className="text-[#999] text-sm leading-relaxed flex gap-2"
+                    >
+                      <span className="text-[#c9a962] shrink-0">—</span>
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {data.benefits && (
+              <div>
+                <h3 className="text-sm uppercase tracking-widest text-[#666] mb-4">
+                  폴라애드 도입 효과
+                </h3>
+                <ul className="space-y-3">
+                  {data.benefits.map((b: string, i: number) => (
+                    <li
+                      key={i}
+                      className="text-[#999] text-sm leading-relaxed flex gap-2"
+                    >
+                      <span className="text-[#c9a962] shrink-0">+</span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {data.recommendedTier && (
+            <div className="text-center border border-white/[0.06] rounded-lg p-6 bg-white/[0.02]">
+              <p className="text-xs uppercase tracking-widest text-[#666] mb-2">
+                추천 플랜
+              </p>
+              <p className="text-lg text-[#c9a962] font-medium">
+                {data.recommendedTier}
+              </p>
+              {data.tierReason && (
+                <p className="text-[#888] text-sm mt-2">{data.tierReason}</p>
+              )}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Bottom CTA */}
       <section className="py-12 px-6 text-center bg-gradient-to-b from-[#1a1a1a] to-[#222]">
@@ -392,7 +476,7 @@ export default function IndustryDemoContent({ data }: { data: IndustryDemo }) {
           {data.name} 마케팅, 지금 시작하세요
         </h2>
         <p className="text-sm text-[#888] mb-6">
-          POLAAD가 홈페이지부터 광고, DB 관리, 리포트까지 모두 해결합니다
+          폴라애드가 홈페이지부터 광고, DB 관리, 리포트까지 모두 해결합니다
         </p>
         <Link
           href="/contact"
