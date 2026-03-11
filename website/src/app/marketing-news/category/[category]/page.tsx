@@ -8,6 +8,8 @@ import {
 } from "@/lib/marketing-news";
 import { ArticleCard, CategoryFilter } from "@/components/marketing-news";
 import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
+
+export const revalidate = 300;
 import { FAQSchema } from "@/components/seo/FAQSchema";
 
 interface PageProps {

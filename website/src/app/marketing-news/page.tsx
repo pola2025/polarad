@@ -4,6 +4,9 @@ import { getAllArticles, getFeaturedArticles } from "@/lib/marketing-news";
 import { ArticleCard, CategoryFilter } from "@/components/marketing-news";
 import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
 
+// ISR: 새 글이 목록에 빠르게 반영되도록
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "마케팅 소식",
   description:
