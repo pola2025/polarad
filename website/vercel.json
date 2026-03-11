@@ -3,15 +3,20 @@
     "src/app/api/cron/generate-article/route.ts": {
       "maxDuration": 300
     },
-    "src/app/api/cron/instagram-polamkt/route.ts": {
-      "maxDuration": 120
-    },
     "src/app/api/cron/post-threads/route.ts": {
       "maxDuration": 60
     },
     "src/app/api/cron/instagram-polarad/route.ts": {
       "maxDuration": 120
+    },
+    "src/app/api/cron/daily-content/route.ts": {
+      "maxDuration": 120
     }
   },
-  "crons": []
+  "crons": [
+    {
+      "path": "/api/cron/daily-content",
+      "schedule": "0 2 * * *"
+    }
+  ]
 }
