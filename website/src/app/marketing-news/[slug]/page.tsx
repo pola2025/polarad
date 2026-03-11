@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+
+// ISR: 새 글도 동적 렌더링 후 5분 캐시
+export const revalidate = 300;
+
 import {
   Calendar,
   Clock,
