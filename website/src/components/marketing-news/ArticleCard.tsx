@@ -43,10 +43,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
             <span className="badge badge-primary w-fit mb-4">
               {categoryInfo.label}
             </span>
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-[#c9a962] transition-colors line-clamp-2">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-[#c9a962] transition-colors line-clamp-2 min-h-[3.5rem] md:min-h-[4rem]">
               {article.title}
             </h2>
-            <p className="text-[#aaa] mb-4 line-clamp-2">
+            <p className="text-[#aaa] mb-4 line-clamp-2 min-h-[3rem]">
               {article.description}
             </p>
             <div className="flex items-center justify-between">
@@ -88,10 +88,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
         <span className="badge badge-primary text-xs mb-3">
           {categoryInfo.label}
         </span>
-        <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#c9a962] transition-colors line-clamp-2">
+        <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#c9a962] transition-colors line-clamp-2 min-h-[3.5rem]">
           {article.title}
         </h3>
-        <p className="text-[#aaa] text-sm mb-4 line-clamp-2">
+        <p className="text-[#aaa] text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
           {article.description}
         </p>
         <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
