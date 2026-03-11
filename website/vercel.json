@@ -13,18 +13,5 @@
       "maxDuration": 120
     }
   },
-  "crons": [
-    {
-      "path": "/api/cron/instagram-polamkt",
-      "schedule": "0 3 * * 2,4"
-    },
-    {
-      "path": "/api/cron/post-threads",
-      "schedule": "0 9 * * 1,3,5"
-    },
-    {
-      "path": "/api/cron/instagram-polarad",
-      "schedule": "0 3 * * 1,3,5"
-    }
-  ]
+  "crons": []
 }
