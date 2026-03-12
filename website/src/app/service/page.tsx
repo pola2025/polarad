@@ -93,7 +93,7 @@ const serviceFaqs = [
   {
     question: "환불 정책은요?",
     answer:
-      "1개월차 30%, 2~3개월차 20%, 4개월차 15%, 5개월차~ 불가. 5개월차부터는 환불 불가.",
+      "약정 기간 내 해지 시, 잔여 기간 구독료에서 30% 환불수수료를 차감한 금액을 환불해 드립니다. 예: 2개월 이용 후 해지 시 잔여 4개월분의 70%를 환불.",
   },
   {
     question: "카드 결제 가능한가요?",
@@ -255,26 +255,28 @@ export default function ServicePage() {
                 </h2>
               </div>
             </ScrollReveal>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[
-                { month: "1개월차", rate: "30%" },
-                { month: "2~3개월차", rate: "20%" },
-                { month: "4개월차", rate: "15%" },
-                { month: "5개월차~", rate: "불가" },
-              ].map((item, i) => (
-                <ScrollReveal key={item.month} delay={i * 0.06}>
-                  <div className="bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-4 text-center">
-                    <div className="text-[#888] text-sm mb-1">{item.month}</div>
-                    <div className="text-white font-bold text-lg">
-                      {item.rate}
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
+            <ScrollReveal delay={0.06}>
+              <div className="bg-[#2a2a2a] border border-white/[0.06] rounded-xl p-6">
+                <div className="text-white font-bold text-lg mb-3">
+                  잔여 기간 금액 − 30% 수수료
+                </div>
+                <p className="text-[#999] text-sm leading-relaxed mb-4">
+                  약정 기간 내 해지 시, 잔여 기간 구독료에서 환불수수료 30%를
+                  차감한 금액을 환불해 드립니다.
+                </p>
+                <div className="bg-[#333] rounded-lg p-4 text-sm text-[#bbb]">
+                  <span className="text-[#c9a962] font-medium">예시</span>{" "}
+                  운영형(월 22만원) 2개월 이용 후 해지 → 잔여 4개월분 88만원 ×
+                  70% ={" "}
+                  <span className="text-white font-semibold">
+                    61.6만원 환불
+                  </span>
+                </div>
+              </div>
+            </ScrollReveal>
             <ScrollReveal delay={0.15}>
               <p className="mt-4 text-sm text-[#c9a962]">
-                * 환불 기준은 서비스 이용 개월 수 기준 적용
+                * 6개월 약정 종료 후에는 월 단위 자동 연장, 언제든 해지 가능
               </p>
             </ScrollReveal>
           </div>
