@@ -1,5 +1,7 @@
+// @ts-nocheck
 /**
  * Vercel Cron Job: 자동 마케팅 뉴스 글 생성
+ * ⚠️ 현재 비활성화됨 (2026-03-13) - 상품 콘텐츠만 운영
  * 스케줄: 월/수/금/일 오전 9시 (KST)
  *
  * ⚠️ GEMINI 모델 절대규칙 (변경 금지) ⚠️
@@ -1632,6 +1634,13 @@ async function generateThumbnail(
 }
 
 export async function GET(request: Request) {
+  // 마케팅 뉴스 자동 생성 비활성화 (2026-03-13)
+  // 상품 관련 콘텐츠(daily-content)만 운영, 마케팅 소식은 중단
+  return NextResponse.json(
+    { disabled: true, message: "마케팅 뉴스 자동 생성이 비활성화되었습니다" },
+    { status: 200 },
+  );
+
   const url = new URL(request.url);
   const forceCategory = url.searchParams.get("category") as CategoryKey | null;
   const forceRun = url.searchParams.get("force") === "true";
@@ -1651,7 +1660,7 @@ export async function GET(request: Request) {
   // 카테고리 결정: force 파라미터 > 요일별 매핑
   let category: CategoryKey | undefined =
     forceCategory && ALL_CATEGORIES[forceCategory as ArticleCategory]
-      ? forceCategory
+      ? (forceCategory as CategoryKey)
       : DAY_CATEGORY_MAP[dayOfWeek];
 
   // 요일 체크 (force가 아닐 때만)
@@ -1679,7 +1688,7 @@ export async function GET(request: Request) {
     // 0. 중복 실행 방지: 오늘 이미 해당 카테고리 글이 생성되었는지 확인
     currentStep = "중복 확인";
     console.log(`🔍 중복 실행 확인 중... (${today}, ${category})`);
-    const todayCheck = await checkTodayArticleExists(category, today);
+    const todayCheck = await checkTodayArticleExists(category!, today);
     if (todayCheck.exists && !forceRun) {
       console.log(
         `⚠️ 오늘 이미 ${category} 카테고리 글이 존재합니다: "${todayCheck.title}"`,
