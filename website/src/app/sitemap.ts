@@ -55,7 +55,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/onlinemkt`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
   ];
+
+  // 데모 업종별 서브페이지
+  const demoIndustrySlugs = [
+    "interior",
+    "architecture",
+    "education",
+    "consulting",
+    "legal",
+    "wedding",
+    "realestate",
+    "moving",
+    "lifeservice",
+  ];
+
+  const demoIndustryPages: MetadataRoute.Sitemap = demoIndustrySlugs.map(
+    (slug) => ({
+      url: `${baseUrl}/demo/${slug}`,
+      lastModified: currentDate,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }),
+  );
 
   // 마케팅 뉴스 메인 페이지 - 최신 글 날짜 사용
   const marketingNewsMain: MetadataRoute.Sitemap = [
@@ -102,6 +130,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPages,
+    ...demoIndustryPages,
     ...marketingNewsMain,
     ...categoryPages,
     ...articlePages,

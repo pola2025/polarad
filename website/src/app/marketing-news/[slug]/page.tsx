@@ -25,9 +25,11 @@ import {
   ShareButtons,
   RelatedArticles,
   MarkdownContent,
+  ArticleServiceLinks,
 } from "@/components/marketing-news";
 import { ViewCounter } from "@/components/marketing-news/ViewCounter";
 import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
+import { ArticleSummary } from "@/components/blog/ArticleSummary";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -212,6 +214,12 @@ export default async function ArticlePage({ params }: PageProps) {
                   </div>
                 </div>
 
+                {/* GEO: 핵심 요약 블록 */}
+                <ArticleSummary
+                  description={article.description}
+                  tags={article.tags}
+                />
+
                 {/* Markdown Content - 기존 디자인 시스템 타이포그래피 적용 */}
                 <div className="article-content">
                   <MarkdownContent content={article.content} />
@@ -221,6 +229,9 @@ export default async function ArticlePage({ params }: PageProps) {
                 <div className="mt-16">
                   <ArticleCTA source={slug} />
                 </div>
+
+                {/* Service Links */}
+                <ArticleServiceLinks category={article.category} />
 
                 {/* Related Articles */}
                 <RelatedArticles articles={relatedArticles} />
