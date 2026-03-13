@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { OrganizationSchema } from "@/components/seo/OrganizationSchema";
 import { WebSiteSchema } from "@/components/seo/WebSiteSchema";
-import { Header } from "@/components/layout/Header";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { Footer } from "@/components/layout/Footer";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = "G-0SK5T8Q0F0";
@@ -149,12 +148,13 @@ export default function RootLayout({
           `}
         </Script>
 
-        <Header />
-        <main className="min-h-screen pt-[60px] md:pt-[60px] lg:pt-[64px] pb-16 md:pb-0 overflow-x-clip">
-          {children}
-        </main>
-        <Footer />
-        <MobileBottomNav />
+        <Sidebar />
+        <div className="md:ml-[220px]">
+          <main className="min-h-screen pt-[56px] md:pt-0 overflow-x-clip">
+            {children}
+          </main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
