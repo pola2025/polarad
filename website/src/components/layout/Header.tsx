@@ -11,6 +11,7 @@ export function Header() {
     { href: "/", label: "홈" },
     { href: "/service", label: "서비스" },
     { href: "/demo", label: "데모" },
+    { href: "/portfolio", label: "포트폴리오" },
     { href: "/contact", label: "상담신청" },
     { href: "/marketing-news", label: "마케팅 소식" },
   ];
