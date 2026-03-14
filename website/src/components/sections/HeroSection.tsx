@@ -105,7 +105,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#c9a962]/10 border border-[#c9a962]/20 text-[#c9a962] text-sm font-semibold mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#c9a962]/10 border border-[#c9a962]/20 text-[#c9a962] text-sm font-semibold mb-6 mt-4 md:mt-0"
             >
               구독형 영업 인프라
             </motion.div>
@@ -117,7 +117,7 @@ export default function HeroSection() {
               className="text-3xl sm:text-4xl lg:text-[clamp(36px,5vw,56px)] font-bold text-white mb-4 leading-[1.3] tracking-[-0.5px] break-keep"
             >
               <span className="block">본업에만 집중하세요.</span>
-              <span className="block mt-2">
+              <span className="block mt-2 lg:mt-4">
                 고객은{" "}
                 <span className="text-[#c9a962]">저희가 데려옵니다.</span>
               </span>
