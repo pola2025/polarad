@@ -172,6 +172,43 @@ export default function ServicePage() {
       {/* Hero */}
       <ServiceHero />
 
+      {/* Showcase Video — 이렇게 작동합니다 */}
+      <section className="py-10 lg:py-24 bg-[#111]">
+        <div className="container px-4">
+          <ScrollReveal>
+            <h2 className="text-2xl lg:text-3xl font-bold text-white text-center mb-3">
+              이렇게 작동합니다
+            </h2>
+            <p className="text-[#888] text-center mb-8 sm:mb-12 text-sm sm:text-base">
+              광고 세팅부터 고객 접수까지, 전 과정을 확인하세요
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={0.1}>
+            <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden border border-white/[0.06]">
+              {/* 모바일: 세로 영상 / PC: 가로 영상 */}
+              <video
+                className="w-full hidden lg:block"
+                src="https://pub-b520cb8ed3989e8182bdb020ade36495.r2.dev/showcase/showcase-pc.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+              <video
+                className="w-full lg:hidden"
+                src="https://pub-b520cb8ed3989e8182bdb020ade36495.r2.dev/showcase/showcase-mobile.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Pricing Cards — 모바일 좌우 슬라이드 + 버튼 */}
       <section className="py-10 lg:py-24 bg-[#1a1a1a]">
         <div className="container px-4">
