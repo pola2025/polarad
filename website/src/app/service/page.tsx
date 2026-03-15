@@ -188,7 +188,7 @@ export default function ServicePage() {
               {/* 모바일: 세로 영상 / PC: 가로 영상 */}
               <video
                 className="w-full hidden lg:block"
-                src="https://pub-b520cb8ed3989e8182bdb020ade36495.r2.dev/showcase/showcase-pc.mp4"
+                src="https://pub-c873926e91684ac7a7f53f44d4cc5b9f.r2.dev/showcase/showcase-pc.mp4"
                 autoPlay
                 muted
                 loop
@@ -197,7 +197,7 @@ export default function ServicePage() {
               />
               <video
                 className="w-full lg:hidden"
-                src="https://pub-b520cb8ed3989e8182bdb020ade36495.r2.dev/showcase/showcase-mobile.mp4"
+                src="https://pub-c873926e91684ac7a7f53f44d4cc5b9f.r2.dev/showcase/showcase-mobile.mp4"
                 autoPlay
                 muted
                 loop
