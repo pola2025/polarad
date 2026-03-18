@@ -292,12 +292,17 @@ export default function PortfolioPage() {
                         loading="lazy"
                       />
                       {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center"
+                      >
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 text-white font-medium bg-[#c9a962] px-4 py-2 rounded-full text-sm">
                           <ExternalLink className="w-4 h-4" />
                           사이트 방문
                         </div>
-                      </div>
+                      </a>
                       {/* Bottom gradient for name */}
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#151515] via-[#151515]/80 to-transparent pt-10 pb-3 px-4">
                         <div className="text-lg font-bold text-white">
