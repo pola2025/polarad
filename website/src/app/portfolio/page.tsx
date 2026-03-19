@@ -18,12 +18,12 @@ import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
 type Category =
   | "전체"
   | "경영컨설팅"
+  | "제조업"
   | "펜션"
   | "전문서비스"
   | "공간디자인"
   | "시스템창호"
-  | "집수리"
-  | "집수리교육";
+  | "집수리";
 
 interface PortfolioItem {
   name: string;
@@ -37,6 +37,17 @@ interface PortfolioItem {
 }
 
 const portfolioItems: PortfolioItem[] = [
+  {
+    name: "JS경영컨설팅",
+    category: "경영컨설팅",
+    domain: "js경영컨설팅.kr",
+    url: "https://xn--js-j52if34d3ff1tbnyjj1r.kr/",
+    description:
+      "경영컨설팅 전문기업. 정책자금 컨설팅 서비스를 효과적으로 전달하는 전문 홈페이지를 구축했습니다.",
+    services: [{ icon: Layout, label: "홈페이지 제작" }],
+    gradient: "from-indigo-600/20 to-blue-600/20",
+    iconBg: "bg-indigo-500/10 text-indigo-400",
+  },
   {
     name: "제이앤아이 파트너스",
     category: "경영컨설팅",
@@ -160,37 +171,37 @@ const portfolioItems: PortfolioItem[] = [
     iconBg: "bg-teal-500/10 text-teal-400",
   },
   {
-    name: "최정예 홈케어 아카데미",
-    category: "집수리교육",
-    domain: "cjyacademy.imweb.me",
-    url: "https://cjyacademy.imweb.me/",
+    name: "JS시스템",
+    category: "제조업",
+    domain: "jssys.work",
+    url: "https://jssys.work/",
     description:
-      "집수리 교육 전문 아카데미. 교육 과정과 수강 안내를 효과적으로 전달하는 홈페이지를 제작했습니다.",
+      "제조업 전문기업. 기업 역량과 제품 라인업을 효과적으로 전달하는 전문 홈페이지를 구축했습니다.",
     services: [{ icon: Layout, label: "홈페이지 제작" }],
-    gradient: "from-lime-600/20 to-green-600/20",
-    iconBg: "bg-lime-500/10 text-lime-400",
+    gradient: "from-orange-600/20 to-red-600/20",
+    iconBg: "bg-orange-500/10 text-orange-400",
   },
 ];
 
 const categories: Category[] = [
   "전체",
   "경영컨설팅",
+  "제조업",
   "펜션",
   "전문서비스",
   "공간디자인",
   "시스템창호",
   "집수리",
-  "집수리교육",
 ];
 
 const categoryColors: Record<string, string> = {
   경영컨설팅: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  제조업: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   펜션: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
   전문서비스: "bg-slate-500/10 text-slate-300 border-slate-500/20",
   공간디자인: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   시스템창호: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
   집수리: "bg-teal-500/10 text-teal-400 border-teal-500/20",
-  집수리교육: "bg-lime-500/10 text-lime-400 border-lime-500/20",
 };
 
 export default function PortfolioPage() {
