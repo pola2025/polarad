@@ -269,6 +269,7 @@ export default function ContactPage() {
           contactPhone: formData.phone,
           contactEmail: email,
           inquirySource: "website",
+          mode: "pending",
         }),
       }).catch(() => {});
     }
