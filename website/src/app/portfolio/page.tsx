@@ -38,6 +38,21 @@ interface PortfolioItem {
 
 const portfolioItems: PortfolioItem[] = [
   {
+    name: "비즈업",
+    category: "경영컨설팅",
+    domain: "bizupms.com",
+    url: "https://bizupms.com/",
+    description:
+      "정부정책자금 전문 경영컨설팅. 중소기업·소상공인 대상 창업자금, 운전자금, 시설자금 조달을 지원하는 전문 홈페이지를 구축했습니다.",
+    services: [
+      { icon: Layout, label: "홈페이지 제작" },
+      { icon: Megaphone, label: "DB 광고 운영" },
+      { icon: Bell, label: "접수알림 자동화" },
+    ],
+    gradient: "from-purple-600/20 to-indigo-600/20",
+    iconBg: "bg-purple-500/10 text-purple-400",
+  },
+  {
     name: "JS경영컨설팅",
     category: "경영컨설팅",
     domain: "js경영컨설팅.kr",

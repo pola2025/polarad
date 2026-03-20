@@ -204,7 +204,6 @@ export default function ContactPage() {
   });
   const [customDomain, setCustomDomain] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSelect = (value: string) => {
@@ -222,53 +221,43 @@ export default function ContactPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!privacyAgreed) {
       alert("개인정보 수집 및 이용에 동의해주세요.");
       return;
     }
 
-    setIsSubmitting(true);
     const rec = getRecommendation(answers);
     const email = formData.emailId
       ? `${formData.emailId}@${formData.emailDomain}`
       : "";
-    try {
-      const response = await fetch(
-        "https://pola-homepage.mkt9834.workers.dev/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: formData.name,
-            phone: formData.phone,
-            company: formData.company,
-            email,
-            message: `[위저드 진단결과] ${rec.tier}\n업종: ${answers[0]}\n현황: ${answers[1]}\n예산: ${answers[2]}\n고민: ${answers[3]}`,
-            privacyAgreed,
-          }),
-        },
-      );
-      const result = await response.json();
-      if (result.success) {
-        if (typeof window !== "undefined" && window.gtag) {
-          window.gtag("event", "contact_form_submit", {
-            event_category: "conversion",
-            event_label: "wizard_diagnosis",
-            industry: answers[0],
-            recommendation: rec.tier,
-          });
-        }
-        setSubmitted(true);
-      } else {
-        alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
-      }
-    } catch {
-      alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsSubmitting(false);
+
+    // GA 이벤트 즉시 발송
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "contact_form_submit", {
+        event_category: "conversion",
+        event_label: "wizard_diagnosis",
+        industry: answers[0],
+        recommendation: rec.tier,
+      });
     }
+
+    // 백엔드 fire-and-forget (응답 대기 없이 즉시 완료 처리)
+    fetch("https://pola-homepage.mkt9834.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.name,
+        phone: formData.phone,
+        company: formData.company,
+        email,
+        message: `[위저드 진단결과] ${rec.tier}\n업종: ${answers[0]}\n현황: ${answers[1]}\n예산: ${answers[2]}\n고민: ${answers[3]}`,
+        privacyAgreed,
+      }),
+    }).catch(() => {});
+
+    setSubmitted(true);
   };
 
   const isResultStep = currentStep === steps.length;
@@ -569,20 +558,11 @@ export default function ContactPage() {
 
                           <button
                             type="submit"
-                            disabled={!privacyAgreed || isSubmitting}
+                            disabled={!privacyAgreed}
                             className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-gradient-to-br from-[#c9a962] to-[#b08d3e] text-[#1a1a1a] font-bold text-sm hover:shadow-[0_4px_20px_rgba(201,169,98,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {isSubmitting ? (
-                              <>
-                                <span className="w-4 h-4 border-2 border-[#1a1a1a] border-t-transparent rounded-full animate-spin" />
-                                신청 중...
-                              </>
-                            ) : (
-                              <>
-                                <Send className="w-4 h-4" />
-                                간편 진단 리포트 받기
-                              </>
-                            )}
+                            <Send className="w-4 h-4" />
+                            간편 진단 리포트 받기
                           </button>
 
                           <p className="text-[10px] text-center text-[#666]">
