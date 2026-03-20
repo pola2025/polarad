@@ -257,6 +257,22 @@ export default function ContactPage() {
       }),
     }).catch(() => {});
 
+    // 브랜드 분석 자동 생성 (회사명 있을 때만, fire-and-forget)
+    if (formData.company?.trim()) {
+      fetch("https://master.polarad.co.kr/api/brand-reports/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          businessName: formData.company,
+          industry: answers[0] || "",
+          contactName: formData.name,
+          contactPhone: formData.phone,
+          contactEmail: email,
+          inquirySource: "website",
+        }),
+      }).catch(() => {});
+    }
+
     setSubmitted(true);
   };
 
